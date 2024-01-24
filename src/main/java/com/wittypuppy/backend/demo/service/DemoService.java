@@ -1,5 +1,9 @@
 package com.wittypuppy.backend.demo.service;
 
+import com.wittypuppy.backend.common.exception.DataDeletionException;
+import com.wittypuppy.backend.common.exception.DataInsertionException;
+import com.wittypuppy.backend.common.exception.DataNotFoundException;
+import com.wittypuppy.backend.common.exception.DataUpdateException;
 import com.wittypuppy.backend.demo.dto.DemoDTO;
 import com.wittypuppy.backend.demo.entity.Demo;
 import com.wittypuppy.backend.demo.repository.DemoRepository;
@@ -60,7 +64,7 @@ public class DemoService {
             return "상품 입력 성공";
         } catch (Exception e) {
             log.error("DemoService >>> insertDemo >>> Error >>>", e);
-            return "상품 입력 실패";
+            throw new DataInsertionException("Demo 데이터 입력 중 에러 발생");
         }
     }
 
@@ -69,7 +73,8 @@ public class DemoService {
         log.info("DemoService >>> updateDemo >>> start");
 
         try {
-            Demo demo = demoRepository.findById(demoCode).get();
+            Demo demo = demoRepository.findById(demoCode)
+                    .orElseThrow(() -> new DataNotFoundException("해당 Demo 데이터를 찾을 수 없습니다."));
             demo.column1(demoDTO.getColumn1())
                     .column2(demoDTO.getColumn2())
                     .column3(demoDTO.getColumn3())
@@ -78,28 +83,21 @@ public class DemoService {
             return "상품 수정 성공";
         } catch (Exception e) {
             log.error("DemoService >>> updateDemo >>> Error >>>", e);
-            return "상품 수정 실패";
+            throw new DataUpdateException("Demo 데이터 갱신 중 에러 발생");
         }
     }
 
     @Transactional
     public String deleteDemoByNo(Long demoCode) {
         try {
-
-            Optional<Demo> optionalDemo = demoRepository.findById(demoCode);
-            if (optionalDemo.isPresent()) {
-                Demo demo = optionalDemo.get();
-                demoRepository.delete(demo);
-                log.info("DemoService >>> updateDemo >>> end");
-                return demoCode + "번 상품 삭제 성공";
-            } else {
-
-                log.info("DemoService >>> updateDemo >>> Does not Exist >>> ");
-                return demoCode + "번 상품이 없습니다.";
-            }
+            Demo demo = demoRepository.findById(demoCode)
+                    .orElseThrow(() -> new DataNotFoundException("해당 Demo 데이터를 찾을 수 없습니다."));
+            demoRepository.delete(demo);
+            log.info("DemoService >>> updateDemo >>> end");
+            return "상품 삭제 성공";
         } catch (Exception e) {
             log.error("DemoService >>> updateDemo >>> Error >>>", e);
-            return demoCode + "번 상품 삭제 실패";
+            throw new DataDeletionException("Demo 데이터 삭제 중 에러 발생");
         }
     }
 }
