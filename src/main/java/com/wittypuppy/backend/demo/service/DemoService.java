@@ -2,7 +2,6 @@ package com.wittypuppy.backend.demo.service;
 
 import com.wittypuppy.backend.demo.dto.DemoDTO;
 import com.wittypuppy.backend.demo.entity.Demo;
-import com.wittypuppy.backend.demo.exception.DemoException;
 import com.wittypuppy.backend.demo.repository.DemoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -96,9 +95,7 @@ public class DemoService {
             } else {
 
                 log.info("DemoService >>> updateDemo >>> Does not Exist >>> ");
-//                return demoCode + "번 상품이 없습니다.";
-
-                throw new DemoException();
+                return demoCode + "번 상품이 없습니다.";
             }
         } catch (Exception e) {
             log.error("DemoService >>> updateDemo >>> Error >>>", e);

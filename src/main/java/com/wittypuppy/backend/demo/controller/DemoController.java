@@ -4,6 +4,7 @@ package com.wittypuppy.backend.demo.controller;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.demo.dto.DemoDTO;
 import com.wittypuppy.backend.demo.service.DemoService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class DemoController {
     }
 
     @PostMapping("/demos")
-    public ResponseEntity<ResponseDTO> insertDemo(@RequestBody DemoDTO newDemo) {
+    public ResponseEntity<ResponseDTO> insertDemo(@RequestBody @Valid DemoDTO newDemo) {
         log.info("DemoController >>> insertDemo >>> start");
 
         String data = demoService.insertDemo(newDemo);
@@ -60,7 +61,7 @@ public class DemoController {
     }
 
     @PutMapping("/demos/{demoCode}")
-    public ResponseEntity<ResponseDTO> updateDemo(@RequestBody DemoDTO newDemo, @PathVariable Long demoCode) {
+    public ResponseEntity<ResponseDTO> updateDemo(@RequestBody @Valid DemoDTO newDemo, @PathVariable Long demoCode) {
         log.info("DemoController >>> updateDemo >>> start");
 
         String data = demoService.updateDemo(newDemo, demoCode);
@@ -76,7 +77,6 @@ public class DemoController {
         log.info("DemoController >>> deleteDemoByNo >>> start");
 
         String data = demoService.deleteDemoByNo(demoCode);
-
 
 
         log.info("DemoController >>> deleteDemoByNo >>> end");

@@ -13,8 +13,8 @@ POST http://localhost:1208/api/v1/demos
 Content-Type: application/json
 
 {
-  "column1": "나 아니다.",
-  "column2": "124421",
+  "column1": null,
+  "column2": "-3",
   "column3": "3.1415922222",
   "column4": "2023-12-28T12:32:00"
 }
