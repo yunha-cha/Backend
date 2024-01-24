@@ -1,0 +1,37 @@
+### 데모 리스트 조회
+GET http://localhost:1208/api/v1/demos
+Content-Type: application/json
+Accept: */*
+
+### 데모 1개 조회
+GET http://localhost:1208/api/v1/demos/1
+Content-Type: application/json
+Accept: */*
+
+### 데모 삽입
+POST http://localhost:1208/api/v1/demos
+Content-Type: application/json
+
+{
+  "column1": "나 아니다.",
+  "column2": "124421",
+  "column3": "3.1415922222",
+  "column4": "2023-12-28T12:32:00"
+}
+
+### 데모 수정
+PUT http://localhost:1208/api/v1/demos/2
+Content-Type: application/json
+
+{
+  "column1": "24년1월23일에 바꿨다",
+  "column2": "99999",
+  "column3": "123.456",
+  "column4": "1999-12-28T12:32:00"
+}
+
+### 데모 삭제
+DELETE http://localhost:1208/api/v1/demos/3
+Content-Type: application/json
+Accept: */*
+
