@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class DemoDTO {
     private Long demoCode;
 
-    @NotNull(message = "null값이 들어왔습니다.")
+    @NotNull(message = "이 컬럼에는 데이터가 반드시 들어와야 합니다.")
     private String column1;
 
     private Long column2;

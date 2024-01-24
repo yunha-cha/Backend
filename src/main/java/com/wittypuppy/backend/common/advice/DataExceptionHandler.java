@@ -61,13 +61,16 @@ public class DataExceptionHandler {
         String description = "";
         String detail = "";
 
-        if (e.getBindingResult().hasErrors()) {
-            detail = e.getBindingResult().getFieldError().getDefaultMessage();
-            String bindResultCode = e.getBindingResult().getFieldError().getCode();
+        if(e.getBindingResult().hasErrors()){
+            detail = e.getBindingResult().getFieldError().getDefaultMessage(); // e.getMessage()
 
-            code = bindResultCode;
+            String bindResultCode = e.getBindingResult().getFieldError().getCode(); // NotNull, Null
+            switch (bindResultCode){
+                case "NotNull":
+                    code = "ERROR_CODE_0001";
+                    description = "필수 값이 누락되었습니다.";
+            }
         }
-        log.info(e.toString());
-        return new ResponseEntity<>(new ErrorResponseDTO(code, description, detail), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponseDTO(code, description, detail), HttpStatus.BAD_REQUEST);
     }
 }
