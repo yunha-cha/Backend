@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.project.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,14 +6,14 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity(name = "PROJECT_PROJECT_AND_PROJECT_MEMBER")
+@Table(name = "tbl_project")
 @Getter
 @Setter
 @ToString
-@Entity
-@Table(name = "tbl_project")
-public class Project {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProjectAndProjectMember {
     @Id
     @Column(name = "project_code", columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +38,6 @@ public class Project {
     private String projectLockedStatus;
 
     @JoinColumn(name = "project_code")
-    @OneToMany
-    private List<ProjectPost> projectPostList;
-
-    @JoinColumn(name = "project_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ProjectMember> projectMemberList;
 }

@@ -1,17 +1,13 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.project.entity;
 
+import com.wittypuppy.backend.common.entity.ProjectPost;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Entity
+@Entity(name = "PROJECT_PROJECT")
 @Table(name = "tbl_project")
 public class Project {
     @Id
@@ -19,8 +15,8 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectCode;
 
-    @Column(name = "project_member_code", columnDefinition = "BIGINT")
-    private Long projectMemberCode;
+    @Column(name = "project_manager_code", columnDefinition = "BIGINT")
+    private Long projectManagerCode;
 
     @Column(name = "project_title", columnDefinition = "VARCHAR(100)")
     private String projectTitle;
@@ -36,12 +32,4 @@ public class Project {
 
     @Column(name = "project_locked_status", columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String projectLockedStatus;
-
-    @JoinColumn(name = "project_code")
-    @OneToMany
-    private List<ProjectPost> projectPostList;
-
-    @JoinColumn(name = "project_code")
-    @OneToMany
-    private List<ProjectMember> projectMemberList;
 }
