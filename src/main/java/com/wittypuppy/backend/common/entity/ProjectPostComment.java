@@ -28,6 +28,9 @@ public class ProjectPostComment {
     @Column(name = "project_post_comment_creation_date", columnDefinition = "DATETIME")
     private LocalDateTime projectPostCommentCreationDate;
 
+    @Column(name = "project_post_member_code", columnDefinition = "BIGINT")
+    private Long projectPostMemberCode;
+
     @JoinColumn(name = "project_post_comment_code")
     @OneToMany
     private List<ProjectPostCommentFile> projectPostCommentFileList;

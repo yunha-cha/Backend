@@ -24,6 +24,9 @@ public class ProjectMember {
     @Column(name = "employee_code", columnDefinition = "BIGINT")
     private Long employeeCode;
 
+    @Column(name = "project_member_delete_status", columnDefinition = "VARCHAR(1)")
+    private String projectMemberDeleteStatus;
+
     @JoinColumn(name = "project_member_code")
     @OneToMany
     private List<ProjectPostMember> projectPostMemberList;
