@@ -19,8 +19,8 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectCode;
 
-    @Column(name = "project_member_code", columnDefinition = "BIGINT")
-    private Long projectMemberCode;
+    @Column(name = "project_manager_code", columnDefinition = "BIGINT")
+    private Long projectManagerCode;
 
     @Column(name = "project_title", columnDefinition = "VARCHAR(100)")
     private String projectTitle;
