@@ -35,4 +35,7 @@ public class Vacation {
 
     @Column(name = "vacation_used_status", columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String vacationUsedStatus;
+
+    @Column(name = "vacation_type" , columnDefinition = "VARCHAR(50) DEFAULT '연차'")
+    private String vacationType;
 }
