@@ -1,7 +1,6 @@
 package com.wittypuppy.backend.project.dto;
 
-import com.wittypuppy.backend.project.entity.ProjectMember;
-import jakarta.persistence.*;
+
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ProjectAndProjectMemberDTO {
+public class ProjectAndMemberAndPostAndPostMemberDTO {
     private Long projectCode;
 
     private Long projectManagerCode;
@@ -27,5 +26,7 @@ public class ProjectAndProjectMemberDTO {
 
     private String projectLockedStatus;
 
-    private List<ProjectMemberDTO> projectMemberList;
+    private List<ProjectPostDTO> projectPostDTOList;
+
+    private List<ProjectMemberAndPostMemberDTO> projectMemberAndPostMemberDTOList;
 }

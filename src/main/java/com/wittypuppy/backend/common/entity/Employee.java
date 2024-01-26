@@ -55,6 +55,9 @@ public class Employee {
     @Column(name="employee_assigned_code", columnDefinition = "BIGINT")
     private Long employeeAssignedCode;
 
+    @Column(name="employee_on_leave_count", columnDefinition = "BIGINT")
+    private Long employeeOnLeaveCount;
+
     @JoinColumn(name = "employee_code")
     @OneToMany
     private List<EventAttendee> eventAttendeeList;

@@ -2,12 +2,15 @@ package com.wittypuppy.backend.project.dto;
 
 import lombok.*;
 
+import java.util.List;
+
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class ProjectMemberDTO {
+public class ProjectMemberAndPostMemberDTO {
     private Long projectMemberCode;
 
     private Long projectCode;
@@ -15,4 +18,6 @@ public class ProjectMemberDTO {
     private Long employeeCode;
 
     private String projectMemberDeleteStatus;
+
+    private List<ProjectPostMemberDTO> projectPostMemberDTOList;
 }
