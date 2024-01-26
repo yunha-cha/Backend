@@ -58,6 +58,9 @@ public class Employee {
     @Column(name="employee_on_leave_count", columnDefinition = "BIGINT")
     private Long employeeOnLeaveCount;
 
+    @Column(name="employee_external_email", columnDefinition = "VARCHAR(100)")
+    private String employeeExternalEmail;
+
     @JoinColumn(name = "employee_code")
     @OneToMany
     private List<EventAttendee> eventAttendeeList;
