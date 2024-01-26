@@ -1,14 +1,17 @@
 package com.wittypuppy.backend.project.entity;
 
-import com.wittypuppy.backend.common.entity.ProjectPost;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity(name = "PROJECT_PROJECT")
 @Table(name = "tbl_project")
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Project {
     @Id
     @Column(name = "project_code", columnDefinition = "BIGINT")
@@ -32,4 +35,49 @@ public class Project {
 
     @Column(name = "project_locked_status", columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String projectLockedStatus;
+
+    public Project setProjectCode(Long projectCode) {
+        this.projectCode = projectCode;
+        return this;
+    }
+
+    public Project setProjectManagerCode(Long projectManagerCode) {
+        this.projectManagerCode = projectManagerCode;
+        return this;
+    }
+
+    public Project setProjectTitle(String projectTitle) {
+        this.projectTitle = projectTitle;
+        return this;
+    }
+
+    public Project setProjectDescription(String projectDescription) {
+        this.projectDescription = projectDescription;
+        return this;
+    }
+
+    public Project setProjectProgressStatus(String projectProgressStatus) {
+        this.projectProgressStatus = projectProgressStatus;
+        return this;
+    }
+
+    public Project setProjectDeadline(LocalDateTime projectDeadline) {
+        this.projectDeadline = projectDeadline;
+        return this;
+    }
+
+    public Project setProjectLockedStatus(String projectLockedStatus) {
+        this.projectLockedStatus = projectLockedStatus;
+        return this;
+    }
+
+    public Project build() {
+        return new Project(projectCode,
+                projectManagerCode,
+                projectTitle,
+                projectDescription,
+                projectProgressStatus,
+                projectDeadline,
+                projectLockedStatus);
+    }
 }
