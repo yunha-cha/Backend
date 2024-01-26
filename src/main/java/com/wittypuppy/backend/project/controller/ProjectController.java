@@ -1,7 +1,6 @@
 package com.wittypuppy.backend.project.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
-import com.wittypuppy.backend.project.dto.ProjectAndMemberAndPostAndPostMemberDTO;
 import com.wittypuppy.backend.project.dto.ProjectAndProjectMemberDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
 import com.wittypuppy.backend.project.service.ProjectService;
@@ -69,21 +68,6 @@ public class ProjectController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 추가 성공", resultStr));
     }
 
-    @GetMapping("/projects/{projectCode}")
-    public ResponseEntity<ResponseDTO> selectProject(
-            @PathVariable Long projectCode
-    ) {
-        log.info("[ProjectController] >>> selectProject >>> start");
-        Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
-
-        ProjectAndMemberAndPostAndPostMemberDTO projectAndMemberAndPostAndPostMemberDTO
-                = projectService.selectProject(projectCode, employeeCode);
-
-
-        log.info("[ProjectController] >>> selectProject >>> end");
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 입장 성공", projectAndMemberAndPostAndPostMemberDTO));
-    }
-
     @PutMapping("/projects/{projectCode}")
     public ResponseEntity<ResponseDTO> modifyProject(
             @RequestBody ProjectDTO projectDTO,
@@ -97,4 +81,33 @@ public class ProjectController {
         log.info("[ProjectController] >>> modifyProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
     }
+
+//    @GetMapping("/projects/{projectCode}/invite")
+//    public ResponseEntity<ResponseDTO> getUnassignedEmployees(
+//            @PathVariable Long projectCode
+//    ) {
+//        log.info("[ProjectController] >>> getUnassignedEmployees >>> start");
+//        Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
+//
+////        String resultStr = projectService.modifyProject(projectDTO, projectCode, employeeCode);
+//
+//        log.info("[ProjectController] >>> getUnassignedEmployees >>> end");
+////        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
+//        return null;
+//    }
+//
+//    @PostMapping("/projects/{projectCode}/invite")
+//    public ResponseEntity<ResponseDTO> inviteNewEmployees(
+//            @RequestBody List<Long> employeeCodeList,
+//            @PathVariable Long projectCode
+//    ) {
+//        log.info("[ProjectController] >>> inviteNewEmployees >>> start");
+//        Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
+//
+////        String resultStr = projectService.modifyProject(projectDTO, projectCode, employeeCode);
+//
+//        log.info("[ProjectController] >>> inviteNewEmployees >>> end");
+////        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
+//        return null;
+//    }
 }

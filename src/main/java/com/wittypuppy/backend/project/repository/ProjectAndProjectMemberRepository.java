@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.project.repository;
 
-import com.wittypuppy.backend.project.entity.Employee;
 import com.wittypuppy.backend.project.entity.ProjectAndProjectMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

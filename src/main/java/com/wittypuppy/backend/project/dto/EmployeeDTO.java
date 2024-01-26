@@ -10,6 +10,5 @@ import lombok.*;
 @ToString
 public class EmployeeDTO {
     private Long employeeCode;
-
     private Long departmentCode;
 }
