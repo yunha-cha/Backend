@@ -52,6 +52,9 @@ public class Employee {
     @Column(name = "employee_password", columnDefinition = "VARCHAR(50)")
     private String employeePassword;
 
+    @Column(name="employee_assigned_code", columnDefinition = "BIGINT")
+    private Long employeeAssignedCode;
+
     @JoinColumn(name = "employee_code")
     @OneToMany
     private List<EventAttendee> eventAttendeeList;
