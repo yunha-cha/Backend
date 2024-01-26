@@ -113,6 +113,7 @@ public class ProjectService {
             // --> 프로젝트 관리자이면 접근 가능
             // --> 프로젝트 멤버이면 접근 가능
             // --> 프로젝트가 잠궈져 있지 않다면 접근 가능
+
             throw new ProjectIsLockedException("프로젝트 관계자만 접근 가능합니다.");
         }
 
