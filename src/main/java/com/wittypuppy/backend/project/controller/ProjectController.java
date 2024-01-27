@@ -3,6 +3,7 @@ package com.wittypuppy.backend.project.controller;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.project.dto.ProjectAndProjectMemberDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
+import com.wittypuppy.backend.project.entity.ProjectAndMemberAndPost;
 import com.wittypuppy.backend.project.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class ProjectController {
         Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
 
         List<ProjectAndProjectMemberDTO> projectAndProjectMemberDTOList
-                = projectService.selectProductListByConditionAndSearchValue(condition, "", employeeCode);
+                = projectService.selectProjectListByConditionAndSearchValue(condition, "", employeeCode);
 
         log.info("[ProjectController] >>> selectProductList >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 리스트 조회 성공", projectAndProjectMemberDTOList));
@@ -46,7 +47,7 @@ public class ProjectController {
         Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
 
         List<ProjectAndProjectMemberDTO> projectAndProjectMemberDTOList
-                = projectService.selectProductListByConditionAndSearchValue(condition, searchValue, employeeCode);
+                = projectService.selectProjectListByConditionAndSearchValue(condition, searchValue, employeeCode);
 
         log.info("[ProjectController] >>> selectProductListBySearchValue >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 검색 결과 리스트 조회 성공", projectAndProjectMemberDTOList));
@@ -56,7 +57,6 @@ public class ProjectController {
     public ResponseEntity<ResponseDTO> createNewProject(
             @RequestBody ProjectAndProjectMemberDTO projectAndProjectMemberDTO // 프로젝트 정보
     ) {
-
         log.info("[ProjectController] >>> createNewProject >>> start");
         Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
 
@@ -66,6 +66,20 @@ public class ProjectController {
 
         log.info("[ProjectController] >>> createNewProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 추가 성공", resultStr));
+    }
+
+    @GetMapping("/projects/{projectCode}")
+    public ResponseEntity<ResponseDTO> selectProjectByProjectCode(
+            @PathVariable Long projectCode
+    ) {
+        log.info("[ProjectController] >>> selectProjectByProjectCode >>> start");
+        Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
+
+        com.wittypuppy.backend.project.dto.viewProjectInfo.ProjectDTO projectDTO =
+                projectService.selectProjectByProjectCode(projectCode, employeeCode);
+
+        log.info("[ProjectController] >>> selectProjectByProjectCode >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 열기 성공", projectDTO));
     }
 
     @PutMapping("/projects/{projectCode}")

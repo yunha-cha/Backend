@@ -1,8 +1,9 @@
-package com.wittypuppy.backend.project.dto;
+package com.wittypuppy.backend.project.dto.viewProjectInfo;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,4 +26,6 @@ public class ProjectPostDTO {
     private LocalDateTime projectPostModifyDate;
 
     private LocalDateTime projectPostDueDate;
+
+    private List<ProjectPostMemberDTO> projectPostMemberDTOList;
 }

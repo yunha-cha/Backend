@@ -8,9 +8,11 @@ import com.wittypuppy.backend.project.dto.ProjectDTO;
 import com.wittypuppy.backend.project.entity.Project;
 import com.wittypuppy.backend.project.entity.ProjectAndProjectMember;
 import com.wittypuppy.backend.project.exception.NotProjectManagerException;
+import com.wittypuppy.backend.project.exception.ProjectIsLockedException;
 import com.wittypuppy.backend.project.repository.EmployeeRepository;
 import com.wittypuppy.backend.project.repository.ProjectAndProjectMemberRepository;
 import com.wittypuppy.backend.project.repository.ProjectRepository;
+import com.wittypuppy.backend.project.repository.ViewProjectInfoRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,10 +30,11 @@ public class ProjectService {
     private final ProjectAndProjectMemberRepository projectAndProjectMemberRepository;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
+    private final ViewProjectInfoRepository viewProjectInfoRepository;
     private final ModelMapper modelMapper;
 
-    public List<ProjectAndProjectMemberDTO> selectProductListByConditionAndSearchValue(String condition, String searchValue, Long employeeCode) {
-        log.info("[ProjectService] >>> selectProductListByConditionAndSearchValue >>> start");
+    public List<ProjectAndProjectMemberDTO> selectProjectListByConditionAndSearchValue(String condition, String searchValue, Long employeeCode) {
+        log.info("[ProjectService] >>> selectProjectListByConditionAndSearchValue >>> start");
         List<ProjectAndProjectMember> result = null;
         if (Objects.isNull(searchValue) || searchValue.isBlank()) {
             log.info("검색어가 없는 경우");
@@ -76,7 +79,7 @@ public class ProjectService {
         List<ProjectAndProjectMemberDTO> resultDTO = result.stream().map(e -> modelMapper.map(e, ProjectAndProjectMemberDTO.class)).toList();
         log.info("ProjectAndProjectMemberDTO >>> {} ", result);
 
-        log.info("[ProjectService] >>> selectProductListByConditionAndSearchValue >>> end");
+        log.info("[ProjectService] >>> selectProjectListByConditionAndSearchValue >>> end");
         return resultDTO;
     }
 
@@ -97,6 +100,32 @@ public class ProjectService {
         log.info("[ProjectService] >>> createNewProject >>> end");
         return result > 0 ? "프로젝트 추가에 성공했습니다." : "프로젝트 추가에 실패했습니다.";
     }
+
+
+    public com.wittypuppy.backend.project.dto.viewProjectInfo.ProjectDTO selectProjectByProjectCode(Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> createNewProject >>> start");
+
+        com.wittypuppy.backend.project.entity.viewProjectInfo.Project project =
+                viewProjectInfoRepository.findById(projectCode)
+                        .orElseThrow(() -> new DataNotFoundException("선택한 프로젝트가 존재하지 않습니다."));
+        boolean isLocked = project.getProjectLockedStatus().equals("Y");
+        boolean isManager = project.getProjectManager().getEmployeeCode().equals(employeeCode);
+        boolean isMember = project.getProjectMemberList().stream().map(projectMember -> projectMember.getProjectMember().getEmployeeCode())
+                .toList().get(0).equals(employeeCode);
+        /*
+        * 잠궈져 있으면서 Manager가 아니고 Member가 아니면 접근 불가능.
+        * */
+        if(isLocked && !isManager && !isMember){
+            throw new ProjectIsLockedException("접근이 불가능한 프로젝트 입니다.");
+        }
+        com.wittypuppy.backend.project.dto.viewProjectInfo.ProjectDTO projectDTO =
+                modelMapper.map(project, com.wittypuppy.backend.project.dto.viewProjectInfo.ProjectDTO.class);
+
+        log.info("[ProjectService] >>> createNewProject >>> end");
+
+        return projectDTO;
+    }
+
 
     @Transactional
     public String modifyProject(ProjectDTO projectDTO, Long projectCode, Long employeeCode) {

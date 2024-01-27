@@ -1,14 +1,17 @@
-package com.wittypuppy.backend.project.entity;
+package com.wittypuppy.backend.project.entity.viewProjectInfo;
 
-import com.wittypuppy.backend.common.entity.ProjectPostComment;
-import com.wittypuppy.backend.common.entity.ProjectPostMember;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity(name="PROJECT_VIEW_PROJECT_INFO_PROJECT_POST")
 @Table(name = "tbl_project_post")
 public class ProjectPost {
     @Id
@@ -36,4 +39,8 @@ public class ProjectPost {
 
     @Column(name = "project_post_due_date", columnDefinition = "DATETIME")
     private LocalDateTime projectPostDueDate;
+
+    @JoinColumn(name = "project_post_code")
+    @OneToMany
+    private List<ProjectPostMember> projectPostMemberList;
 }
