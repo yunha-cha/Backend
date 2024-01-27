@@ -3,7 +3,6 @@ package com.wittypuppy.backend.project.controller;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.project.dto.ProjectAndProjectMemberDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
-import com.wittypuppy.backend.project.entity.ProjectAndMemberAndPost;
 import com.wittypuppy.backend.project.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
