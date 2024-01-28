@@ -61,7 +61,7 @@ public class ProjectController {
 
         projectAndProjectMemberDTO.setProjectManagerCode(employeeCode); // 생성한 사람이 프로젝트 관리자로
 
-        String resultStr = projectService.createNewProject(projectAndProjectMemberDTO);
+        String resultStr = projectService.createNewProject(projectAndProjectMemberDTO,employeeCode);
 
         log.info("[ProjectController] >>> createNewProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 추가 성공", resultStr));
@@ -95,32 +95,27 @@ public class ProjectController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
     }
 
-//    @GetMapping("/projects/{projectCode}/invite")
-//    public ResponseEntity<ResponseDTO> getUnassignedEmployees(
-//            @PathVariable Long projectCode
-//    ) {
-//        log.info("[ProjectController] >>> getUnassignedEmployees >>> start");
-//        Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
-//
-////        String resultStr = projectService.modifyProject(projectDTO, projectCode, employeeCode);
-//
-//        log.info("[ProjectController] >>> getUnassignedEmployees >>> end");
-////        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
-//        return null;
-//    }
-//
-//    @PostMapping("/projects/{projectCode}/invite")
-//    public ResponseEntity<ResponseDTO> inviteNewEmployees(
-//            @RequestBody List<Long> employeeCodeList,
-//            @PathVariable Long projectCode
-//    ) {
-//        log.info("[ProjectController] >>> inviteNewEmployees >>> start");
-//        Long employeeCode = 1L; // 이거는 나중에 수정해야 한다.
-//
-////        String resultStr = projectService.modifyProject(projectDTO, projectCode, employeeCode);
-//
-//        log.info("[ProjectController] >>> inviteNewEmployees >>> end");
-////        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
-//        return null;
-//    }
+    /*프로젝트 게시판에서 초대받지 못한 인원 확인하기*/
+
+    /*프로젝트 멤버 초대하기*/
+
+    /*프로젝트 멤버에서 나가기*/
+
+    /*프로젝트 멤버 내보내기*/
+
+    /*프로젝트 관리자 위임*/
+
+    /*프로젝트 게시글 만들기*/
+
+    /*프로젝트 게시글 열기*/
+
+    /*프로젝트 게시글 멤버 초대*/
+
+    /*프로젝트 게시글 멤버 내보내기*/
+
+    /*프로젝트 게시글 멤버에서 나가기*/
+
+    /*프로젝트 게시글 댓글 작성하기*/
+
+    /*프로젝트 게시글 댓글 첨부파일 작성하기*/
 }
