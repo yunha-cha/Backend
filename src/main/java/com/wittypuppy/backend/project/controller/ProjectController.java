@@ -61,7 +61,7 @@ public class ProjectController {
 
         projectAndProjectMemberDTO.setProjectManagerCode(employeeCode); // 생성한 사람이 프로젝트 관리자로
 
-        String resultStr = projectService.createNewProject(projectAndProjectMemberDTO,employeeCode);
+        String resultStr = projectService.createNewProject(projectAndProjectMemberDTO);
 
         log.info("[ProjectController] >>> createNewProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 추가 성공", resultStr));
