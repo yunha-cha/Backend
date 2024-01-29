@@ -75,17 +75,17 @@ public class ProjectController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 접속 성공", projectDTO));
     }
 
-//    @PutMapping("/projects/{projectCode}")
-//    public ResponseEntity<ResponseDTO> modifyProject(
-//            @RequestBody ProjectDTO projectDTO,
-//            @PathVariable Long projectCode
-//    ) {
-//        log.info("[CalendarController] >>> modifyProject >>> start");
-//        Long employeeCode = 1L;
-//
-//        String resultStr = projectService.modifyProject(projectDTO, projectCode, employeeCode);
-//
-//        log.info("[CalendarController] >>> selectProjectByProjectCode >>> end");
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
-//    }
+    @PutMapping("/projects/{projectCode}")
+    public ResponseEntity<ResponseDTO> modifyProject(
+            @RequestBody ProjectDTO projectDTO,
+            @PathVariable Long projectCode
+    ) {
+        log.info("[CalendarController] >>> modifyProject >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.modifyProject(projectDTO, projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> selectProjectByProjectCode >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
+    }
 }
