@@ -89,7 +89,7 @@ public class ProjectController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
     }
 
-    @PutMapping("/projects/{projectCode}")
+    @DeleteMapping("/projects/{projectCode}")
     public ResponseEntity<ResponseDTO> deleteProject(
             @PathVariable Long projectCode
     ) {

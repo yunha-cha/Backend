@@ -36,23 +36,23 @@ public class ProjectService {
             if (type == null) {
                 projectList = projectRepository.findAll();
             } else if (type.equals("me")) {
-                projectList = projectRepository.findAllByProjectMemberList_EmployeeCode(employeeCode);
+                projectList = projectRepository.findAllByProjectMemberList_Employee_EmployeeCode(employeeCode);
             } else if (type.equals("myteam")) {
                 Long myDepartmentCode = employeeRepository.findById(employeeCode).orElseThrow(() -> new DataNotFoundException("사원 정보가 잘못 되었습니다."))
                         .getDepartment().getDepartmentCode();
                 List<Long> employeeCodeList = employeeRepository.findAllByDepartment_DepartmentCode(myDepartmentCode).stream().map(Employee::getEmployeeCode).collect(Collectors.toList());
-                projectList = projectRepository.findAllByProjectMemberList_EmployeeCodeIn(employeeCodeList);
+                projectList = projectRepository.findAllByProjectMemberList_Employee_EmployeeCodeIn(employeeCodeList);
             }
         } else {
             if (type == null) {
                 projectList = projectRepository.findAllByProjectTitle(searchValue);
             } else if (type.equals("me")) {
-                projectList = projectRepository.findAllByProjectTitleAndProjectMemberList_EmployeeCode(searchValue, employeeCode);
+                projectList = projectRepository.findAllByProjectTitleAndProjectMemberList_Employee_EmployeeCode(searchValue, employeeCode);
             } else if (type.equals("myteam")) {
                 Long myDepartmentCode = employeeRepository.findById(employeeCode).orElseThrow(() -> new DataNotFoundException("사원 정보가 잘못 되었습니다."))
                         .getDepartment().getDepartmentCode();
                 List<Long> employeeCodeList = employeeRepository.findAllByDepartment_DepartmentCode(myDepartmentCode).stream().map(Employee::getEmployeeCode).collect(Collectors.toList());
-                projectList = projectRepository.findAllByProjectTitleAndProjectMemberList_EmployeeCodeIn(searchValue, employeeCodeList);
+                projectList = projectRepository.findAllByProjectTitleAndProjectMemberList_Employee_EmployeeCodeIn(searchValue, employeeCodeList);
             }
         }
 
