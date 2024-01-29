@@ -18,6 +18,8 @@ import java.util.List;
 @Setter
 @ToString
 public class Employee {
+
+
     @Id
     @Column(name = "employee_code", columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +27,5 @@ public class Employee {
 
     @Column(name = "department_code", columnDefinition = "BIGINT")
     private Long departmentCode;
+
 }

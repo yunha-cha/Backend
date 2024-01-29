@@ -3,7 +3,9 @@ package com.wittypuppy.backend.group.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity(name = "GROUP_EMPLOYEE")
+import java.util.List;
+
+@Entity(name = "GROUP_DEPARTMENT")
 @Table(name = "tbl_department")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class GroupDept {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long deptCode;
 
-    @Column(name = "department_name")
-    private String deptName;
+    @OneToMany(mappedBy = "department")
+    private List<GroupEmp> employee;
 
 }

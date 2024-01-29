@@ -1,15 +1,12 @@
 package com.wittypuppy.backend.group.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "GROUP_DEPARTMENT")
+@Entity(name = "GROUP_EMPLOYEE")
 @Table(name = "tbl_employee")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,11 +18,15 @@ public class GroupEmp {
     @Column(name = "employee_code")
     private Long empCode;
 
-    @Column(name = "department_code")
-    private Long deptCode;
+    @ManyToOne
+    @JoinColumn(name = "department_code")
+    private GroupDept department;
 
     @Column(name = "employee_name")
     private String empName;
+
+    @Column(name = "employee_external_email")
+    private String externalEmail;
 
     @Column(name = "employee_phone")
     private Long phone;
