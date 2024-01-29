@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findAllByDepartment_DepartmentCode(Long departmentCode);
+    List<Employee> findAllByEmployeeRetirementDateIsNull();
 }

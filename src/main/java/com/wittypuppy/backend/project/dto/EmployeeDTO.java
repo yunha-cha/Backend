@@ -2,6 +2,7 @@ package com.wittypuppy.backend.project.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,7 +19,7 @@ public class EmployeeDTO {
 
     private String employeeName;
 
-    private String employeeRetirementDate;
+    private LocalDateTime employeeRetirementDate;
 
     private List<ProfileDTO> profileDTOList;
 }

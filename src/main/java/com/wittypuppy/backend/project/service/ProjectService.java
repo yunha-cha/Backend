@@ -2,6 +2,7 @@ package com.wittypuppy.backend.project.service;
 
 import com.wittypuppy.backend.common.exception.DataDeletionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
+import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
 import com.wittypuppy.backend.project.entity.Employee;
 import com.wittypuppy.backend.project.entity.Project;
@@ -108,7 +109,7 @@ public class ProjectService {
 
     @Transactional
     public String modifyProject(ProjectDTO projectDTO, Long projectCode, Long employeeCode) {
-        log.info("[ProjectService] >>> selectProjectByProjectCode >>> start");
+        log.info("[ProjectService] >>> modifyProject >>> start");
         int result;
 
         try {
@@ -124,14 +125,14 @@ public class ProjectService {
         }
 
 
-        log.info("[ProjectService] >>> selectProjectByProjectCode >>> end");
+        log.info("[ProjectService] >>> modifyProject >>> end");
 
         return result > 0 ? "프로젝트 수정 성공" : "프로젝트 수정 실패";
     }
 
     @Transactional
     public String deleteProject(Long projectCode, Long employeeCode) {
-        log.info("[ProjectService] >>> selectProjectByProjectCode >>> start");
+        log.info("[ProjectService] >>> deleteProject >>> start");
         int result;
 
         Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트를 찾을 수 없습니다."));
@@ -143,8 +144,18 @@ public class ProjectService {
         }
 
 
-        log.info("[ProjectService] >>> selectProjectByProjectCode >>> end");
+        log.info("[ProjectService] >>> deleteProject >>> end");
 
         return result > 0 ? "프로젝트 삭제 성공" : "프로젝트 삭제 실패";
+    }
+
+    public List<EmployeeDTO> selectEmployeeList(Long employeeCode) {
+        log.info("[ProjectService] >>> selectEmployeeList >>> start");
+
+        List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateIsNull();
+        List<EmployeeDTO> employeeDTOList = employeeList.stream().map(employee -> modelMapper.map(employee, EmployeeDTO.class)).toList();
+
+        log.info("[ProjectService] >>> selectEmployeeList >>> end");
+        return employeeDTOList;
     }
 }

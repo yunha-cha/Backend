@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.project.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
 import com.wittypuppy.backend.project.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -101,4 +102,17 @@ public class ProjectController {
         log.info("[CalendarController] >>> deleteProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 삭제 성공", resultStr));
     }
+
+    @GetMapping("/employees")
+    public ResponseEntity<ResponseDTO> selectEmployeeList(
+    ) {
+        log.info("[CalendarController] >>> selectProjectByProjectCode >>> start");
+        Long employeeCode = 1L;
+
+        List<EmployeeDTO> employeeList = projectService.selectEmployeeList( employeeCode);
+
+        log.info("[CalendarController] >>> selectProjectByProjectCode >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "사원 목록 가져오기 성공", employeeList));
+    }
+
 }
