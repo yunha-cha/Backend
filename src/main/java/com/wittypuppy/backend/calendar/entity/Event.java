@@ -26,10 +26,10 @@ public class Event {
     private Department department;
 
     @JoinColumn(name = "event_code")
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private EventOptions eventOptions;
 
     @JoinColumn(name = "event_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<EventAttendee> eventAttendeeList;
 }

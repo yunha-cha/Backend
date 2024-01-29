@@ -21,7 +21,7 @@ public class CalendarExceptionHandler {
         String description = "데이터 조회 실패";
         String detail = e.getMessage();
 
-        return new ResponseEntity<>(new ErrorResponseDTO(code, description, detail), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ErrorResponseDTO(code, description, detail), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DeleteEventException.class)
@@ -31,6 +31,6 @@ public class CalendarExceptionHandler {
         String description = "일정 삭제 실패";
         String detail = e.getMessage();
 
-        return new ResponseEntity<>(new ErrorResponseDTO(code, description, detail), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ErrorResponseDTO(code, description, detail), HttpStatus.BAD_REQUEST);
     }
 }

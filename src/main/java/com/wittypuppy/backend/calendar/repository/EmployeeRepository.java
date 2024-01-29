@@ -6,9 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository("Calendar_EmployeeRepository")
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-    List<Employee> findAllByEmployeeRetirementDateBefore(LocalDateTime currentDateTime);
+    Optional<List<Employee>> findAllByEmployeeRetirementDateBefore(LocalDateTime currentDateTime);
 }

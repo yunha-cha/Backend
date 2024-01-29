@@ -65,7 +65,8 @@ public class CalendarService {
     public List<EmployeeDTO> selectEmployeeList() {
         log.info("[CalendarService] >>> selectEmployeeList >>> start");
 
-        List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateBefore(LocalDateTime.now());
+        List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateBefore(LocalDateTime.now())
+                .orElseThrow(() -> new DataNotFoundException("현재 사원 목록 정보가 없습니다."));
 
         List<EmployeeDTO> employeeDTOList = employeeList.stream().map(employee -> modelMapper.map(employee, EmployeeDTO.class)).collect(Collectors.toList());
 
@@ -79,9 +80,13 @@ public class CalendarService {
         int result = 0;
         try {
             Calendar calendar = calendarRepository.findByEmployee_EmployeeCodeAndEventList_EventOptions_EventDeleteStatus(employeeCode, "N");
+            if (calendar == null) {
+                throw new DataNotFoundException("계정의 캘린더를 찾을 수 없습니다.");
+            }
             List<Event> eventList = calendar.getEventList();
             if (eventList == null) {
                 eventList = new ArrayList<>();
+                calendar.setEventList(eventList);
             }
             Event newEvent = modelMapper.map(eventDTO, Event.class);
             eventList.add(newEvent);
@@ -116,7 +121,7 @@ public class CalendarService {
     public String deleteEvent(Long eventCode, Long employeeCode) {
         log.info("[CalendarService] >>> deleteEvent >>> start");
         /*일정이 N에서 T로 되는가*/
-        /*일정이 T에서 Y로 되는가*/
+        /*일정이 T에서 완전한 삭제로 되는가*/
         int result = 0;
         try {
             Event event = eventRepository.findById(eventCode).orElseThrow(() -> new DataNotFoundException("해당 일정을 찾을 수 없습니다."));
@@ -127,8 +132,7 @@ public class CalendarService {
                 eventOptions.setEventDeleteTime(LocalDateTime.now());
                 result = 1;
             } else if (eventOptions.getEventDeleteStatus().equals("T")) {
-                eventOptions.setEventDeleteStatus("Y");
-                eventOptions.setEventDeleteTime(null);
+                eventRepository.delete(event);
                 result = 2;
             } else {
                 throw new DeleteEventException("허가되지 않은 일정정보 입니다.");
@@ -146,7 +150,9 @@ public class CalendarService {
         log.info("[CalendarService] >>> selectTemporarilyDeleteEventList >>> start");
 
         Calendar calendar = calendarRepository.findByEmployee_EmployeeCodeAndEventList_EventOptions_EventDeleteStatus(employeeCode, "T");
-
+        if (calendar == null) {
+            throw new DataNotFoundException("계정의 캘린더를 찾을 수 없습니다.");
+        }
         List<Event> eventList = calendar.getEventList();
         List<EventDTO> eventDTOList = eventList.stream().map(event -> modelMapper.map(event, EventDTO.class)).collect(Collectors.toList());
 
