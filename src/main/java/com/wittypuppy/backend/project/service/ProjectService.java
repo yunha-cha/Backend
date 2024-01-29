@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.project.service;
 
+import com.wittypuppy.backend.common.exception.DataDeletionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
 import com.wittypuppy.backend.project.entity.Employee;
@@ -110,15 +111,15 @@ public class ProjectService {
         log.info("[ProjectService] >>> selectProjectByProjectCode >>> start");
         int result;
 
-        try{
-            Project project = projectRepository.findById(projectCode).orElseThrow(()->new DataNotFoundException("해당 프로젝트를 찾을 수 없습니다."));
+        try {
+            Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트를 찾을 수 없습니다."));
             project.setProjectTitle(projectDTO.getProjectTitle());
             project.setProjectDescription(projectDTO.getProjectDescription());
             project.setProjectProgressStatus(projectDTO.getProjectProgressStatus());
             project.setProjectDeadline(projectDTO.getProjectDeadline());
             project.setProjectLockedStatus(projectDTO.getProjectLockedStatus());
             result = 1;
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new ModifyProjectException("프로젝트 수정에 실패했습니다.");
         }
 
@@ -126,5 +127,24 @@ public class ProjectService {
         log.info("[ProjectService] >>> selectProjectByProjectCode >>> end");
 
         return result > 0 ? "프로젝트 수정 성공" : "프로젝트 수정 실패";
+    }
+
+    @Transactional
+    public String deleteProject(Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> selectProjectByProjectCode >>> start");
+        int result;
+
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트를 찾을 수 없습니다."));
+        if (project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            projectRepository.delete(project);
+            result = 1;
+        } else {
+            throw new DataDeletionException("프로젝트 삭제에 실패했습니다.");
+        }
+
+
+        log.info("[ProjectService] >>> selectProjectByProjectCode >>> end");
+
+        return result > 0 ? "프로젝트 삭제 성공" : "프로젝트 삭제 실패";
     }
 }

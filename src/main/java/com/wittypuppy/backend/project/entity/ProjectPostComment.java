@@ -31,6 +31,6 @@ public class ProjectPostComment {
     private Long projectPostMemberCode;
 
     @JoinColumn(name="project_post_comment_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProjectPostCommentFile> projectPostCommentFileList;
 }

@@ -3,7 +3,6 @@ package com.wittypuppy.backend.project.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -29,6 +28,6 @@ public class ProjectPostMember {
     private String projectPostMemberDeleteStatus;
 
     @JoinColumn(name = "project_post_member_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProjectPostComment> projectPostCommentList;
 }

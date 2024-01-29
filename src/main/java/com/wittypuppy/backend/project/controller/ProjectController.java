@@ -88,4 +88,17 @@ public class ProjectController {
         log.info("[CalendarController] >>> selectProjectByProjectCode >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 수정 성공", resultStr));
     }
+
+    @PutMapping("/projects/{projectCode}")
+    public ResponseEntity<ResponseDTO> deleteProject(
+            @PathVariable Long projectCode
+    ) {
+        log.info("[CalendarController] >>> deleteProject >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.deleteProject(projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> deleteProject >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 삭제 성공", resultStr));
+    }
 }

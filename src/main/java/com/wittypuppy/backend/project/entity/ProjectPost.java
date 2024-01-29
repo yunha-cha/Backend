@@ -41,10 +41,10 @@ public class ProjectPost {
     private LocalDateTime projectPostDueDate;
 
     @JoinColumn(name = "project_post_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProjectPostMember> projectPostMemberList;
 
     @JoinColumn(name="project_post_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProjectPostComment> projectPostCommentList;
 }

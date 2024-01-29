@@ -39,10 +39,10 @@ public class Project {
     private String projectLockedStatus;
 
     @JoinColumn(name = "project_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProjectMember> projectMemberList;
 
     @JoinColumn(name = "project_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProjectPost> projectPostList;
 }
