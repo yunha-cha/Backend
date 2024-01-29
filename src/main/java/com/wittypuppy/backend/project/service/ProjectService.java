@@ -19,7 +19,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -189,5 +188,72 @@ public class ProjectService {
 
         log.info("[ProjectService] >>> selectEmployeeList >>> end");
         return result > 0 ? "프로젝트 삭제 성공" : "프로젝트 삭제 실패";
+    }
+
+    @Transactional
+    public String kickOutProjectMember(Long badEmployeeCode, Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> kickOutProjectMember >>> start");
+        int result = 0;
+        /*
+         * 1. 내가 관리자여야 한다.
+         * 2. delete가 아니라 설정값을 바꿔야 한다.
+         * */
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당하는 프로젝트가 없습니다."));
+        if (project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            ProjectMember badProjectMember =
+                    projectMemberRepository.
+                            findByProjectCodeAndEmployee_EmployeeCode(projectCode, badEmployeeCode).
+                            orElseThrow(() -> new DataNotFoundException("강퇴할 회원이 해당 프로젝트에 없습니다."));
+            badProjectMember.setProjectMemberDeleteStatus("Y");
+            result = 1;
+        }
+
+        log.info("[ProjectService] >>> kickOutProjectMember >>> end");
+        return result > 0 ? "프로젝트 강퇴 성공" : "프로젝트 강퇴 실패";
+    }
+
+    @Transactional
+    public String exitProjectMember(Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> exitProjectMember >>> start");
+        int result = 0;
+        /*
+         * 1. 내가 관리자이면 해당 나갈 수 없다.
+         * */
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당하는 프로젝트가 없습니다."));
+        if (!project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            ProjectMember projectMember =
+                    projectMemberRepository.
+                            findByProjectCodeAndEmployee_EmployeeCode(projectCode, employeeCode).
+                            orElseThrow(() -> new DataNotFoundException("내 정보가 해당 프로젝트에 없습니다."));
+            projectMember.setProjectMemberDeleteStatus("Y");
+            result = 1;
+        }
+
+        log.info("[ProjectService] >>> exitProjectMember >>> end");
+        return result > 0 ? "프로젝트 나가기 성공" : "프로젝트 나가기 실패";
+    }
+
+    @Transactional
+    public String delegateProject(Long projectCode, Long delegatedEmployeeCode, Long employeeCode) {
+        log.info("[ProjectService] >>> delegateProject >>> start");
+        int result = 0;
+        /*
+         * 1. 내가 관리자여야만 위임이 가능하다.
+         * 2. 그 위임 대상자가 실제 멤버에 삭제여부가 N인 경우여야 한다.
+         * */
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당하는 프로젝트가 없습니다."));
+        ProjectMember delegatedProjectMember =
+                projectMemberRepository.
+                        findByProjectCodeAndEmployee_EmployeeCodeAndProjectMemberDeleteStatus(projectCode, delegatedEmployeeCode, "N").
+                        orElseThrow(() -> new DataNotFoundException("위임할 회원 정보가 없습니다."));
+        if (project.getProjectManager().getEmployeeCode().equals(employeeCode) &&
+                delegatedProjectMember != null) {
+            // 내가 관리자이고 delegatedProjectMember 가 존재하면.
+            project.setProjectManager(delegatedProjectMember.getEmployee());
+            result = 1;
+        }
+
+        log.info("[ProjectService] >>> delegateProject >>> end");
+        return result > 0 ? "프로젝트 관리자 위임 성공" : "프로젝트 관리자 위임 실패";
     }
 }

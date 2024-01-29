@@ -128,4 +128,45 @@ public class ProjectController {
         log.info("[CalendarController] >>> deleteProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 멤버 초대 성공", resultStr));
     }
+
+    @PutMapping("/projects/{projectCode}/kickout/{badEmployeeCode}")
+    public ResponseEntity<ResponseDTO> kickOutProjectMember(
+            @PathVariable Long projectCode,
+            @PathVariable Long badEmployeeCode
+    ) {
+        log.info("[CalendarController] >>> kickOutProjectMember >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.kickOutProjectMember(badEmployeeCode, projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> kickOutProjectMember >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 강퇴 성공", resultStr));
+    }
+
+    @PutMapping("/projects/{projectCode}/exit")
+    public ResponseEntity<ResponseDTO> exitProjectMember(
+            @PathVariable Long projectCode
+    ) {
+        log.info("[CalendarController] >>> exitProjectMember >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.exitProjectMember(projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> exitProjectMember >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 나가기 성공", resultStr));
+    }
+
+    @PutMapping("/projects/{projectCode}/delegate/{delegatedEmployeeCode}")
+    public ResponseEntity<ResponseDTO> delegateProject(
+            @PathVariable Long projectCode,
+            @PathVariable Long delegatedEmployeeCode
+    ) {
+        log.info("[CalendarController] >>> delegateProject >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.delegateProject(projectCode, delegatedEmployeeCode, employeeCode);
+
+        log.info("[CalendarController] >>> delegateProject >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 관리자 위임 성공", resultStr));
+    }
 }
