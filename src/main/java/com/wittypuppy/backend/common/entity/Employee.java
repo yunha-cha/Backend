@@ -37,14 +37,14 @@ public class Employee {
     @Column(name = "employee_phone", columnDefinition = "VARCHAR(50)")
     private String employeePhone;
 
-    @Column(name = "employee_adress", columnDefinition = "VARCHAR(300)")
-    private String employeeAdress;
+    @Column(name = "employee_address", columnDefinition = "VARCHAR(300)")
+    private String employeeAddress;
 
     @Column(name = "employee_join_date", columnDefinition = "DATETIME")
     private LocalDateTime employeeJoinDate;
 
-    @Column(name = "employee_retirement_date", columnDefinition = "VARCHAR(1) DEFAULT 'N'")
-    private String employeeRetirementDate;
+    @Column(name = "employee_retirement_date", columnDefinition = "DATETIME")
+    private LocalDateTime employeeRetirementDate;
 
     @Column(name = "employee_id", columnDefinition = "VARCHAR(50)")
     private String employeeId;
@@ -54,6 +54,12 @@ public class Employee {
 
     @Column(name="employee_assigned_code", columnDefinition = "BIGINT")
     private Long employeeAssignedCode;
+
+    @Column(name="employee_on_leave_count", columnDefinition = "BIGINT")
+    private Long employeeOnLeaveCount;
+
+    @Column(name="employee_external_email", columnDefinition = "VARCHAR(100)")
+    private String employeeExternalEmail;
 
     @JoinColumn(name = "employee_code")
     @OneToMany
