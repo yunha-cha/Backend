@@ -109,10 +109,23 @@ public class ProjectController {
         log.info("[CalendarController] >>> selectProjectByProjectCode >>> start");
         Long employeeCode = 1L;
 
-        List<EmployeeDTO> employeeList = projectService.selectEmployeeList( employeeCode);
+        List<EmployeeDTO> employeeList = projectService.selectEmployeeList(employeeCode);
 
         log.info("[CalendarController] >>> selectProjectByProjectCode >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "사원 목록 가져오기 성공", employeeList));
     }
 
+    @PostMapping("/projects/{projectCode}/invited")
+    public ResponseEntity<ResponseDTO> inviteProjectMembers(
+            @RequestBody List<Long> employeeCodeList,
+            @PathVariable Long projectCode
+    ) {
+        log.info("[CalendarController] >>> deleteProject >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.inviteProjectMembers(employeeCodeList, projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> deleteProject >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 멤버 초대 성공", resultStr));
+    }
 }

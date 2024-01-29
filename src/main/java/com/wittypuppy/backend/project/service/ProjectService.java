@@ -11,6 +11,7 @@ import com.wittypuppy.backend.project.exception.CreateProjectException;
 import com.wittypuppy.backend.project.exception.ModifyProjectException;
 import com.wittypuppy.backend.project.exception.ProjectLockedException;
 import com.wittypuppy.backend.project.repository.EmployeeRepository;
+import com.wittypuppy.backend.project.repository.ProjectMemberRepository;
 import com.wittypuppy.backend.project.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +33,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final ProjectMemberRepository projectMemberRepository;
 
     public List<ProjectDTO> selectProjectListByTypeAndSearchValue(String type, String searchValue, Long employeeCode) {
         log.info("[ProjectService] >>> selectProjectListByTypeAndSearchValue >>> start");
@@ -157,5 +162,32 @@ public class ProjectService {
 
         log.info("[ProjectService] >>> selectEmployeeList >>> end");
         return employeeDTOList;
+    }
+
+    @Transactional
+    public String inviteProjectMembers(List<Long> employeeCodeList, Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> selectEmployeeList >>> start");
+        int result = 0;
+
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 없습니다."));
+        if (project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            Set<Long> employeeCodeSet = new HashSet<>(employeeCodeList);
+            Set<Long> originalEmployeeCodeSet = project.getProjectMemberList()
+                    .stream()
+                    .map(projectMember -> projectMember.getEmployee().getEmployeeCode())
+                    .collect(Collectors.toSet());
+            employeeCodeSet.removeAll(originalEmployeeCodeSet);
+            employeeCodeSet.remove(employeeCode); // 혹시 모를 계정 정보도 삭제
+
+            List<Employee> employeeList = employeeRepository.findAllById(employeeCodeSet);
+            List<ProjectMember> projectMemberList = employeeList.stream()
+                    .map(employee -> new ProjectMember(null, projectCode, employee, "N", null))
+                    .collect(Collectors.toList());
+            projectMemberRepository.saveAll(projectMemberList);
+            result = 1;
+        }
+
+        log.info("[ProjectService] >>> selectEmployeeList >>> end");
+        return result > 0 ? "프로젝트 삭제 성공" : "프로젝트 삭제 실패";
     }
 }
