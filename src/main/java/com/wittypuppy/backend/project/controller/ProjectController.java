@@ -42,10 +42,10 @@ public class ProjectController {
         log.info("[CalendarController] >>> selectProjectListByTypeAndSearchValue >>> start");
         Long employeeCode = 1L;
 
-        List<ProjectDTO> projectListDTO = projectService.selectProjectListByTypeAndSearchValue(type, searchValue, employeeCode);
+        List<ProjectDTO> projectDTOList = projectService.selectProjectListByTypeAndSearchValue(type, searchValue, employeeCode);
 
         log.info("[CalendarController] >>> selectProjectListByTypeAndSearchValue >>> end");
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 리스트 검색 성공", projectListDTO));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 리스트 검색 성공", projectDTOList));
     }
 
     @PostMapping("/projects/create")
@@ -59,5 +59,19 @@ public class ProjectController {
 
         log.info("[CalendarController] >>> createProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 리스트 검색 성공", resultStr));
+    }
+
+
+    @GetMapping("/projects/{projectCode}")
+    public ResponseEntity<ResponseDTO> selectProjectByProjectCode(
+            @PathVariable Long projectCode
+    ) {
+        log.info("[CalendarController] >>> selectProjectByProjectCode >>> start");
+        Long employeeCode = 1L;
+
+        ProjectDTO projectDTO = projectService.selectProjectByProjectCode(projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> selectProjectByProjectCode >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 리스트 검색 성공", projectDTO));
     }
 }

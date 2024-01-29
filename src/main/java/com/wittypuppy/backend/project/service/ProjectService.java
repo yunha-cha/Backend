@@ -6,6 +6,7 @@ import com.wittypuppy.backend.project.entity.Employee;
 import com.wittypuppy.backend.project.entity.Project;
 import com.wittypuppy.backend.project.entity.ProjectMember;
 import com.wittypuppy.backend.project.exception.CreateProjectException;
+import com.wittypuppy.backend.project.exception.ProjectLockedException;
 import com.wittypuppy.backend.project.repository.EmployeeRepository;
 import com.wittypuppy.backend.project.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
@@ -82,5 +83,24 @@ public class ProjectService {
 
         log.info("[ProjectService] >>> selectProjectListByTypeAndSearchValue >>> end");
         return result > 0 ? "프로젝트 생성 성공" : "프로젝트 생성 실패";
+    }
+
+    public ProjectDTO selectProjectByProjectCode(Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> selectProjectByProjectCode >>> start");
+
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당하는 프로젝트를 찾을 수 없습니다."));
+
+        List<ProjectMember> projectMemberList = project.getProjectMemberList();
+
+        boolean isLocked = project.getProjectLockedStatus().equals("Y");
+        List<Long> employeeCodeList = projectMemberList.stream().map(projectMember -> projectMember.getEmployee().getEmployeeCode()).collect(Collectors.toList());
+        boolean isMember = employeeCodeList.contains(employeeCode);
+        if(isLocked&&!isMember){
+            throw new ProjectLockedException("허가되지 않은 사용자입니다.");
+        }
+        ProjectDTO projectDTO = modelMapper.map(project,ProjectDTO.class);
+
+        log.info("[ProjectService] >>> selectProjectByProjectCode >>> end");
+        return projectDTO;
     }
 }
