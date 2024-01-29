@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.calendar.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
