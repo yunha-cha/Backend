@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.calendar.entity;
+package com.wittypuppy.backend.project.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @ToString
 @Setter
-@Entity(name = "CALENDAR_EMPLOYEE")
+@Entity(name = "PROJECT_EMPLOYEE")
 @Table(name = "tbl_employee")
 public class Employee {
     @Id

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 public class Demo {
+
     @Id
     @Column(name = "demo_pk")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

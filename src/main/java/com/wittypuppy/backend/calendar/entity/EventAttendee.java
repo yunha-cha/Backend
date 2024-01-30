@@ -26,6 +26,6 @@ public class EventAttendee {
     private Employee employee;
 
     @JoinColumn(name="event_attendee_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<EventAlert> eventAlertList;
 }

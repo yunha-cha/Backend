@@ -38,6 +38,6 @@ public class Calendar {
     private String calendarBorderColor;
 
     @JoinColumn(name="calendar_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Event> eventList;
 }
