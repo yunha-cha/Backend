@@ -16,6 +16,12 @@ public class ResponseDTO {
     public ResponseDTO() {
     }
 
+    public ResponseDTO(int status,String message, Object data){
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
+
     public ResponseDTO(HttpStatus status, String message, Object data) {
         this.status = status.value();
         this.message = message;
