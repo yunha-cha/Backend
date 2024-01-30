@@ -229,4 +229,18 @@ public class ProjectController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 멤버 목록 조회 성공", projectMemberDTOList));
     }
 
+    @PutMapping("/projects/{projectCode}/posts/{projectPostCode}/invited")
+    public ResponseEntity<ResponseDTO> inviteProjectPostMemberList(
+            @PathVariable Long projectCode,
+            @PathVariable Long projectPostCode,
+            @RequestBody List<Long> projectMemberList
+    ) {
+        log.info("[CalendarController] >>> inviteProjectPostMemberList >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.inviteProjectPostMemberList(projectCode, projectPostCode, projectMemberList, employeeCode);
+
+        log.info("[CalendarController] >>> inviteProjectPostMemberList >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 멤버 초대 성공", resultStr));
+    }
 }

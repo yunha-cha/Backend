@@ -346,4 +346,23 @@ public class ProjectService {
 
         return projectMemberDTOList;
     }
+
+    @Transactional
+    public String inviteProjectPostMemberList(Long projectCode, Long projectPostCode, List<Long> projectMemberList, Long employeeCode) {
+        log.info("[ProjectService] >>> inviteProjectPostMemberList >>> start");
+        int result = 0;
+
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다"));
+        try {
+            if (project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+                List<ProjectPostMember> projectPostMemberList = projectMemberList.stream().map(projectMember -> new ProjectPostMember(null, projectPostCode, projectMember, "N", null)).toList();
+                projectPostMemberRepository.saveAll(projectPostMemberList);
+            }
+        } catch (Exception e) {
+
+        }
+
+        log.info("[ProjectService] >>> inviteProjectPostMemberList >>> end");
+        return result > 0 ? "프로젝트 게시글 멤버 초대 성공" : "프로젝트 게시글 멤버 초대 실패";
+    }
 }
