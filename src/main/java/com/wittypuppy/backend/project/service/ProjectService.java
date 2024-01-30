@@ -11,6 +11,7 @@ import com.wittypuppy.backend.project.exception.ModifyProjectException;
 import com.wittypuppy.backend.project.exception.ProjectLockedException;
 import com.wittypuppy.backend.project.repository.EmployeeRepository;
 import com.wittypuppy.backend.project.repository.ProjectMemberRepository;
+import com.wittypuppy.backend.project.repository.ProjectPostMemberRepository;
 import com.wittypuppy.backend.project.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class ProjectService {
     private final ModelMapper modelMapper;
     private final ProjectMemberRepository projectMemberRepository;
     private final ProjectPostRepository projectPostRepository;
+    private final ProjectPostMemberRepository projectPostMemberRepository;
 
     public List<ProjectDTO> selectProjectListByTypeAndSearchValue(String type, String searchValue, Long employeeCode) {
         log.info("[ProjectService] >>> selectProjectListByTypeAndSearchValue >>> start");
@@ -259,6 +261,7 @@ public class ProjectService {
         return result > 0 ? "프로젝트 관리자 위임 성공" : "프로젝트 관리자 위임 실패";
     }
 
+    @Transactional
     public String createProjectPost(Long projectCode, ProjectPostDTO projectPostDTO, Long employeeCode) {
         log.info("[ProjectService] >>> createProjectPost >>> start");
         int result = 0;
@@ -283,5 +286,30 @@ public class ProjectService {
 
         log.info("[ProjectService] >>> createProjectPost >>> end");
         return result > 0 ? "프로젝트 게시글 생성 성공" : "프로젝트 게시글 생성 실패";
+    }
+
+    public ProjectPostDTO selectProjectPostByProjectPostCode(Long projectCode, Long projectPostCode, Long employeeCode) {
+        log.info("[ProjectService] >>> createProjectPost >>> start");
+
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 없습니다."));
+
+        ProjectPost selectedProjectPost = null;
+        try {
+            selectedProjectPost
+                    = project.getProjectPostList().stream().filter(projectPost -> projectPost.getProjectPostCode().equals(projectPostCode))
+                    .toList().get(0);
+        } catch (Exception e) {
+            throw new DataNotFoundException("해당하는 프로젝트 게시글이 없습니다.");
+        }
+        ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndEmployee_EmployeeCode(projectCode, employeeCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 접속자는 프로젝트 멤버가 아닙니다."));
+        ProjectPostMember projectPostMember = projectPostMemberRepository.findByProjectPostCodeAndProjectMemberCode(projectPostCode, projectMember.getProjectMemberCode())
+                .orElseThrow(() -> new DataNotFoundException("현재 접속자는 프로젝트 게시글 멤버가 아닙니다."));
+
+        ProjectPostDTO projectPostDTO = modelMapper.map(selectedProjectPost, ProjectPostDTO.class);
+
+        log.info("[ProjectService] >>> createProjectPost >>> end");
+
+        return projectPostDTO;
     }
 }
