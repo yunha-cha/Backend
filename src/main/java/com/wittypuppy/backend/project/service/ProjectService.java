@@ -4,6 +4,7 @@ import com.wittypuppy.backend.common.exception.DataDeletionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
+import com.wittypuppy.backend.project.dto.ProjectMemberDTO;
 import com.wittypuppy.backend.project.dto.ProjectPostDTO;
 import com.wittypuppy.backend.project.entity.*;
 import com.wittypuppy.backend.project.exception.CreateProjectException;
@@ -317,17 +318,32 @@ public class ProjectService {
     public String modifyProjectPost(Long projectCode, Long projectPostCode, ProjectPostDTO projectPostDTO, Long employeeCode) {
         log.info("[ProjectService] >>> modifyProjectPost >>> start");
         int result = 0;
-        Project project = projectRepository.findById(projectCode).orElseThrow(()->new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
-        if(project.getProjectManager().getEmployeeCode().equals(employeeCode)){
-            ProjectPost projectPost = projectPostRepository.findById(projectPostCode).orElseThrow(()->new DataNotFoundException("해당 프로젝트 게시글이 존재하지 않습니다."));
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
+        if (project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            ProjectPost projectPost = projectPostRepository.findById(projectPostCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트 게시글이 존재하지 않습니다."));
             projectPost.setProjectPostStatus(projectPostDTO.getProjectPostStatus());
             projectPost.setProjectPostPriority(projectPostDTO.getProjectPostStatus());
             projectPost.setProjectPostTitle(projectPostDTO.getProjectPostTitle());
             projectPost.setProjectPostModifyDate(LocalDateTime.now());
             projectPost.setProjectPostDueDate(projectPostDTO.getProjectPostDueDate());
         }
+        /*
+         * 댓글에 기록하는건 나중에
+         * */
 
         log.info("[ProjectService] >>> modifyProjectPost >>> end");
         return result > 0 ? "프로젝트 게시글 수정 성공" : "프로젝트 게시글 수정 실패";
+    }
+
+    public List<ProjectMemberDTO> selectProjectMemberList(Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> createProjectPost >>> start");
+
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
+
+        List<ProjectMember> projectMemberList = project.getProjectMemberList().stream().filter(projectMember -> projectMember.getProjectMemberDeleteStatus().equals("N")).toList();
+
+        List<ProjectMemberDTO> projectMemberDTOList = projectMemberList.stream().map(projectMember -> modelMapper.map(projectMember, ProjectMemberDTO.class)).toList();
+
+        return projectMemberDTOList;
     }
 }

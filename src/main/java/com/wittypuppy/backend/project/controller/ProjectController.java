@@ -1,8 +1,10 @@
 package com.wittypuppy.backend.project.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import com.wittypuppy.backend.common.entity.ProjectMember;
 import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
+import com.wittypuppy.backend.project.dto.ProjectMemberDTO;
 import com.wittypuppy.backend.project.dto.ProjectPostDTO;
 import com.wittypuppy.backend.project.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -213,4 +215,18 @@ public class ProjectController {
         log.info("[CalendarController] >>> modifyProjectPost >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 수정 성공", resultStr));
     }
+
+    @GetMapping("/projects/{projectCode}/members")
+    public ResponseEntity<ResponseDTO> selectProjectMemberList(
+            @PathVariable Long projectCode
+    ) {
+        log.info("[CalendarController] >>> selectProjectMemberList >>> start");
+        Long employeeCode = 1L;
+
+        List<ProjectMemberDTO> projectMemberDTOList = projectService.selectProjectMemberList(projectCode,employeeCode);
+
+        log.info("[CalendarController] >>> selectProjectMemberList >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 멤버 목록 조회 성공", projectMemberDTOList));
+    }
+
 }
