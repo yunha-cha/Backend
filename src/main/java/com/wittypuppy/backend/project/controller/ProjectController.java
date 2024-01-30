@@ -3,6 +3,7 @@ package com.wittypuppy.backend.project.controller;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
+import com.wittypuppy.backend.project.dto.ProjectPostDTO;
 import com.wittypuppy.backend.project.service.ProjectService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class ProjectController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 리스트 검색 성공", projectDTOList));
     }
 
-    @PostMapping("/projects/create")
+    @PostMapping("/projects")
     public ResponseEntity<ResponseDTO> createProject(
             @RequestBody ProjectDTO projectDTO
     ) {
@@ -168,5 +169,19 @@ public class ProjectController {
 
         log.info("[CalendarController] >>> delegateProject >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 관리자 위임 성공", resultStr));
+    }
+
+    @PostMapping("/projects/{projectCode}/posts")
+    public ResponseEntity<ResponseDTO> createProjectPost(
+            @PathVariable Long projectCode,
+            @RequestBody ProjectPostDTO projectPostDTO
+    ) {
+        log.info("[CalendarController] >>> createProjectPost >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.createProjectPost(projectCode, projectPostDTO, employeeCode);
+
+        log.info("[CalendarController] >>> createProjectPost >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 생성 성공", resultStr));
     }
 }

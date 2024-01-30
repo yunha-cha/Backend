@@ -4,9 +4,8 @@ import com.wittypuppy.backend.common.exception.DataDeletionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
-import com.wittypuppy.backend.project.entity.Employee;
-import com.wittypuppy.backend.project.entity.Project;
-import com.wittypuppy.backend.project.entity.ProjectMember;
+import com.wittypuppy.backend.project.dto.ProjectPostDTO;
+import com.wittypuppy.backend.project.entity.*;
 import com.wittypuppy.backend.project.exception.CreateProjectException;
 import com.wittypuppy.backend.project.exception.ModifyProjectException;
 import com.wittypuppy.backend.project.exception.ProjectLockedException;
@@ -19,6 +18,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +34,7 @@ public class ProjectService {
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
     private final ProjectMemberRepository projectMemberRepository;
+    private final ProjectPostRepository projectPostRepository;
 
     public List<ProjectDTO> selectProjectListByTypeAndSearchValue(String type, String searchValue, Long employeeCode) {
         log.info("[ProjectService] >>> selectProjectListByTypeAndSearchValue >>> start");
@@ -255,5 +257,31 @@ public class ProjectService {
 
         log.info("[ProjectService] >>> delegateProject >>> end");
         return result > 0 ? "프로젝트 관리자 위임 성공" : "프로젝트 관리자 위임 실패";
+    }
+
+    public String createProjectPost(Long projectCode, ProjectPostDTO projectPostDTO, Long employeeCode) {
+        log.info("[ProjectService] >>> createProjectPost >>> start");
+        int result = 0;
+
+        try {
+            Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당 프로젝트를 찾을 수 없습니다."));
+            List<ProjectMember> projectMemberList = project.getProjectMemberList();
+            List<Long> projectMemberCodeList = projectMemberList.stream().map(projectMember -> projectMember.getProjectMemberCode()).toList();
+            if (projectMemberCodeList.contains(employeeCode)) {
+                ProjectPost projectPost = modelMapper.map(projectPostDTO, ProjectPost.class);
+                projectPost.setProjectCode(projectCode);
+                projectPost.setProjectPostCreationDate(LocalDateTime.now());
+                ProjectPostMember projectPostMember = new ProjectPostMember(null, null, employeeCode, "N", new ArrayList<>());
+                projectPost.setProjectPostMemberList(Stream.of(projectPostMember).toList());
+
+                projectPostRepository.save(projectPost);
+                result = 1;
+            }
+        } catch (Exception e) {
+        }
+
+
+        log.info("[ProjectService] >>> createProjectPost >>> end");
+        return result > 0 ? "프로젝트 게시글 생성 성공" : "프로젝트 게시글 생성 실패";
     }
 }
