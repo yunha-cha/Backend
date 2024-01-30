@@ -198,4 +198,19 @@ public class ProjectController {
         log.info("[CalendarController] >>> selectProjectPostByProjectPostCode >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 입장 성공", projectPostDTO));
     }
+
+    @PutMapping("/projects/{projectCode}/posts/{projectPostCode}")
+    public ResponseEntity<ResponseDTO> modifyProjectPost(
+            @PathVariable Long projectCode,
+            @PathVariable Long projectPostCode,
+            @RequestBody ProjectPostDTO projectPostDTO
+    ) {
+        log.info("[CalendarController] >>> modifyProjectPost >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.modifyProjectPost(projectCode, projectPostCode, projectPostDTO, employeeCode);
+
+        log.info("[CalendarController] >>> modifyProjectPost >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 수정 성공", resultStr));
+    }
 }
