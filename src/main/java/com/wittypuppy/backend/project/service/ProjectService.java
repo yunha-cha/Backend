@@ -365,4 +365,46 @@ public class ProjectService {
         log.info("[ProjectService] >>> inviteProjectPostMemberList >>> end");
         return result > 0 ? "프로젝트 게시글 멤버 초대 성공" : "프로젝트 게시글 멤버 초대 실패";
     }
+
+    @Transactional
+    public String kickOutProjectPostMember(Long badProjectPostMemberCode, Long projectPostCode, Long projectCode, Long employeeCode) {
+        log.info("[ProjectService] >>> kickOutProjectPostMember >>> start");
+        int result = 0;
+        /*
+         * 1. 내가 관리자여야 한다. (프로젝트 관리자를 말한다.)
+         * 2. delete가 아니라 설정값을 바꿔야 한다.
+         * */
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당하는 프로젝트가 없습니다."));
+        if (project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            ProjectPostMember projectPostMember = projectPostMemberRepository.findByProjectPostCodeAndProjectMemberCode(projectPostCode, badProjectPostMemberCode)
+                    .orElseThrow(() -> new DataNotFoundException("해당 프로젝트 게시글의 멤버가 아닙니다."));
+            projectPostMember.setProjectPostMemberDeleteStatus("Y");
+            result = 1;
+        }
+
+        log.info("[ProjectService] >>> kickOutProjectPostMember >>> end");
+        return result > 0 ? "프로젝트 게시글 강퇴 성공" : "프로젝트 게시글 강퇴 실패";
+    }
+
+    @Transactional
+    public String exitProjectPostMember(Long projectCode, Long projectPostCode, Long employeeCode) {
+        log.info("[ProjectService] >>> exitProjectMember >>> start");
+        int result = 0;
+        /*
+         * 1. 내가 관리자이면 해당 게시글을 나갈 수 없다.
+         * 2. 프로젝트 게시글 멤버가 없더라도 게시글을 남아있는다. (나간 기록까지 기록하므로)
+         * */
+        Project project = projectRepository.findById(projectCode).orElseThrow(() -> new DataNotFoundException("해당하는 프로젝트가 없습니다."));
+        if (!project.getProjectManager().getEmployeeCode().equals(employeeCode)) {
+            ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndEmployee_EmployeeCode(projectCode, employeeCode)
+                    .orElseThrow(() -> new DataNotFoundException("현재 접속자는 해당 프로젝트의 멤버가 아닙니다."));
+            ProjectPostMember projectPostMember = projectPostMemberRepository.findByProjectPostCodeAndProjectMemberCode(projectPostCode, projectMember.getProjectMemberCode())
+                    .orElseThrow(() -> new DataNotFoundException("현재 접속자는 해당 프로젝트 게시글의 멤버가 아닙니다."));
+            projectPostMember.setProjectPostMemberDeleteStatus("Y");
+            result = 1;
+        }
+
+        log.info("[ProjectService] >>> exitProjectMember >>> end");
+        return result > 0 ? "프로젝트 게시글 나가기 성공" : "프로젝트 게시글 나가기 실패";
+    }
 }

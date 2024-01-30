@@ -1,7 +1,6 @@
 package com.wittypuppy.backend.project.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
-import com.wittypuppy.backend.common.entity.ProjectMember;
 import com.wittypuppy.backend.project.dto.EmployeeDTO;
 import com.wittypuppy.backend.project.dto.ProjectDTO;
 import com.wittypuppy.backend.project.dto.ProjectMemberDTO;
@@ -223,7 +222,7 @@ public class ProjectController {
         log.info("[CalendarController] >>> selectProjectMemberList >>> start");
         Long employeeCode = 1L;
 
-        List<ProjectMemberDTO> projectMemberDTOList = projectService.selectProjectMemberList(projectCode,employeeCode);
+        List<ProjectMemberDTO> projectMemberDTOList = projectService.selectProjectMemberList(projectCode, employeeCode);
 
         log.info("[CalendarController] >>> selectProjectMemberList >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 멤버 목록 조회 성공", projectMemberDTOList));
@@ -242,5 +241,34 @@ public class ProjectController {
 
         log.info("[CalendarController] >>> inviteProjectPostMemberList >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 멤버 초대 성공", resultStr));
+    }
+
+    @PutMapping("/projects/{projectCode}/posts/{projectPostCode}/kickout/{badProjectPostMemberCode}")
+    public ResponseEntity<ResponseDTO> kickOutProjectPostMember(
+            @PathVariable Long projectCode,
+            @PathVariable Long projectPostCode,
+            @PathVariable Long badProjectPostMemberCode
+    ) {
+        log.info("[CalendarController] >>> kickOutProjectPostMember >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.kickOutProjectPostMember(badProjectPostMemberCode, projectPostCode, projectCode, employeeCode);
+
+        log.info("[CalendarController] >>> kickOutProjectPostMember >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 멤버 강퇴 성공", resultStr));
+    }
+
+    @PutMapping("/projects/{projectCode}/posts/{projectPostCode}/exit")
+    public ResponseEntity<ResponseDTO> exitProjectPostMember(
+            @PathVariable Long projectCode,
+            @PathVariable Long projectPostCode
+    ) {
+        log.info("[CalendarController] >>> exitProjectPostMember >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = projectService.exitProjectPostMember(projectCode, projectPostCode, employeeCode);
+
+        log.info("[CalendarController] >>> exitProjectPostMember >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로젝트 게시글 나가기 성공", resultStr));
     }
 }
