@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.entity;
 
+import com.wittypuppy.backend.calendar.entity.Department;
 import com.wittypuppy.backend.common.entity.ApprovalDocument;
 import com.wittypuppy.backend.common.entity.ApprovalLine;
 import com.wittypuppy.backend.common.entity.AttendanceManagement;
@@ -25,8 +26,9 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeCode;
 
-    @Column(name = "department_code", columnDefinition = "BIGINT")
-    private Long departmentCode;
+    @JoinColumn(name = "department_code")
+    @ManyToOne
+    private Department employeeDepartmentCode;
 
 
     @Column(name = "employee_name", columnDefinition = "VARCHAR(100)")

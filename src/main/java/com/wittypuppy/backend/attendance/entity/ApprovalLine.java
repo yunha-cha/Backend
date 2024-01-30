@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name ="ATTENDANCE_LINE")
 @Table(name = "tbl_approval_line")
 public class ApprovalLine {
     @Id

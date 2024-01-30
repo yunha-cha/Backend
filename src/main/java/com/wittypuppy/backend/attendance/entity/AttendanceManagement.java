@@ -3,15 +3,15 @@ package com.wittypuppy.backend.attendance.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name ="ATTENDANCE_ATTENDANCE_AND_WORK_TYPE")
 @Table(name = "tbl_attendance_management")
 public class AttendanceManagement {
     @Id
@@ -19,8 +19,9 @@ public class AttendanceManagement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attendanceManagementCode;
 
-    @Column(name = "employee_code", columnDefinition = "BIGINT")
-    private Long employeeCode;
+    @JoinColumn(name = "employee_code")
+    @ManyToOne
+    private Employee attendanceEmployeeCode;
 
     @Column(name = "attendance_management_arrival_time", columnDefinition = "DATETIME")
     private LocalDateTime attendanceManagementArrivalTime;
@@ -31,7 +32,8 @@ public class AttendanceManagement {
     @Column(name = "attendance_management_state", columnDefinition = "VARCHAR(100)")
     private String attendanceManagementState;
 
-    @Column(name = "attendance_management_work_day", columnDefinition = "DATETIME")
-    private LocalDateTime attendanceManagementWorkDay;
+    @Column(name = "attendance_management_work_day", columnDefinition = "DATE")
+    private LocalDate attendanceManagementWorkDay;
+
 
 }

@@ -1,16 +1,21 @@
 package com.wittypuppy.backend.attendance.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class AttendanceManagementDTO {
 
     private Long attendanceManagementCode;
 
-    private Long employeeCode;
+    private EmployeeDTO attendanceEmployeeCode;
 
     private LocalDateTime attendanceManagementArrivalTime;
 
@@ -18,6 +23,7 @@ public class AttendanceManagementDTO {
 
     private String attendanceManagementState;
 
-    private LocalDateTime attendanceManagementWorkDay;
+    private LocalDate attendanceManagementWorkDay;
 
+    private AttendanceWorkTypeDTO attendanceWorkTypeList;
 }

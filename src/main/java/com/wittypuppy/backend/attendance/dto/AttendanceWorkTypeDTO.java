@@ -1,18 +1,21 @@
 package com.wittypuppy.backend.attendance.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 
 public class AttendanceWorkTypeDTO {
 
     private Long attendanceWorkTypeCode;
 
-    private Long employeeCode;
+    private EmployeeDTO employeeCode;
 
     private String attendanceWorkTypeStatus;
 
-    private Long approvalDocumentCode;
+    private ApprovalDocumentDTO workTypeApprovalDocumentCode;
 
-    private Long attendanceManagementCode;
+    private AttendanceManagementDTO attendanceManagementCode;
 }

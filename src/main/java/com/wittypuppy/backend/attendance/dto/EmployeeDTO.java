@@ -4,13 +4,17 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 
 public class EmployeeDTO {
 
     private Long employeeCode;
 
-    private Long departmentCode;
+    private DepartmentDTO departmentCode;
 
     private String employeeName;
 

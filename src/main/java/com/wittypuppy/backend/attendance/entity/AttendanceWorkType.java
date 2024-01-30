@@ -3,12 +3,14 @@ package com.wittypuppy.backend.attendance.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name ="ATTENDANCE_WORK_TYPE")
 @Table(name = "tbl_attendance_work_type")
 public class AttendanceWorkType {
     @Id
@@ -16,15 +18,18 @@ public class AttendanceWorkType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attendanceWorkTypeCode;
 
-    @Column(name = "employee_code", columnDefinition = "BIGINT")
-    private Long employeeCode;
+    @JoinColumn(name = "employee_code")
+    @ManyToOne
+    private Employee workTypeEmployeeCode;
 
     @Column(name = "attendance_work_type_status", columnDefinition = "VARCHAR(100)")
     private String attendanceWorkTypeStatus;
 
-    @Column(name = "approval_document_code", columnDefinition = "BIGINT")
-    private Long approvalDocumentCode;
+    @JoinColumn(name = "attendance_management_code")
+    @OneToOne
+    private AttendanceManagement attendanceManagementCode;
 
-    @Column(name = "attendance_management_code", columnDefinition = "BIGINT")
-    private Long attendanceManagementCode;
+    @JoinColumn(name = "approval_document_code")
+    @OneToMany
+    private List<ApprovalDocument> attendanceWorkTypeApprovalDocumentCode;
 }
