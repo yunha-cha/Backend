@@ -45,7 +45,7 @@ public class WebSecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//토큰인증 방식에서는 세션을 사용하지 않음.
                 .formLogin(form -> form.disable())
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(basic -> basic.disable())
