@@ -1,0 +1,78 @@
+package com.wittypuppy.backend.messenger.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@ToString
+@Entity(name = "MESSENGER_CHAT")
+@Table(name = "tbl_chat")
+public class Chat {
+    @Id
+    @Column(name = "chat_code")
+    private Long chatCode;
+
+    @Column(name = "chatroom_code")
+    private Long chatroomCode;
+
+    @Column(name = "chatroom_member_code")
+    private Long chatroomMemberCode;
+
+    @Column(name = "chat_write_date")
+    private LocalDateTime chatWriteDate;
+
+    @Column(name = "chat_content")
+    private String chatContent;
+
+    @JoinColumn(name = "chat_code")
+    @OneToMany
+    private List<ChatReadStatus> chatReadStatusList;
+
+    @JoinColumn(name = "chat_code")
+    @OneToMany
+    private List<ChatFile> chatFileList;
+
+    public Chat setChatCode(Long chatCode) {
+        this.chatCode = chatCode;
+        return this;
+    }
+
+    public Chat setChatroomCode(Long chatroomCode) {
+        this.chatroomCode = chatroomCode;
+        return this;
+    }
+
+    public Chat setChatroomMemberCode(Long chatroomMemberCode) {
+        this.chatroomMemberCode = chatroomMemberCode;
+        return this;
+    }
+
+    public Chat setChatWriteDate(LocalDateTime chatWriteDate) {
+        this.chatWriteDate = chatWriteDate;
+        return this;
+    }
+
+    public Chat setChatContent(String chatContent) {
+        this.chatContent = chatContent;
+        return this;
+    }
+
+    public Chat setChatReadStatusList(List<ChatReadStatus> chatReadStatusList) {
+        this.chatReadStatusList = chatReadStatusList;
+        return this;
+    }
+
+    public Chat setChatFileList(List<ChatFile> chatFileList) {
+        this.chatFileList = chatFileList;
+        return this;
+    }
+
+    public Chat build() {
+        return new Chat(chatCode, chatroomCode, chatroomMemberCode, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
+    }
+}
