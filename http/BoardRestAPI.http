@@ -1,0 +1,64 @@
+
+### 최근 순서대로 게시글 조회
+GET http://localhost:1208/board/
+
+### 게시판에 따른 게시글 조회
+GET http://localhost:1208/board/1
+
+
+
+### 게시글 작성
+POST http://localhost:1208/board/posts/regist
+Content-Type: application/json
+
+{
+  "postTitle": "첫번째 게시물",
+  "postContext": "5시 00분에 쓴 첫번째 게시물"
+
+}
+
+
+### 게시글 열람
+GET http://localhost:1208/board/posts/3
+
+
+### 게시글 수정
+PUT http://localhost:1208/board/posts/2
+Content-Type: application/json
+
+{
+  "postTitle": "[수정] 2번째 게시물",
+  "postContext": "1월 31일 3시 46분에 게시물을 수정했습니다. 확인해주세요."
+}
+
+
+### 게시글 삭제
+DELETE http://localhost:1208/board/posts/6
+
+
+
+## 댓글
+### 댓글 입력
+POST http://localhost:1208/board/posts/1/comment/regist
+Content-Type: application/json
+
+{
+  "postCommentContext" : "1번 게시물을 2월1일 오전 10시33분에 확인하였습니다."
+}
+
+
+
+
+
+### 댓글 삭제
+DELETE http://localhost:1208/board/posts/comment/1
+
+
+
+### Employee 조회
+GET http://localhost:1208/board/test
+Content-Type: application/json
+
+{
+  "employeeCode": 1
+}

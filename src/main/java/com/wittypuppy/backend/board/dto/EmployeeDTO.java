@@ -10,15 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class DemoDTO {
-    private Long demoCode;
+public class EmployeeDTO {
 
-    @NotNull(message = "이 컬럼에는 데이터가 반드시 들어와야 합니다.")
-    private String column1;
+    private Long employeeCode;
 
-    private Long column2;
+    private String employeeName;
 
-    private Double column3;
-
-    private LocalDateTime column4;
 }

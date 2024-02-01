@@ -10,18 +10,16 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Entity(name = "BOARD_BOARD_GROUP")
-@Table(name = "tbl_board_group")
-public class BoardGroup {
+@Entity(name = "BOARD_EMPLOYEE")
+@Table(name = "tbl_employee")
+public class Employee {
+
     @Id
-    @Column(name = "board_group_code",columnDefinition = "BIGINT")
+    @Column(name = "employee_code",columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardGroupCode;
+    private Long employeeCode;
 
-    @Column(name = "board_group_name",columnDefinition = "VARCHAR(100)")
-    private String boardGroupName;
+    @Column(name = "employee_name",columnDefinition = "VARCHAR(100)")
+    private String employeeName;
 
-    @JoinColumn(name = "board_group_code")
-    @OneToMany
-    private List<Board> boardList;
 }

@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.board.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "BOARD_POST")
 @Table(name = "tbl_post")
 public class Post {
     @Id
@@ -43,19 +43,22 @@ public class Post {
     @Column(name = "post_storage_status",columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String postStorageStatus;
 
-    @JoinColumn(name = "post_code")
-    @OneToMany
-    private List<PostAlert> postAlertList;
+
+//    @JoinColumn(name = "post_code")
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<PostAlert> postAlertList;
+
+//    @JoinColumn(name = "post_code")
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<PostLike> postLikeList;
 
     @JoinColumn(name = "post_code")
-    @OneToMany
-    private List<PostLike> postLikeList;
-
-    @JoinColumn(name = "post_code")
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<PostAttachment> postAttachmentList;
 
     @JoinColumn(name = "post_code")
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<PostComment> postCommentList;
+
+
 }

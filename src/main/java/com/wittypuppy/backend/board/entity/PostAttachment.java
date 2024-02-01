@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.board.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "BOARD_POST_ATTACHMENT")
 @Table(name = "tbl_post_attachment")
 public class PostAttachment {
     @Id

@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.board.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "BOARD_BOARD_GROUP")
 @Table(name = "tbl_board_group")
 public class BoardGroup {
     @Id

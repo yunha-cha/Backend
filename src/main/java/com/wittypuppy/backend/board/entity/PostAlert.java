@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.board.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "BOARD_POST_ALERT")
 @Table(name = "tbl_post_alert")
 public class PostAlert {
     @Id

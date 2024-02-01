@@ -1,5 +1,7 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.board.entity;
 
+import com.wittypuppy.backend.common.entity.PostAlert;
+import com.wittypuppy.backend.common.entity.PostComment;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "BOARD_BOARD_MEMBER")
 @Table(name = "tbl_board_member")
 public class BoardMember {
     @Id

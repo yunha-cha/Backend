@@ -1,102 +1,221 @@
 package com.wittypuppy.backend.board.service;
 
-import com.wittypuppy.backend.board.dto.DemoDTO;
-import com.wittypuppy.backend.board.entity.Demo;
-import com.wittypuppy.backend.board.repository.DemoRepository;
-import com.wittypuppy.backend.common.exception.DataDeletionException;
-import com.wittypuppy.backend.common.exception.DataInsertionException;
-import com.wittypuppy.backend.common.exception.DataNotFoundException;
-import com.wittypuppy.backend.common.exception.DataUpdateException;
+import com.wittypuppy.backend.board.dto.EmployeeDTO;
+import com.wittypuppy.backend.board.dto.PostCommentDTO;
+import com.wittypuppy.backend.board.dto.PostDTO;
+import com.wittypuppy.backend.board.entity.Employee;
+import com.wittypuppy.backend.board.entity.Post;
+import com.wittypuppy.backend.board.entity.PostComment;
+import com.wittypuppy.backend.board.repository.BoardEmployeeRepository;
+import com.wittypuppy.backend.board.repository.PostCommentRepository;
+import com.wittypuppy.backend.board.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class DemoService {
-    private final DemoRepository demoRepository;
+public class BoardService {
+    private final PostRepository postRepository;
+
+    private final PostCommentRepository postCommentRepository;
+    private final BoardEmployeeRepository boardEmployeeRepository;
     private final ModelMapper modelMapper;
 
-    public DemoService(DemoRepository demoRepository, ModelMapper modelMapper) {
-        this.demoRepository = demoRepository;
+    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
+        this.postRepository = postRepository;
+        this.postCommentRepository = postCommentRepository;
+        this.boardEmployeeRepository = boardEmployeeRepository;
         this.modelMapper = modelMapper;
     }
 
-    public List<DemoDTO> selectDemoList() {
-        log.info("DemoService >>> selectDemoList >>> start");
 
-        List<Demo> demoList = demoRepository.findAll();
+    @Transactional
+    public List<PostDTO> selectPostList() {
+        log.info("BoardService >>> selectPostList >>> start");
 
-        List<DemoDTO> demoDTOList = demoList.stream()
-                .map(demo -> modelMapper.map(demo, DemoDTO.class))
+        // jparepository를 통해 엔티티를 받음
+        List<Post> postList = postRepository.findAll();
+
+        List<PostDTO> postDTOList = postList.stream()
+                .map(post -> modelMapper.map(post, PostDTO.class))
                 .collect(Collectors.toList());
 
-        log.info("DemoService >>> selectDemoList >>> end");
-        return demoDTOList;
+        System.out.println("postDTOList = " + postDTOList);
+        log.info("BoardService >>> selectPostList >>> end");
+
+        return postDTOList;
+
+
     }
 
-    public DemoDTO findDemoByNo(Long demoCode) {
-        log.info("DemoService >>> findDemoByNo >>> start");
-
-        Demo demo = demoRepository.findById(demoCode).get();
-        System.out.println(demo);
-        DemoDTO demoDTO = modelMapper.map(demo, DemoDTO.class);
-        System.out.println(demoDTO);
-        log.info("DemoService >>> findDemoByNo >>> end");
-        return demoDTO;
-    }
 
     @Transactional
-    public String insertDemo(DemoDTO demoDTO) {
-        log.info("DemoService >>> insertDemo >>> start");
+    public EmployeeDTO selectEmployee(EmployeeDTO employeeDTO) {
+        Long prKey = employeeDTO.getEmployeeCode();
 
-        Demo insertDemo = modelMapper.map(demoDTO, Demo.class);
+        Employee employee = boardEmployeeRepository.findByEmployeeCode(prKey);
 
-        try {
-            demoRepository.save(insertDemo);
-            log.info("DemoService >>> insertDemo >>> end");
+        // dto -> 엔티티로 변환 / 엔티티, 변환할 dto 타입
+        EmployeeDTO employeeDTOs = modelMapper.map(employee, EmployeeDTO.class);
 
-            return "상품 입력 성공";
-        } catch (Exception e) {
-            log.error("DemoService >>> insertDemo >>> Error >>>", e);
-            throw new DataInsertionException("Demo 데이터 입력 중 에러 발생");
-        }
+        System.out.println("employee = " + employee);
+        System.out.println("employeeDTOs = " + employeeDTOs);
+
+        return employeeDTOs;
+
     }
 
-    @Transactional
-    public String updateDemo(DemoDTO demoDTO, Long demoCode) {
-        log.info("DemoService >>> updateDemo >>> start");
 
-        try {
-            Demo demo = demoRepository.findById(demoCode)
-                    .orElseThrow(() -> new DataNotFoundException("해당 Demo 데이터를 찾을 수 없습니다."));
-            demo.column1(demoDTO.getColumn1())
-                    .column2(demoDTO.getColumn2())
-                    .column3(demoDTO.getColumn3())
-                    .column4(demoDTO.getColumn4());
-            log.info("DemoService >>> updateDemo >>> end");
-            return "상품 수정 성공";
-        } catch (Exception e) {
-            log.error("DemoService >>> updateDemo >>> Error >>>", e);
-            throw new DataUpdateException("Demo 데이터 갱신 중 에러 발생");
-        }
+    @Transactional
+    public List<PostDTO> selectPostListByBoardCode(Long boardCode) {
+
+        List<Post> postList = postRepository.findByBoardCode(boardCode);
+
+        // 엔티티 조회되는지 출력
+        System.out.println("postList = " + postList);
+
+        // 엔티티를 dto로 변환해서 반환하기
+        List<PostDTO> postDTOList = postList.stream()
+                .map(post -> modelMapper.map(post, PostDTO.class))
+                .collect(Collectors.toList());
+
+        return postDTOList;
+
     }
 
+
     @Transactional
-    public String deleteDemoByNo(Long demoCode) {
-        try {
-            Demo demo = demoRepository.findById(demoCode)
-                    .orElseThrow(() -> new DataNotFoundException("해당 Demo 데이터를 찾을 수 없습니다."));
-            demoRepository.delete(demo);
-            log.info("DemoService >>> updateDemo >>> end");
-            return "상품 삭제 성공";
+    public String insertPost(PostDTO postDTO) {
+
+        log.info("BoardService >>> insertPost >>> start");
+
+        int result = 0;
+
+        try{
+            // 받은 dto를 엔티티로 변환
+            Post newPost = modelMapper.map(postDTO, Post.class);
+
+            // 등록할 때 현재 날짜로 설정
+            newPost.setPostDate(LocalDateTime.now());
+
+            // 알림 받을 직원 설정 -> 테이블 생성?(게시판 멤버, 게시글 코드)
+            postRepository.save(newPost);
+            result = 1;
+
         } catch (Exception e) {
-            log.error("DemoService >>> updateDemo >>> Error >>>", e);
-            throw new DataDeletionException("Demo 데이터 삭제 중 에러 발생");
+            e.printStackTrace();
         }
+
+
+        return result > 0 ? "게시물 등록 성공" : "게시물 등록 실패";
+
+    }
+
+
+    @Transactional
+    public PostDTO updatePost(PostDTO postDTO, Long postCode) {
+
+        log.info("BoardService >>> updatePost >>> start");
+        System.out.println("postDTO = " + postDTO);
+
+        // postCode에 해당하는 엔티티 찾기
+        Post entityPost = postRepository.findByPostCode(postCode);
+        entityPost.setPostTitle(postDTO.getPostTitle());
+        entityPost.setPostContext(postDTO.getPostContext());
+
+
+        PostDTO updatedPostDTO = modelMapper.map(entityPost, PostDTO.class);
+
+        System.out.println("entityPost = " + entityPost);
+        System.out.println("updatedPostDTO = " + updatedPostDTO);
+
+        return updatedPostDTO;
+
+    }
+
+
+    @Transactional
+    public String deletePost(Long postCode) {
+
+
+        int result = 0;
+        try{
+
+            Post deletepost = postRepository.findByPostCode(postCode);
+            postRepository.delete(deletepost);
+
+            result = 1;
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return result > 0 ? "게시글 삭제 성공" : "게시글 삭제 실패";
+
+    }
+
+
+    @Transactional
+    public PostDTO selectPost(Long postCode) {
+
+        Post post = postRepository.findByPostCode(postCode);
+
+        PostDTO postDTO = modelMapper.map(post, PostDTO.class);
+
+        return postDTO;
+
+    }
+
+
+    @Transactional
+    public PostCommentDTO insertComment(PostCommentDTO postCommentDTO, Long postCode) {
+
+        PostComment newPostComment = modelMapper.map(postCommentDTO, PostComment.class);
+        newPostComment.setPostCode(postCode);
+        newPostComment.setPostCommentDate(LocalDateTime.now());
+
+        postCommentRepository.save(newPostComment);
+
+        System.out.println("newPostComment = " + newPostComment);
+
+        return modelMapper.map(newPostComment, PostCommentDTO.class);
+
+    }
+
+
+    @Transactional
+    public String deleteComment(Long commentCode) {
+
+        int result = 0;
+
+        try{
+            PostComment postComment = postCommentRepository.findByPostCommentCode(commentCode);
+            postCommentRepository.delete(postComment);
+            result = 1;
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+        return result > 0 ? "댓글 삭제 성공" : "댓글 삭제 실패";
+    }
+
+
+
+
+
+    private <S, T> List<T> convert(List<S> list, Class<T> targetClass) {
+        return list.stream()
+                .map(value -> modelMapper.map(value, targetClass))
+                .collect(Collectors.toList());
     }
 }
+
+

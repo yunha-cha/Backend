@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common.entity;
+package com.wittypuppy.backend.board.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,29 +10,30 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Entity
+@Entity(name = "BOARD_POST_COMMENT")
 @Table(name = "tbl_post_comment")
 public class PostComment {
     @Id
     @Column(name = "post_comment_code",columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_comment_code;
+    private Long postCommentCode;
 
     @Column(name = "post_code",columnDefinition = "BIGINT")
-    private Long post_code;
+    private Long postCode;
 
     @Column(name = "board_member_code",columnDefinition = "BIGINT")
-    private Long board_member_code;
+    private Long boardMemberCode;
 
     @Column(name = "post_comment_context",columnDefinition = "VARCHAR(500)")
-    private String post_comment_context;
+    private String postCommentContext;
 
     @Column(name = "post_comment_date",columnDefinition = "DATETIME")
-    private LocalDateTime post_comment_date;
+    private LocalDateTime postCommentDate;
 
     @Column(name = "post_comment_update_date",columnDefinition = "DATETIME")
-    private LocalDateTime post_comment_update_date;
+    private LocalDateTime postCommentUpdateDate;
 
     @Column(name = "post_comment_delete_status",columnDefinition = "VARCHAR(1) DEFAULT 'N'")
-    private String post_comment_delete_status;
+    private String postCommentDeleteStatus;
+
 }

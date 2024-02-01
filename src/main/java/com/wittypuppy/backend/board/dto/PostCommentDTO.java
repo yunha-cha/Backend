@@ -10,15 +10,20 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class DemoDTO {
-    private Long demoCode;
+public class PostCommentDTO {
 
-    @NotNull(message = "이 컬럼에는 데이터가 반드시 들어와야 합니다.")
-    private String column1;
+    private Long postCommentCode;
 
-    private Long column2;
+    private Long postCode;
 
-    private Double column3;
+    private Long boardMemberCode;
 
-    private LocalDateTime column4;
+    private String postCommentContext;
+
+    private LocalDateTime postCommentDate;
+
+    private LocalDateTime postCommentUpdateDate;
+
+    private String postCommentDeleteStatus;
+
 }

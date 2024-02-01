@@ -1,9 +1,6 @@
-package com.wittypuppy.backend.demo.dto;
+package com.wittypuppy.backend.board.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.*;
 
 import java.time.LocalDateTime;

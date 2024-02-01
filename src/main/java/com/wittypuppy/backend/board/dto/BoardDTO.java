@@ -1,24 +1,34 @@
 package com.wittypuppy.backend.board.dto;
 
+import com.wittypuppy.backend.board.entity.BoardMember;
+import com.wittypuppy.backend.common.entity.Post;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class DemoDTO {
-    private Long demoCode;
+public class BoardDTO {
 
-    @NotNull(message = "이 컬럼에는 데이터가 반드시 들어와야 합니다.")
-    private String column1;
+    private Long boardCode;
 
-    private Long column2;
+    private Long boardManagerCode;
 
-    private Double column3;
+    private Long boardGroupCode;
 
-    private LocalDateTime column4;
+    private String boardTitle;
+
+    private String boardDescription;
+
+    private String boardAccessStatus;
+
+    private List<PostDTO> postList;
+
+    private List<BoardMemberDTO> boardMemberList;
+
 }
