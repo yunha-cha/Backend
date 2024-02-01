@@ -3,7 +3,7 @@ GET http://localhost:1208/admin/user-info
 Content-Type: application/json
 
 {
-  "employeeCode": 1
+  "employeeCode": 3
 }
 
 ### 유저 정보 업데이트
