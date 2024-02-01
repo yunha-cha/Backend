@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "MESSENGER_CHAT")
 @Table(name = "tbl_chat")
 public class Chat {
@@ -34,7 +33,46 @@ public class Chat {
     @OneToMany
     private List<ChatReadStatus> chatReadStatusList;
 
-    @JoinColumn(name="chat_code")
+    @JoinColumn(name = "chat_code")
     @OneToMany
     private List<ChatFile> chatFileList;
+
+    public Chat setChatCode(Long chatCode) {
+        this.chatCode = chatCode;
+        return this;
+    }
+
+    public Chat setChatroomCode(Long chatroomCode) {
+        this.chatroomCode = chatroomCode;
+        return this;
+    }
+
+    public Chat setChatroomMemberCode(Long chatroomMemberCode) {
+        this.chatroomMemberCode = chatroomMemberCode;
+        return this;
+    }
+
+    public Chat setChatWriteDate(LocalDateTime chatWriteDate) {
+        this.chatWriteDate = chatWriteDate;
+        return this;
+    }
+
+    public Chat setChatContent(String chatContent) {
+        this.chatContent = chatContent;
+        return this;
+    }
+
+    public Chat setChatReadStatusList(List<ChatReadStatus> chatReadStatusList) {
+        this.chatReadStatusList = chatReadStatusList;
+        return this;
+    }
+
+    public Chat setChatFileList(List<ChatFile> chatFileList) {
+        this.chatFileList = chatFileList;
+        return this;
+    }
+
+    public Chat build() {
+        return new Chat(chatCode, chatroomCode, chatroomMemberCode, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
+    }
 }

@@ -29,11 +29,11 @@ public class Chatroom {
     private String chatroomFixedStatus;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ChatroomMember> chatroomMemberList;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ChatroomProfile> chatroomProfileList;
 
     @JoinColumn(name = "chatroom_code")

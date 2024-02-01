@@ -7,13 +7,11 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "MESSENGER_CHATROOM_PROFILE")
 @Table(name = "tbl_chatroom_profile")
 public class ChatroomProfile {
@@ -35,4 +33,38 @@ public class ChatroomProfile {
 
     @Column(name = "chatroom_profile_delete_status")
     private String chatroomProfileDeleteStatus;
+
+    public ChatroomProfile setChatroomProfileCode(Long chatroomProfileCode) {
+        this.chatroomProfileCode = chatroomProfileCode;
+        return this;
+    }
+
+    public ChatroomProfile setChatroomCode(Long chatroomCode) {
+        this.chatroomCode = chatroomCode;
+        return this;
+    }
+
+    public ChatroomProfile setChatroomProfileOgFile(String chatroomProfileOgFile) {
+        this.chatroomProfileOgFile = chatroomProfileOgFile;
+        return this;
+    }
+
+    public ChatroomProfile setChatroomProfileChangedFile(String chatroomProfileChangedFile) {
+        this.chatroomProfileChangedFile = chatroomProfileChangedFile;
+        return this;
+    }
+
+    public ChatroomProfile setChatroomProfileRegistDate(LocalDateTime chatroomProfileRegistDate) {
+        this.chatroomProfileRegistDate = chatroomProfileRegistDate;
+        return this;
+    }
+
+    public ChatroomProfile setChatroomProfileDeleteStatus(String chatroomProfileDeleteStatus) {
+        this.chatroomProfileDeleteStatus = chatroomProfileDeleteStatus;
+        return this;
+    }
+
+    public ChatroomProfile builder() {
+        return new ChatroomProfile(chatroomProfileCode, chatroomCode, chatroomProfileOgFile, chatroomProfileChangedFile, chatroomProfileRegistDate, chatroomProfileDeleteStatus);
+    }
 }
