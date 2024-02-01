@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.project.service;
+package com.wittypuppy.backend.project.repository;
 
 import com.wittypuppy.backend.project.entity.ProjectPost;
 import org.springframework.data.jpa.repository.JpaRepository;
