@@ -14,15 +14,6 @@ public class ResponseDTO {
     private String message; // 응답메시지
     private Object data; // 응답데이터
 
-    public ResponseDTO(HttpStatus ok, String 열람_성공, PostDTO postDTO, PostDTO postDTO2) {
-    }
-
-    public ResponseDTO(int status,String message, Object data){
-        this.status = status;
-        this.message = message;
-        this.data = data;
-    }
-
     public ResponseDTO(int status,String message, Object data){
         this.status = status;
         this.message = message;
