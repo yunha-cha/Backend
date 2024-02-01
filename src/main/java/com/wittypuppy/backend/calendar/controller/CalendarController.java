@@ -70,7 +70,7 @@ public class CalendarController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "이벤트 생성 성공", resultStr));
     }
 
-    @PutMapping("events/{eventCode}")
+    @PutMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> modifyEvent(
             @RequestBody EventDTO eventDTO
     ) {
@@ -81,5 +81,49 @@ public class CalendarController {
 
         log.info("[CalendarController] >>> createEvent >>> end");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "이벤트 수정 성공", resultStr));
+    }
+
+    /*캘린더 휴지통에 넣는 작업*/
+    /*휴지통 일정 삭제하는 작업.*/
+    @DeleteMapping("/events/{eventCode}")
+    public ResponseEntity<ResponseDTO> deleteEvent(
+            @PathVariable Long eventCode
+    ) {
+        log.info("[CalendarController] >>> deleteEvent >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = calendarService.deleteEvent(eventCode, employeeCode);
+
+        log.info("[CalendarController] >>> deleteEvent >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "이벤트 삭제 작업 성공", resultStr));
+    }
+
+    /*휴지통 여는 작업*/
+    /*나중에 event -> sql의 event를 이용해서 완전 삭제 되도록.*/
+    @GetMapping("/events/{eventCode}/temporarily-delete")
+    public ResponseEntity<ResponseDTO> selectTemporarilyDeleteEventList(
+            @PathVariable Long eventCode
+    ) {
+        log.info("[CalendarController] >>> selectTemporarilyDeleteEventList >>> start");
+        Long employeeCode = 1L;
+
+        List<EventDTO> eventDTOList = calendarService.selectTemporarilyDeleteEventList(employeeCode);
+
+        log.info("[CalendarController] >>> selectTemporarilyDeleteEventList >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "이벤트 임시 삭제 목록 가져오기 성공", eventDTOList));
+    }
+
+    /*휴지통 일정 복구 하는 작업*/
+    @PutMapping("/events/{eventCode}/rollback")
+    public ResponseEntity<ResponseDTO> rollbackEvent(
+            @PathVariable Long eventCode
+    ) {
+        log.info("[CalendarController] >>> rollbackEvent >>> start");
+        Long employeeCode = 1L;
+
+        String resultStr = calendarService.rollbackEvent(eventCode, employeeCode);
+
+        log.info("[CalendarController] >>> rollbackEvent >>> end");
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "이벤트 임시 삭제 롤백 성공.", resultStr));
     }
 }

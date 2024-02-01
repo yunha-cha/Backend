@@ -1,0 +1,53 @@
+### 보낸 메일 조회
+GET http://localhost:1208/mail/find-receive-mail?condition=send
+
+### 받은 메일 조회
+GET http://localhost:1208/mail/find-send-mail?condition=send
+
+### 이메일 보내기
+POST http://localhost:1208/mail/send-mail?status=temporary
+Content-Type: application/json
+
+{
+  "emailTitle": "제목",
+  "emailContent": "<span>나는 내용이다<span>",
+  "emailReceiver": {
+
+    "employeeId": "inji2349@gmail.com"
+  }
+}
+
+### 이메일 여러 개 상태 변경하기
+PUT http://localhost:1208/mail/update-mail-status?status=temporary
+Content-Type: application/json
+
+[
+  {
+    "emailCode": 31
+  }
+]
+
+### 이메일 여러 개 삭제 하기
+DELETE http://localhost:1208/mail/delete-mail
+Content-Type: application/json
+
+[
+  {
+    "emailCode": 50
+  },
+  {
+    "emailCode": 40
+  }
+]
+
+### 임시저장 이메일 불러오기
+GET http://localhost:1208/mail/temporary
+
+### 메일 예약하기
+POST http://localhost:1208/update-email-schedule
+Content-Type: application/json
+
+{
+  "date": "2024-01-30",
+  "time": "15:45"
+}
