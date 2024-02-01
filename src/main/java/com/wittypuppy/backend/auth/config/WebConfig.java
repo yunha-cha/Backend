@@ -15,13 +15,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
 //
-//    // 정적 자원에 접근을 허용하게 하기 위함
+////    // 정적 자원에 접근을 허용하게 하기 위함
 //    @Value("${image.add-resource-locations}")
 //    private String ADD_RESOURCE_LOCATION;
 //
 //    @Value("${image.add-resource-handler}")
 //    private String ADD_RESOURCE_HANDLER;
-
+//
 //    @Override
 //    public void addResourceHandlers(ResourceHandlerRegistry registry){
 //        registry.addResourceHandler(ADD_RESOURCE_HANDLER)

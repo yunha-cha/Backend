@@ -64,13 +64,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         try {
             if(header != null && !header.equalsIgnoreCase("")){
                 String token = TokenUtils.splitHeader(header);
+                System.out.println("token ====================== " + token);
 
                 if(TokenUtils.isValidToken(token)){
                     Claims claims = TokenUtils.getClaimsFromToken(token);
-
+                    System.out.println("claims ===================== " + claims);
                     EmployeeDTO authentication = new EmployeeDTO();
                     authentication.setEmployeeName(claims.get("employeeName").toString());
-                    authentication.setEmployeeExternalEmail(claims.get("employeeEmail").toString());
+                    authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
                     AbstractAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(authentication, token, authentication.getAuthorities());

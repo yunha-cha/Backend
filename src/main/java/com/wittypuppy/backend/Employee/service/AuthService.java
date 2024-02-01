@@ -36,7 +36,7 @@ public class AuthService {
         log.info("[AuthService] memberDTO {} =======> ", employeeDTO);
 
         /* 이메일 중복 유효성 검사(선택적) */
-        if(employeeRepository.findByEmployeeEmail(employeeDTO.getEmployeeExternalEmail()) != null){ // 중복된 내용이 있으니 값을 가지고 온 것 (없으면 null)
+        if(employeeRepository.findByEmployeeEmail(employeeDTO.getEmployeeEmail()) != null){ // 중복된 내용이 있으니 값을 가지고 온 것 (없으면 null)
             log.info("[AuthService] 이메일이 종복됩니다.");
             throw new DuplicatedMemberEmailException("이메일이 중복됩니다.");
         }

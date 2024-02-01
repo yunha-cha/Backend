@@ -6,6 +6,8 @@ GET http://localhost:1208/api/v1/project/projects?condition=me
 
 ### 나의 조직의 프로젝트 리스트 조회
 GET http://localhost:1208/api/v1/project/projects?condition=myteam
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA2NzYwMDQxMDU1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLquYDshLHrr7wiLCJzdWIiOiJ1c2VyMDEiLCJlbXBsb3llZUVtYWlsIjoic3VuZ21pbjEyM0BnbWFpbC5jb20iLCJleHAiOjE3MDY3NjE4NDEsImVtcGxveWVlUm9sZSI6W119.2h-e9M8uXgR8wwL9_uuFzCGv_nK-qvzw2foyZQ9ZQNw
 
 ### 위의 상황에 검색 추가(제목)
 GET http://localhost:1208/api/v1/project/projects?condition=myteam&searchValue=asd

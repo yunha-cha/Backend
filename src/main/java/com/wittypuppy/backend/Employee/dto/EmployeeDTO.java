@@ -20,7 +20,7 @@ public class EmployeeDTO implements UserDetails {
     private String employeeId;
     private String employeePassword;
     private String employeeName;
-    private String employeeExternalEmail;
+    private String employeeEmail;
     private Date employeeRetirementDate;
     private List<EmployeeRoleDTO> employeeRole;
     private Date employeeBirthDate;
