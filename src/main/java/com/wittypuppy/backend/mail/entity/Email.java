@@ -42,7 +42,7 @@ public class Email {
 //    private Long emailSender;
 
 
-    @ManyToOne
+    @ManyToOne  //하나의 이메일에서
     @JoinColumn(name="email_receiver_employee_code", columnDefinition = "BIGINT")   //받는 이
     private Employee emailReceiver; //받기
 
