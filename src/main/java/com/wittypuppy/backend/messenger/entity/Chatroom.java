@@ -33,11 +33,11 @@ public class Chatroom {
     private List<ChatroomMember> chatroomMemberList;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatroomProfile> chatroomProfileList;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Chat> chatList;
 
     public Chatroom setChatroomCode(Long chatroomCode) {

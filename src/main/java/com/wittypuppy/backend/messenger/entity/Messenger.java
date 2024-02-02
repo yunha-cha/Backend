@@ -33,7 +33,7 @@ public class Messenger {
     private String messengerTheme;
 
     @JoinColumn(name = "messenger_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Chatroom> chatroomList;
 
     public Messenger setMessengerCode(Long messengerCode) {

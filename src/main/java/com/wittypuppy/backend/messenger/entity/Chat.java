@@ -30,11 +30,11 @@ public class Chat {
     private String chatContent;
 
     @JoinColumn(name = "chat_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatReadStatus> chatReadStatusList;
 
     @JoinColumn(name = "chat_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatFile> chatFileList;
 
     public Chat setChatCode(Long chatCode) {
@@ -72,7 +72,7 @@ public class Chat {
         return this;
     }
 
-    public Chat build() {
+    public Chat builder() {
         return new Chat(chatCode, chatroomCode, chatroomMemberCode, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
     }
 }

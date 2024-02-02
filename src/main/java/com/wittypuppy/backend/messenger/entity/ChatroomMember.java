@@ -34,11 +34,11 @@ public class ChatroomMember {
     private LocalDateTime chatroomMemberInviteTime;
 
     @JoinColumn(name = "chatroom_member_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatReadStatus> chatReadStatusList;
 
     @JoinColumn(name = "chatroom_member_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Chat> chatList;
 
     public ChatroomMember setChatroomMemberCode(Long chatroomMemberCode) {

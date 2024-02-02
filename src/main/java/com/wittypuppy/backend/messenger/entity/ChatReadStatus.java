@@ -1,15 +1,18 @@
 package com.wittypuppy.backend.messenger.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "MESSENGER_CHAT_READ_STATUS")
 @Table(name = "tbl_chat_read_status")
 public class ChatReadStatus {
@@ -22,4 +25,23 @@ public class ChatReadStatus {
 
     @Column(name = "chat_code")
     private Long chatCode;
+
+    public ChatReadStatus setChatReadStatusCode(Long chatReadStatusCode) {
+        this.chatReadStatusCode = chatReadStatusCode;
+        return this;
+    }
+
+    public ChatReadStatus setChatroomMemberCode(Long chatroomMemberCode) {
+        this.chatroomMemberCode = chatroomMemberCode;
+        return this;
+    }
+
+    public ChatReadStatus setChatCode(Long chatCode) {
+        this.chatCode = chatCode;
+        return this;
+    }
+
+    public ChatReadStatus builder() {
+        return new ChatReadStatus(chatReadStatusCode, chatroomMemberCode, chatCode);
+    }
 }
