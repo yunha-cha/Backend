@@ -15,7 +15,7 @@ public class ChatroomMessengerMainDTO {
     private String chatroomFixedStatus;
     private String chatroomContent;
     private LocalDateTime chatroomChatDate;
-    private Long notReadChatCount;
     private String chatroomProfileChangedFile;
+    private Long notReadChatCount;
     private Long chatroomMemberCount;
 }
