@@ -20,7 +20,7 @@ public class AttendanceWorkType {
     private Long attendanceWorkTypeCode;
 
     @JoinColumn(name = "employee_code")
-    @ManyToOne
+    @OneToOne
     private Employee workTypeEmployeeCode;
 
     @Column(name = "attendance_work_type_status", columnDefinition = "VARCHAR(100)")
@@ -34,5 +34,5 @@ public class AttendanceWorkType {
     @OneToMany
     private List<ApprovalDocument> attendanceWorkTypeApprovalDocumentCode;
 
-    
+
 }

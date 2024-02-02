@@ -34,28 +34,55 @@ public class AttendanceController {
     }
 
 
+    //근태 메인화면
+    @GetMapping("/attendances/main")
+    public ResponseEntity<ResponseDTO> attendanceMain(
+            //출근 시간 받아오기
+            //퇴근시간 받아오기
+            //날짜 받아오기
+            //로그인 값 받아오기
+            ){
+        Long employeeCode = 1L; // 로그인한 코드 넣기
 
+        /*
+        * 출퇴근 날짜 인서트 서류 참고로 해서
+        * 남은 연차 보여주기
+        * 결재 대기건 보여주기
+        * */
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공",  attendanceService.attendaceMain(employeeCode)));
+
+    }
+
+
+
+
+
+
+ //출퇴근 목록
     @GetMapping("/attendances/lists")
     public ResponseEntity<ResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "year", defaultValue = "") String year,  //리액트 값 받기
-            @RequestParam(name = "month", defaultValue = "") String month
+            @RequestParam(name = "yearMonth", defaultValue = "2023-12") String yearMonth  //리액트 값 받기
+
     ) {
         System.out.println("==============selectCommuteList==================");
         System.out.println("===============offset ================= " + offset);
-        System.out.println("===============year ================= " + year);
-        System.out.println("===============month ================= " + month);
+        System.out.println("===============year ================= " + yearMonth);
+
+
+        Long employeeCode = 1L; // 로그인한 코드 넣기
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
         PagingResponseDTO pagingResponse = new PagingResponseDTO();
 
-        Page<AttendanceWorkTypeDTO> attendanceList = attendanceService.selectCommuteList(cri, year, month);
+        Page<AttendanceWorkTypeDTO> attendanceList = attendanceService.selectCommuteList(cri, yearMonth, employeeCode);
         pagingResponse.setData(attendanceList);
         pagingResponse.setPageInfo(new PageDTO(cri, (int) attendanceList.getTotalElements()));
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "출퇴근 목록 조회 성공", pagingResponse));
     }
+
 
 
     //내가 신청한 문서 기안

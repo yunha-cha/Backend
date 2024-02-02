@@ -42,30 +42,17 @@ public class AttendanceService {
         this.lineRepository = lineRepository;
     }
 
-    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, String year, String month) {
+    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, String yearMonth, Long employeeCode) {
         System.out.println("=============WorkTypeList start= service===============");
 
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by("attendanceManagementCode").descending());
+        Pageable paging = PageRequest.of(index, count, Sort.by(Sort.Direction.ASC, "attendance_management_work_day"));
 
-        Page<AttendanceWorkType> result;
+        System.out.println("========= employeeCode ====== " + employeeCode);
+        System.out.println("========== yearMonth ======= " + yearMonth);
 
-        if (!year.isEmpty() && !month.isEmpty()) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-            YearMonth yearMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
-            LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
-            LocalDateTime endOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
-
-            Specification<AttendanceWorkType> spec = (root, query, cb) -> {
-                Join<AttendanceWorkType, AttendanceManagement> attendanceManagementJoin = root.join("attendanceManagementCode", JoinType.INNER);
-                return cb.between(attendanceManagementJoin.get("attendanceManagementWorkDay"), startOfMonth, endOfMonth);
-            };
-
-            result = workTypeRepository.findAll(spec, paging);
-        } else {
-            result = workTypeRepository.findAll(paging);
-        }
+        Page<AttendanceWorkType> result = workTypeRepository.attendanceList(yearMonth, employeeCode, paging);
 
         Page<AttendanceWorkTypeDTO> workTypeList = result.map(attendance -> modelMapper.map(attendance, AttendanceWorkTypeDTO.class));
 
