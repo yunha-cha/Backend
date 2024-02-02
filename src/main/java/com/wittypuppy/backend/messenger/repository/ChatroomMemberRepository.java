@@ -2,6 +2,7 @@ package com.wittypuppy.backend.messenger.repository;
 
 import com.wittypuppy.backend.messenger.entity.ChatroomMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface ChatroomMemberRepository extends JpaRepository<ChatroomMember, 
     Optional<ChatroomMember> findByChatroomMemberCodeAndChatroomCode(Long chatroomMember, Long chatroomCode);
 
     List<ChatroomMember> findAllByChatroomCodeAndChatroomMemberTypeIn(Long chatroomCode, List<String> chatroomMemberTypeList);
+
 }

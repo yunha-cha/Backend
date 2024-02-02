@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,7 +11,7 @@ import java.util.List;
 @ToString
 @Setter
 @Entity(name = "PROJECT_PROJECT_POST_COMMENT_FILE")
-@Table(name = "tbl_project_post_comment_FILE")
+@Table(name = "tbl_project_post_comment_file")
 public class ProjectPostCommentFile {
     @Id
     @Column(name = "project_post_comment_file_code", columnDefinition = "BIGINT")
@@ -20,7 +19,7 @@ public class ProjectPostCommentFile {
     private Long projectPostCommentFileCode;
 
     @Column(name = "project_post_comment_code")
-    private Long projectPostCode;
+    private Long projectPostCommentCode;
 
     @Column(name = "project_post_comment_file_og_file")
     private String projectPostCommentFileOgFile;

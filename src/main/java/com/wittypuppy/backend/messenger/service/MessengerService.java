@@ -2,6 +2,7 @@ package com.wittypuppy.backend.messenger.service;
 
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.messenger.dto.ChatroomOptionsDTO;
+import com.wittypuppy.backend.messenger.dto.MessengerMainDTO;
 import com.wittypuppy.backend.messenger.dto.MessengerOptionsDTO;
 import com.wittypuppy.backend.messenger.entity.*;
 import com.wittypuppy.backend.messenger.repository.*;
@@ -33,7 +34,7 @@ public class MessengerService {
 
     /* 메신저 열기 */
     @Transactional
-    public void openMessenger(Long userEmployeeCode) {
+    public MessengerMainDTO openMessenger(Long userEmployeeCode) {
         Messenger messenger = messengerRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseGet(() -> {
                     Employee employee = employeeRepository.findById(userEmployeeCode)
@@ -47,6 +48,22 @@ public class MessengerService {
                     messengerRepository.save(newMessenger);
                     return newMessenger;
                 });
+        List<Chatroom> chatroomList = messenger.getChatroomList();
+
+        MessengerMainDTO messengerMainDTO = new MessengerMainDTO()
+                .setMessengerCode(messenger.getMessengerCode())
+                .setMessengerOption(messenger.getMessengerOption())
+                .setMessengerMiniAlarmOption(messenger.getMessengerMiniAlarmOption())
+                .setMessengerTheme(messenger.getMessengerTheme())
+                .builder();
+
+        if (chatroomList.size() == 0) {
+            return messengerMainDTO;
+        }
+        // 채팅방이 조금이라도 있을 경우
+        List<Object[]> ChatroomChatCount = messengerRepository.countByChatroomCodeWhereTypeIsNotDelete(); // 채팅방코드 + 채팅방 멤버 숫자 로 이루어진 배열의 리스트
+
+        return null;
     }
 
     /* 채팅 불러오기*/

@@ -5,16 +5,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository("Project_ProjectRepository")
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findAllByProjectMemberList_Employee_EmployeeCode(Long employeeCode);
 
-    List<Project> findAllByProjectMemberList_Employee_EmployeeCodeIn(List<Long> employeeCodeList);
+    List<Project> findAllByProjectManager_Department_DepartmentCode(Long departmentCode);
 
-    List<Project> findAllByProjectTitle(String projectTitle);
+    List<Project> findAllByProjectTitleLike(String searchValuePattern);
 
-    List<Project> findAllByProjectTitleAndProjectMemberList_Employee_EmployeeCode(String projectTitle, Long employeeCode);
+    Optional<Project> findByProjectPostList_ProjectPostCodeAndProjectMemberList_Employee_EmployeeCode(Long projectPostCode, Long employeeCode);
 
-    List<Project> findAllByProjectTitleAndProjectMemberList_Employee_EmployeeCodeIn(String projectTitle, List<Long> employeeCodeList);
+    Optional<Project> findByProjectPostList_ProjectPostCode(Long projectPostCode);
 }

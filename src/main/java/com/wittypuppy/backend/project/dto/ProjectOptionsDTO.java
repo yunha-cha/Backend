@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class ProjectDTO {
+public class ProjectOptionsDTO {
+    private Long projectCode;
     private String projectTitle;
     private String projectDescription;
+    private String progressStatus;
     private LocalDateTime projectDeadline;
     private String projectLockedStatus;
 }
