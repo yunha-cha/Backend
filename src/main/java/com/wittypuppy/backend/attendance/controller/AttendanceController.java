@@ -49,7 +49,7 @@ public class AttendanceController {
         * 남은 연차 보여주기
         * 결재 대기건 보여주기
         * */
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공",  attendanceService.attendaceMain(employeeCode)));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공",  attendanceService.attendanceMain(employeeCode)));
 
     }
 

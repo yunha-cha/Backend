@@ -222,4 +222,9 @@ public class AttendanceService {
 
         return resultList;
     }
+
+    public Object attendanceMain(Long employeeCode) {
+
+        return null;
+    }
 }
