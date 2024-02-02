@@ -2,6 +2,8 @@
 GET http://localhost:1208/api/v1/demos
 Content-Type: application/json
 Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA2ODM5NTAxNjkwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2trcnJyMTJAZ21haWwuY29tIiwiZXhwIjoxNzA2ODQxMzAxLCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlTm8iOjAsImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9BRE1JTiIsImF1dGhvcml0eURlc2MiOiLqtIDrpqzsnpAifX1dfQ.iZ7aCkxczudsJQ5TfxeB75mfhRKQIr44sZciQDXz7QA
+
 
 ### 데모 1개 조회
 GET http://localhost:1208/api/v1/demos/1
@@ -11,6 +13,8 @@ Accept: */*
 ### 데모 삽입
 POST http://localhost:1208/api/v1/demos
 Content-Type: application/json
+Accept: */*
+
 
 {
   "column1": null,
@@ -34,4 +38,5 @@ Content-Type: application/json
 DELETE http://localhost:1208/api/v1/demos/3
 Content-Type: application/json
 Accept: */*
+
 

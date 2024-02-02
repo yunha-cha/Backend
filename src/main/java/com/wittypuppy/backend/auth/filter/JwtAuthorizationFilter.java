@@ -1,7 +1,7 @@
 package com.wittypuppy.backend.auth.filter;
 
 
-import com.wittypuppy.backend.common.AuthConstants;
+import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.util.TokenUtils;
 import io.jsonwebtoken.Claims;

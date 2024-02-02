@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.common;
+package com.wittypuppy.backend.common.dto;
 
 /**
  * jwt 관련 상수 필드

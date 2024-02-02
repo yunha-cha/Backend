@@ -75,31 +75,31 @@
 #< ./pikachu.png
 #--WebAppBoundary--
 
-###
+### 회원가입
 POST http://localhost:1208/auth/signup
 Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user04",
-  "employeePassword": "pass04",
-  "employeeName": "유관순",
-  "employeeExternalEmail": "hong1234@gmail.com",
+  "employeeId": "user07",
+  "employeePassword": "pass07",
+  "employeeName": "강해린",
+  "employeeEmail": "kkkrrr12@gmail.com",
   "employeeRetirementDate": "",
-  "employeeBirthDate": "2000-01-01",
+  "employeeBirthDate": "2003-03-03",
   "empAddress": "동대문구 종로구 하이미디어",
-  "empPhone": "010-1111-2222"
+  "empPhone": "010-3444-4132"
 
 }
 
-###
+### 로그인
 POST http://localhost:1208/auth/login
 Content-Type: application/json
 Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user01",
-  "employeePassword": "1234"
+  "employeeId": "user07",
+  "employeePassword": "pass07"
 }
 

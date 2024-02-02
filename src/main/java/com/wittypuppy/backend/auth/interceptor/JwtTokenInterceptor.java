@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.auth.interceptor;
 
-import com.wittypuppy.backend.common.AuthConstants;
+import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.util.TokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

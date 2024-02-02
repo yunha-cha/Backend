@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.auth.handler;
 
-import com.wittypuppy.backend.common.AuthConstants;
+import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.Employee.dto.TokenDTO;
 import com.wittypuppy.backend.util.ConvertUtil;

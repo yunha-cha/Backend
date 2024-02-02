@@ -12,15 +12,14 @@ import lombok.*;
 
         private Long empCode;
 
-        private Long deptCode;
+        private GroupDeptDTO department;
 
         private String empName;
 
-        private String externalEmail;
+        private String empEmail;
 
-        private Long phone;
+        private String phone;
 
-        private String deptName;
 
 }
 
