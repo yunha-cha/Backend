@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.common.dto;
 
+import com.wittypuppy.backend.board.dto.PostDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,9 +13,6 @@ public class ResponseDTO {
     private int status; // 상태코드값
     private String message; // 응답메시지
     private Object data; // 응답데이터
-
-    public ResponseDTO() {
-    }
 
     public ResponseDTO(int status,String message, Object data){
         this.status = status;

@@ -1,0 +1,106 @@
+### 테스트
+GET http://localhost:1208/admin/user-info
+Content-Type: application/json
+
+{
+  "employeeCode": 3
+}
+
+### 유저 정보 업데이트
+PUT http://localhost:1208/admin/user-update
+Content-Type: application/json
+
+{
+  "employeeCode": 1,
+  "employeeDepartment": {
+    "departmentCode": 8,
+    "parentDepartmentCode": 3,
+    "departmentName": "IT운영팀"
+  },
+  "employeeJob": {
+    "jobCode": 5,
+    "jobName": "팀장"
+  },
+  "educations": [
+    {
+      "employeeCode": 1,
+      "educationGrade": 4.5,
+      "educationAdmissionDate": "2018-03-01",
+      "educationGraduateDate": "2023-07-01",
+      "educationMajor": "소프트웨어공학",
+      "educationName": "낙성대학교"
+    }
+  ],
+  "careers": [
+    {
+      "careerCode": 1,
+      "employeeCode": 1,
+      "careerStartDate": "2023-07-01",
+      "careerEndDate": "2024-01-05",
+      "careerCompanyName": "애플",
+      "careerPosition": "팀장",
+      "careerBusinessInformation": "맥 개발"
+    }
+  ],
+  "employeeBirthDate": "1999-08-17",
+  "employeeJoinDate": "2024-01-29 14:44:50",
+  "employeeAddress": "사우로51 ",
+  "employeeId": "wjdwltjq8482",
+  "employeeName": "정지섭",
+  "employeePassword": "1234",
+  "employeePhone": "010-5790-8482",
+  "employeeResidentNumber": "990817-1211111",
+  "employeeRetirementDate": null,
+  "employeeAssignedCode": "202404001",
+  "employeeOnLeaveCount": "12",
+  "employeeExternalEmail": "wjdwltjq8482@naver.com",
+  "employeeRole": "ROLE_USER"
+}
+
+### 유저 추가
+POST http://localhost:1208/admin/create-user
+Content-Type: application/json
+
+{
+  "employee": {
+    "employeeDepartment": {
+      "departmentCode": 8,
+      "parentDepartmentCode": 3,
+      "departmentName": "IT운영팀"
+    },
+    "employeeJob": {
+      "jobCode": 5,
+      "jobName": "팀장"
+    },
+    "employeeBirthDate": "1999-08-17",
+    "employeeJoinDate": "2024-01-29 14:44:50",
+    "employeeAddress": "사우로51 ",
+    "employeeId": "insert123",
+    "employeeName": "테스트",
+    "employeePassword": "1111",
+    "employeePhone": "010-5790-8482",
+    "employeeResidentNumber": "990817-1311111",
+    "employeeRetirementDate": null,
+    "employeeAssignedCode": "202404001",
+    "employeeOnLeaveCount": "12",
+    "employeeExternalEmail": "wjdwltjq8482@naver.com",
+    "employeeRole": "ROLE_USER"
+  },
+  "education": {
+    "employeeCode": 1,
+    "educationGrade": 4.5,
+    "educationAdmissionDate": "2018-03-01",
+    "educationGraduateDate": "2023-07-01",
+    "educationMajor": "소프트웨어공학",
+    "educationName": "낙성대학교"
+  },
+  "career": {
+    "careerCode": 1,
+    "employeeCode": 1,
+    "careerStartDate": "2023-07-01",
+    "careerEndDate": "2024-01-05",
+    "careerCompanyName": "애플",
+    "careerPosition": "팀장",
+    "careerBusinessInformation": "맥 개발"
+  }
+}
