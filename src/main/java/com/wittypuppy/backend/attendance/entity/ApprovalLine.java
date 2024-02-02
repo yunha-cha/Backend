@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,11 +19,13 @@ public class ApprovalLine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalLineCode;
 
-    @Column(name = "approval_document_code", columnDefinition = "BIGINT")
-    private Long approvalDocumentCode;
+    @JoinColumn(name = "approval_document_code")
+    @OneToOne
+    private ApprovalDocument approvalLineDocumentCode;
 
-    @Column(name = "employee_code", columnDefinition = "BIGINT")
-    private Long employeeCode;
+    @JoinColumn(name = "employee_code")
+    @OneToOne
+    private Employee lineEmployeeCode;
 
     @Column(name = "approval_process_order", columnDefinition = "BIGINT")
     private Long approvalProcessOrder;

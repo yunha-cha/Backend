@@ -1,6 +1,9 @@
 package com.wittypuppy.backend.attendance.dto;
 
 import lombok.*;
+
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -15,7 +18,9 @@ public class AttendanceWorkTypeDTO {
 
     private String attendanceWorkTypeStatus;
 
-    private ApprovalDocumentDTO workTypeApprovalDocumentCode;
+    private List<ApprovalDocumentDTO> workTypeApprovalDocumentCode;
 
     private AttendanceManagementDTO attendanceManagementCode;
+
+
 }

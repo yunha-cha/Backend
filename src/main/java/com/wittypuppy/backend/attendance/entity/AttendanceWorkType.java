@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+
 @Entity(name ="ATTENDANCE_WORK_TYPE")
 @Table(name = "tbl_attendance_work_type")
 public class AttendanceWorkType {
@@ -32,4 +33,6 @@ public class AttendanceWorkType {
     @JoinColumn(name = "approval_document_code")
     @OneToMany
     private List<ApprovalDocument> attendanceWorkTypeApprovalDocumentCode;
+
+    
 }

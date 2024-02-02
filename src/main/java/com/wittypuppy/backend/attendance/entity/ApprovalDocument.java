@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,10 +22,11 @@ public class ApprovalDocument {
     @Column(name = "approval_form", columnDefinition = "VARCHAR(100)")
     private String approvalForm;
 
-    @Column(name = "employee_code", columnDefinition = "BIGINT")
-    private Long employeeCode;
+    @JoinColumn(name = "employee_code")
+    @OneToOne
+    private Employee documentEmployeeCode;
 
     @Column(name = "apprvoal_request_date", columnDefinition = "DATETIME")
-    private LocalDateTime apprvoalRequestDate;
+    private LocalDateTime approvalRequestDate;
 
 }
