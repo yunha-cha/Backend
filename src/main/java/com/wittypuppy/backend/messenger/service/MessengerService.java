@@ -260,7 +260,7 @@ public class MessengerService {
         Chat readChat = chatRepository.findById(chatCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 발생한 채팅에 대한 정보가 없습니다."));
 
-        ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, userChatroomMember.getChatroomMemberCode())
+        ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatCodeAndChatroomMemberCode(readChat.getChatCode(), userChatroomMember.getChatroomMemberCode())
                 .orElseGet(() -> {
                     ChatReadStatus newChatReadStatus = new ChatReadStatus()
                             .setChatroomMemberCode(userChatroomMember.getChatroomMemberCode())
