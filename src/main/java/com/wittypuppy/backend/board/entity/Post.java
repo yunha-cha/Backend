@@ -56,9 +56,10 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY)
     private List<PostAttachment> postAttachmentList;
 
-    @JoinColumn(name = "post_code")
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<PostComment> postCommentList;
+    // 댓글 필요한데 헷갈려서
+//    @JoinColumn(name = "post_code")
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<PostComment> postCommentList;
 
 
 }

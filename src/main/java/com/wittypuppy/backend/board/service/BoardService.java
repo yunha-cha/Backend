@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,7 @@ public class BoardService {
         log.info("BoardService >>> selectPostList >>> start");
 
         // jparepository를 통해 엔티티를 받음
-        List<Post> postList = postRepository.findAll();
+        List<Post> postList = postRepository.findAllByOrderByPostDateDesc();
 
         List<PostDTO> postDTOList = postList.stream()
                 .map(post -> modelMapper.map(post, PostDTO.class))
@@ -76,7 +75,7 @@ public class BoardService {
     @Transactional
     public List<PostDTO> selectPostListByBoardCode(Long boardCode) {
 
-        List<Post> postList = postRepository.findByBoardCode(boardCode);
+        List<Post> postList = postRepository.findByBoardCodeOrderByPostDateDesc(boardCode);
 
         // 엔티티 조회되는지 출력
         System.out.println("postList = " + postList);
@@ -126,10 +125,9 @@ public class BoardService {
         System.out.println("postDTO = " + postDTO);
 
         // postCode에 해당하는 엔티티 찾기
-        Post entityPost = postRepository.findByPostCode(postCode);
+        Post entityPost = postRepository.findById(postCode).get();
         entityPost.setPostTitle(postDTO.getPostTitle());
         entityPost.setPostContext(postDTO.getPostContext());
-
 
         PostDTO updatedPostDTO = modelMapper.map(entityPost, PostDTO.class);
 
@@ -144,11 +142,10 @@ public class BoardService {
     @Transactional
     public String deletePost(Long postCode) {
 
-
         int result = 0;
         try{
 
-            Post deletepost = postRepository.findByPostCode(postCode);
+            Post deletepost = postRepository.findById(postCode).get();
             postRepository.delete(deletepost);
 
             result = 1;
@@ -161,11 +158,34 @@ public class BoardService {
 
     }
 
+    @Transactional
+    public String movePost(Long postCode, Long boardCode) {
+
+        int result = 0;
+        try {
+
+            Post post = postRepository.findById(postCode).get();
+            post.setBoardCode(boardCode);
+            result = 1;
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+        }
+
+        return result > 0 ? "게시물 이동 성공" : "게시물 이동 실패";
+    }
+
 
     @Transactional
     public PostDTO selectPost(Long postCode) {
 
-        Post post = postRepository.findByPostCode(postCode);
+
+        // 조회수 카운트
+
+        Post post = postRepository.findById(postCode).orElseThrow( () -> new RuntimeException("Post not found"));
+        post.setPostViews(post.getPostViews()+1);
+        postRepository.save(post);
 
         PostDTO postDTO = modelMapper.map(post, PostDTO.class);
 
@@ -208,6 +228,47 @@ public class BoardService {
     }
 
 
+
+    @Transactional
+    public String updateComment(PostCommentDTO postCommentDTO, Long commentCode) {
+
+        int result = 0;
+
+        try{
+            PostComment postComment = postCommentRepository.findById(commentCode).get();
+//            PostComment postComment = postCommentRepository.findById(commentCode).orElseThrow();
+            postComment.setPostCommentContext(postCommentDTO.getPostCommentContext());
+            postComment.setPostCommentUpdateDate(LocalDateTime.now());
+
+            result = 1;
+
+        } catch (Exception e){
+
+            e.printStackTrace();
+//            throw new RuntimeException(e);
+
+        }
+
+        return result > 0 ? "댓글 수정 성공" : "댓글 수정 실패";
+
+    }
+
+
+    @Transactional
+    public List<PostDTO> searchPostList(String search, Long boardCode) {
+
+//        List<Post> postList = postRepository.findByBoardCodeOrderByPostDateDesc(boardCode);
+
+        List<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%');
+
+        List<PostDTO> postDTOList = postListByTitle.stream().map(
+                post -> modelMapper.map(post, PostDTO.class)
+        ).toList();
+
+
+        System.out.println("postDTOList = " + postDTOList);
+        return postDTOList;
+    }
 
 
 
