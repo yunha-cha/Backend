@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +43,7 @@ public class AttendanceService {
         this.lineRepository = lineRepository;
     }
 
-    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, String yearMonth, Long employeeCode) {
+    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, LocalDate yearMonth, Long employeeCode) {
         System.out.println("=============WorkTypeList start= service===============");
 
         int index = cri.getPageNum() - 1;
@@ -223,7 +224,7 @@ public class AttendanceService {
         return resultList;
     }
 
-    public Object attendanceMain(Long employeeCode) {
+    public AttendanceWorkTypeDTO attendanceMain(Long employeeCode) {
 
         return null;
     }

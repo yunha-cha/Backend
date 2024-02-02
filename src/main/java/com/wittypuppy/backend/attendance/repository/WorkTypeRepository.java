@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,5 +27,5 @@ public interface WorkTypeRepository extends  JpaRepository<AttendanceWorkType, I
             "WHERE A.employee_code = :employeeCode " +
             "AND DATE_FORMAT(A.attendance_management_work_day, '%Y-%m') = :yearMonth" ,
             nativeQuery = true)
-    Page<AttendanceWorkType> attendanceList(String yearMonth, Long employeeCode, Pageable paging);
+    Page<AttendanceWorkType> attendanceList(LocalDate yearMonth, Long employeeCode, Pageable paging);
 }

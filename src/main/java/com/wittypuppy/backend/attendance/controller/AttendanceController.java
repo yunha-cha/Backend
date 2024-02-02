@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -34,12 +36,11 @@ public class AttendanceController {
     }
 
 
-    //근태 메인화면
+    //근태 메인화면 출근 완료 화면 or 퇴근 완료 화면
     @GetMapping("/attendances/main")
     public ResponseEntity<ResponseDTO> attendanceMain(
-            //출근 시간 받아오기
-            //퇴근시간 받아오기
-            //날짜 받아오기
+//            @RequestParam (name = "arrival", defaultValue = "") LocalDateTime arrival, //출근 시간 받아오기
+//            @RequestParam (name = "departure", defaultValue = "") LocalDateTime departure //퇴근시간 받아오기
             //로그인 값 받아오기
             ){
         Long employeeCode = 1L; // 로그인한 코드 넣기
@@ -49,7 +50,7 @@ public class AttendanceController {
         * 남은 연차 보여주기
         * 결재 대기건 보여주기
         * */
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공",  attendanceService.attendanceMain(employeeCode)));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공", attendanceService.attendanceMain(employeeCode)));
 
     }
 
@@ -62,7 +63,7 @@ public class AttendanceController {
     @GetMapping("/attendances/lists")
     public ResponseEntity<ResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "2023-12") String yearMonth  //리액트 값 받기
+            @RequestParam(name = "yearMonth", defaultValue = "2023-12") LocalDate yearMonth  //리액트 값 받기
 
     ) {
         System.out.println("==============selectCommuteList==================");
