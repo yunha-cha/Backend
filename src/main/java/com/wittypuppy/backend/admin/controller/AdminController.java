@@ -67,8 +67,8 @@ public class AdminController {
     /**
      * 유저 회원 가입 시키기
      * (비밀번호 암호화 하기)
-     * @param userDTO
-     * @return
+     * @param userDTO 유저 정보, 학위, 경력을 받음
+     * @return 9002,9004 에러 있음
      */
     @PostMapping("/create-user")
     public ResponseEntity<ResponseDTO> createUser(@RequestBody CreateUserDTO userDTO){
@@ -89,6 +89,18 @@ public class AdminController {
         }
 
         return res("유저 추가에 성공했습니다.",userDTO);
+    }
+
+    /**
+     * 비밀번호 초기화 메소드 (구현 중)
+     * @param employeeDTO 수정할 유저의 코드를 받아 옴
+     * @return 바뀐 비밀번호
+     */
+    @PutMapping("reset-password")
+    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody EmployeeDTO employeeDTO){
+
+
+        return res("구현 중",employeeDTO);
     }
 
     /**
