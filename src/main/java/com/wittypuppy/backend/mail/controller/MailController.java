@@ -7,8 +7,11 @@ import com.wittypuppy.backend.mail.service.EmailService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,15 +20,27 @@ import java.util.List;
 @RestController
 public class MailController {
     private final EmailService emailService;
+    private final SimpMessagingTemplate simp;
 
-    public MailController(EmailService emailService) {
+    public MailController(EmailService emailService, SimpMessagingTemplate simp) {
         this.emailService = emailService;
+        this.simp = simp;
     }
 
-    //예약한 메일 보내는 기능
+    //예약한 메일 보내는 기능, 예약한 메일 전송 됐을 때 알람도 있어야 함
+    //하드코딩 2개 있음
 
     /**
-     * 이메일 전송 메소드
+     * 일반 메일 전송
+     * @param email 보내는 이메일DTO 객체
+     */
+    @MessageMapping("/mail/alert/send")
+    public void mailAlert(@Payload EmailDTO email){
+        simp.convertAndSend("/topic/mail/alert/"+1,    //하드코딩 1
+                emailService.sendMail(setDefault(email),"send"));
+    }
+    /**
+     * 특수한 상태의 이메일 전송 ( 임시 저장, 예약 )
      * @param email 사용자가 메일 쓰기 중 입력한 데이터
      * @param status send, temporary, reserve 로 나뉜다.(일반, 임시저장, 예약)
      * @return 응답
@@ -33,17 +48,7 @@ public class MailController {
     @PostMapping("send-mail")
     public ResponseEntity<ResponseDTO> sendMail(@RequestBody EmailDTO email,@RequestParam String status) {
         //에러 처리 하셈
-        String receiverId = getId(email.getEmailReceiver().getEmployeeId());   //이메일 가져와서 아이디로 변환
-        if(receiverId.equals("에러")) return resNull(1000,"이메일이 이상합니다.");
-
-        email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
-        email.setEmailSender(new EmployeeDTO(1L));                 //가져갈 객체에 보내는 사람 저장
-        email.setEmailSendTime(LocalDateTime.now());                            //보낼 시간 현재로 저장
-        email.setEmailReadStatus("N");                                          //읽지 않음으로 저장
-
-        email.setEmailStatus("send");                                            //이메일 상태 기본으로
-
-        EmailDTO result = emailService.sendMail(email,status);
+        EmailDTO result = emailService.sendMail(setDefault(email),status);
 
         return res("메일 보내기에 성공하였습니다.", result);
     }
@@ -171,5 +176,16 @@ public class MailController {
         } else {
             return "에러";
         }
+    }
+    private EmailDTO setDefault(EmailDTO email){
+        String receiverId = getId(email.getEmailReceiver().getEmployeeId());
+        email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
+
+        email.setEmailSender(new EmployeeDTO(1L,"inji2349"));//보내는 사람 하드코딩
+
+        email.setEmailSendTime(LocalDateTime.now());                            //보낼 시간 현재로 저장
+        email.setEmailReadStatus("N");                                          //읽지 않음으로 저장
+        email.setEmailStatus("send");                                            //이메일 상태 기본으로
+        return email;
     }
 }

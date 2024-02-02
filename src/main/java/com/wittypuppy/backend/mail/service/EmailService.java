@@ -52,17 +52,13 @@ public class EmailService {
     @Transactional
     public EmailDTO sendMail(EmailDTO email, String status){
         switch (status){    //여기에 상태에 맞춰서 처리하자.
-            case "send":break;
             case "temporary":   //임시저장
                 email.setEmailStatus("temporary");break;  //별도 처리 필요 없음
             case "reserve":     //예약
-                email.setEmailStatus("reserve");break;    //스케쥴링ㄱ 시간 되면 send로 바꿔주면 됨
-
-            default: return null;
+                email.setEmailStatus("reserve");break;    //스케쥴링ㄱ 시간 되면 send로 바꿔주고 알람 전송
+            default: email.setEmailStatus("send"); break;
         }
         Email emailEntity = modelMapper.map(email,Email.class);    //엔티티로 변환 됨
-
-
         return modelMapper.map(emailRepository.save(emailEntity),EmailDTO.class);
 
     }
