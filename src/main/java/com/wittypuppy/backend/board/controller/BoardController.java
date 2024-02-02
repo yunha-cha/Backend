@@ -57,7 +57,7 @@ public class BoardController {
     }
 
 
-    // 게시물 등록
+    // 게시글 등록
     @PostMapping("/posts/regist")
     public ResponseEntity<ResponseDTO> insertPost(@RequestBody PostDTO postDTO){
 
@@ -71,13 +71,13 @@ public class BoardController {
     }
 
 
-    /* 게시물 상세 열람 */
+    /* 게시글 상세 열람 */
     @GetMapping("/posts/{postCode}")
     public ResponseEntity<ResponseDTO> selectPost(@PathVariable Long postCode){
 
         System.out.println("postCode = " + postCode);
 
-        // 게시물 열람, 댓글 조인
+        // 게시글 열람, 댓글 조인
         PostDTO postDTO = boardService.selectPost(postCode);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "열람 성공",postDTO));
@@ -85,7 +85,7 @@ public class BoardController {
     }
 
 
-    /* 게시물 수정 */
+    /* 게시글 수정 */
     @PutMapping("/posts/{postCode}")
     public ResponseEntity<ResponseDTO> updatePost(@RequestBody PostDTO postDTO, @PathVariable Long postCode){
 
@@ -103,7 +103,7 @@ public class BoardController {
     }
 
 
-    /* 게시물 삭제 */
+    /* 게시글 삭제 */
     @DeleteMapping("/posts/{postCode}")
     public ResponseEntity<ResponseDTO> deletePost(@PathVariable Long postCode){
 
@@ -111,6 +111,42 @@ public class BoardController {
 
         return res(resultMessage, null);
     }
+
+
+    /* 게시글 이동 - 게시글은 게시판을 이동할 수 있다. */
+    @PutMapping("/posts/{postCode}/move")
+    public ResponseEntity<ResponseDTO> movePost(@PathVariable Long postCode, @RequestParam Long boardCode ){
+
+
+       String result = boardService.movePost(postCode, boardCode);
+
+       return res("게시글 이동", result);
+
+    }
+
+
+    /* 게시글 검색 */
+    @GetMapping("/{boardCode}/posts/search")
+    public ResponseEntity<ResponseDTO> searchPostList(@RequestParam(name = "q", defaultValue = "회사") String search, @PathVariable Long boardCode){
+
+
+        System.out.println("search = " + search);
+        System.out.println("boardCode = " + boardCode);
+        List<PostDTO> postDTOList = boardService.searchPostList(search, boardCode);
+
+        return res("검색 성공", postDTOList);
+
+    }
+
+
+    /* 게시글 */
+
+
+    /* 게시글 추천 */
+    @PutMapping("")
+
+
+
 
 
     /* 댓글 등록 */
@@ -127,13 +163,16 @@ public class BoardController {
 
 
     /* 댓글 수정 */
-    // 수정할 때 객체에  모두 넘기면 commentCode가 필요없음
-    @PutMapping("/posts/{postCode}/comment")
-    public ResponseEntity<ResponseDTO> updateComment(@RequestBody PostCommentDTO postCommentDTO ,@PathVariable Long postCode){
+    // 수정할 때 객체에 모두 넘기면 commentCode가 필요없음
+    @PutMapping("/posts/comment/{commentCode}")
+    public ResponseEntity<ResponseDTO> updateComment(@RequestBody PostCommentDTO postCommentDTO, @PathVariable Long commentCode){
+
+        System.out.println("postCommentDTO = " + postCommentDTO);
+
+        String resultStr = boardService.updateComment(postCommentDTO, commentCode);
 
 
-
-        return null;
+        return res("댓글 수정 성공", resultStr);
     }
 
 

@@ -12,8 +12,10 @@ POST http://localhost:1208/board/posts/regist
 Content-Type: application/json
 
 {
+  "boardCode": 1,
   "postTitle": "첫번째 게시물",
-  "postContext": "5시 00분에 쓴 첫번째 게시물"
+  "postContext": "5시 00분에 쓴 첫번째 게시물",
+  "postNoticeStatus": "Y"
 
 }
 
@@ -36,8 +38,14 @@ Content-Type: application/json
 DELETE http://localhost:1208/board/posts/6
 
 
+### 게시글 이동 - requestParam, url에 쿼리스트링 사용
+PUT http://localhost:1208/board/posts/7/move?boardCode=2
 
-## 댓글
+
+### 게시글 검색 - 쿼리 스트링
+GET http://localhost:1208/board/1/posts/search?q=물
+
+
 ### 댓글 입력
 POST http://localhost:1208/board/posts/1/comment/regist
 Content-Type: application/json
@@ -47,7 +55,13 @@ Content-Type: application/json
 }
 
 
+### 댓글 수정
+PUT http://localhost:1208/board/posts/comment/3
+Content-Type: application/json
 
+{
+  "postCommentContext" : "3번 게시물을 2월1일 오후 3시 35분에 수정하였습니다."
+}
 
 
 ### 댓글 삭제

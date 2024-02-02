@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post,Long> {
 
-    List<Post> findByBoardCode(Long boardCode);
+    List<Post> findAllByOrderByPostDateDesc();
 
-    Post findByPostCode(Long postCode);
+    List<Post> findByBoardCodeOrderByPostDateDesc(Long boardCode);
+
+    List<Post> findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(Long boardCode, String s, Long boardCode1, String s1);
+
 }
