@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.attendance.service;
+package com.wittypuppy.backend.attendance.repository;
 
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import org.springframework.data.domain.Page;

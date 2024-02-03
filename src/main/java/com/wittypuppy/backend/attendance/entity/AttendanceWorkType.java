@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.entity;
 
+import com.wittypuppy.backend.attendance.dto.AttendanceWorkTypeDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,14 +21,14 @@ public class AttendanceWorkType {
     private Long attendanceWorkTypeCode;
 
     @JoinColumn(name = "employee_code")
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Employee workTypeEmployeeCode;
 
     @Column(name = "attendance_work_type_status", columnDefinition = "VARCHAR(100)")
     private String attendanceWorkTypeStatus;
 
     @JoinColumn(name = "attendance_management_code")
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private AttendanceManagement attendanceManagementCode;
 
     @JoinColumn(name = "approval_document_code")

@@ -1,10 +1,7 @@
 package com.wittypuppy.backend.attendance.controller;
 
 
-import com.wittypuppy.backend.attendance.dto.ApprovalDocumentDTO;
-import com.wittypuppy.backend.attendance.dto.ApprovalLineDTO;
-import com.wittypuppy.backend.attendance.dto.AttendanceWorkTypeDTO;
-import com.wittypuppy.backend.attendance.entity.ApprovalLine;
+import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
 import com.wittypuppy.backend.attendance.paging.PagingResponseDTO;
@@ -14,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,20 +32,64 @@ public class AttendanceController {
 
     //근태 메인화면 출근 완료 화면 or 퇴근 완료 화면
     @GetMapping("/attendances/main")
-    public ResponseEntity<ResponseDTO> attendanceMain(
-//            @RequestParam (name = "arrival", defaultValue = "") LocalDateTime arrival, //출근 시간 받아오기
-//            @RequestParam (name = "departure", defaultValue = "") LocalDateTime departure //퇴근시간 받아오기
-            //로그인 값 받아오기
-            ){
+    public ResponseEntity<AttendanceResponseDTO> attendanceMain(){
+
         Long employeeCode = 1L; // 로그인한 코드 넣기
 
-        /*
-        * 출퇴근 날짜 인서트 서류 참고로 해서
-        * 남은 연차 보여주기
-        * 결재 대기건 보여주기
-        * */
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 상세정보 조회 성공", attendanceService.attendanceMain(employeeCode)));
+        System.out.println("========== employeeCode =========> " + employeeCode);
+        System.out.println("=========== attendanceMainControllerStart ============");
 
+        /*
+        * 남은 연차 보여주기 (연차 tbl_vacation (연차 타입 연차, 반차 인지/ 사용여부가 N / 만료 일자전 까지))
+        *
+        * 결재 대기건 보여주기 수량 ->
+        * 오늘 출근한 시간 보여주기 )
+        * 오늘 퇴근한 시간 보여주기
+        * */
+
+        // 오늘 출퇴근 보여 주기
+        AttendanceManagementDTO commute = attendanceService.attendanceMain(employeeCode);
+
+        //남은 연차 수량
+        VacationDTO vacation = attendanceService.attendanceVacation(employeeCode);
+
+        //결재 대기 수량 보여 주기
+        ApprovalLineDTO approvalWaiting = attendanceService.attendanceWaiting(employeeCode);
+
+        return ResponseEntity.ok().body(new AttendanceResponseDTO(HttpStatus.OK, "근태 메인 화면 조회 성공", commute, vacation, approvalWaiting));
+
+    }
+
+    @PostMapping("/attendances/main")
+    public ResponseEntity<AttendanceResponseDTO> commuteInput(
+            @RequestParam(name = "arrival", defaultValue = "2024-02-03 08:57:33") LocalDateTime arrival
+
+    ){
+
+        Long employeeCode = 1L; // 로그인한 코드 넣기
+
+        System.out.println("========== employeeCode =========> " + employeeCode);
+        System.out.println("=========== commuteInput ControllerStart ============");
+
+        /*
+        * 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
+        * 공휴일, 주말 제외 조건
+        *
+        *
+        * 결재선의 상태에서 마지막 단계 까지 승인된(결재)것이 없는 경우
+        * -> 출근 9시 지나면 지각, 9까지 오면 정상:
+        * -> 18:00:00 까지 출근 찍히지 않은 경우 결근으로 인서트
+         *
+        *
+        * 결재선의 상태에서 마지막 단계 까지 승인된(결재)것 ->  결재문서 양식 (SW사용신청서 제외한 모든 양식 ( 근태신청서- 외근,출장) ) :
+        * -> 자동으로 출근 퇴근 시간 기입 하는 경우 (출근시간에 외근, 퇴근 시간에 외근, 출장) :오늘 날짜가 신청한 날짜와 동일하면 자동으로 넣기 쿼리 조건문
+        * -> 출근 시간, 퇴근 시간 " 00:00:00 "  자동 표기할 경우 ( 연차, ..휴가 )
+        * -> 퇴근시간 연장근무 시간 자동 퇴근 기록, 출장 (오늘 날짜와 출근 날짜가 동일하면 18:00:00 자동 퇴근 조건 쿼리 부여)
+        * ->
+        * tbl_attendance_management , tbl_attendance_work_type, tbl_approval_document, tbl_approval_line, tbl_work_type, tbl_overwork, tbl_on_leave
+        * */
+
+        return null;
     }
 
 
@@ -59,11 +97,11 @@ public class AttendanceController {
 
 
 
- //출퇴근 목록
+        //출퇴근 목록
     @GetMapping("/attendances/lists")
     public ResponseEntity<ResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "2023-12") LocalDate yearMonth  //리액트 값 받기
+            @RequestParam(name = "yearMonth", defaultValue = "2023-12") String yearMonth  //리액트 값 받기
 
     ) {
         System.out.println("==============selectCommuteList==================");

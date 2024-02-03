@@ -25,5 +25,4 @@ public class AttendanceManagementDTO {
 
     private LocalDate attendanceManagementWorkDay;
 
-    private AttendanceWorkTypeDTO attendanceWorkTypeList;
 }

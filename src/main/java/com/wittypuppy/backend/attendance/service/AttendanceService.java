@@ -1,26 +1,22 @@
 package com.wittypuppy.backend.attendance.service;
 
 import com.wittypuppy.backend.attendance.dto.ApprovalLineDTO;
+import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
 import com.wittypuppy.backend.attendance.dto.AttendanceWorkTypeDTO;
+import com.wittypuppy.backend.attendance.dto.VacationDTO;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
+import com.wittypuppy.backend.attendance.entity.Vacation;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.repository.ApprovalRepository;
+import com.wittypuppy.backend.attendance.repository.LineRepository;
+import com.wittypuppy.backend.attendance.repository.ManagementRepository;
 import com.wittypuppy.backend.attendance.repository.WorkTypeRepository;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 
 
 @Service
@@ -36,14 +32,17 @@ public class AttendanceService {
 
     private final LineRepository lineRepository;
 
-    public AttendanceService(WorkTypeRepository workTypeRepository, ModelMapper modelMapper, ApprovalRepository approvalRepository, LineRepository lineRepository) {
+    private final ManagementRepository managementRepository;
+
+    public AttendanceService(WorkTypeRepository workTypeRepository, ModelMapper modelMapper, ApprovalRepository approvalRepository, LineRepository lineRepository, ManagementRepository managementRepository) {
         this.workTypeRepository = workTypeRepository;
         this.modelMapper = modelMapper;
         this.approvalRepository = approvalRepository;
         this.lineRepository = lineRepository;
+        this.managementRepository = managementRepository;
     }
 
-    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, LocalDate yearMonth, Long employeeCode) {
+    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, String yearMonth, Long employeeCode) {
         System.out.println("=============WorkTypeList start= service===============");
 
         int index = cri.getPageNum() - 1;
@@ -207,7 +206,7 @@ public class AttendanceService {
         * 승인, 반려 상태값 업데이트 하기
         * */
 
-        System.out.println("=====service=====paymentWaitingListStart========");
+        System.out.println("=====service=====paymentWaitingLis tStart========");
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
         Pageable paging = PageRequest.of(index, count, Sort.by("approval_document_code").descending());
@@ -219,13 +218,62 @@ public class AttendanceService {
         Page<ApprovalLineDTO> resultList = result.map(paymentWaiting -> modelMapper.map(paymentWaiting, ApprovalLineDTO.class));
 
         System.out.println("========resultList======= " + resultList);
-        System.out.println("======== paymentRejectionList end ============");
+        System.out.println("======== paymentWaitingLis end ============");
 
         return resultList;
     }
 
-    public AttendanceWorkTypeDTO attendanceMain(Long employeeCode) {
 
+
+    //근태 메인 출퇴근 정보 조회
+    public AttendanceManagementDTO attendanceMain(Long employeeCode) {
+
+        System.out.println(" =========== employeeCode ===========> " + employeeCode);
+        System.out.println("========attendanceMainServiceStart======");
+
+        AttendanceManagement result = managementRepository.attendanceCommute(employeeCode);
+
+        AttendanceManagementDTO results = modelMapper.map(result, AttendanceManagementDTO.class);
+
+        System.out.println("========attendanceMainService end ======");
+        return results;
+    }
+
+
+    //근태 메인 연차 남은 수량 조회
+    public VacationDTO attendanceVacation(Long employeeCode) {
+
+        System.out.println(" =========== employeeCode ===========> " + employeeCode);
+        System.out.println("========attendanceVacation ServiceStart======");
+
+        Long result = managementRepository.attendanceVacation(employeeCode);
+
+        VacationDTO results = modelMapper.map(result, VacationDTO.class);
+
+        System.out.println("========= result ======== " + result);
+
+        System.out.println("========attendanceVacation end ======");
+
+        return results;
+
+    }
+
+
+    //근태 결재(대기) 할 수량 조회
+    public ApprovalLineDTO attendanceWaiting(Long employeeCode) {
+
+        System.out.println(" =========== employeeCode ===========> " + employeeCode);
+        System.out.println("========attendanceWaiting ServiceStart======");
+//
+//        ApprovalLine result = managementRepository.attendanceWaiting(employeeCode);
+//
+//        ApprovalLineDTO results = modelMapper.map(result, ApprovalLineDTO.class);
+//
+//        System.out.println("========== result ======== " + result);
+//        System.out.println("========attendanceWaiting end ======");
+//
         return null;
     }
+
+
 }
