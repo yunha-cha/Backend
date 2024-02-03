@@ -22,6 +22,7 @@ public class Employee {
     @Column(name = "employee_id")
     private String employeeId;
 
+    //하나의 유저는 여러 이메일 테이블의 받는사람이 될 수 있다.
     @OneToMany(mappedBy = "emailReceiver")
     private List<Email> emailReceiverList;
     @OneToMany(mappedBy = "emailSender")

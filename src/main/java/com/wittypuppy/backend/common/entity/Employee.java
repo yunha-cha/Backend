@@ -75,7 +75,7 @@ public class Employee {
 
     @JoinColumn(name = "employee_code")
     @OneToMany
-    private List<Messanger> messangerList;
+    private List<Messenger> messengerList;
 
     @JoinColumn(name = "employee_code")
     @OneToMany
