@@ -56,7 +56,6 @@ public class MessengerService {
         List<Chatroom> chatroomList = messenger.getChatroomList();
 
         MessengerMainDTO messengerMainDTO = new MessengerMainDTO()
-                .setMessengerCode(messenger.getMessengerCode())
                 .setMessengerOption(messenger.getMessengerOption())
                 .setMessengerMiniAlarmOption(messenger.getMessengerMiniAlarmOption())
                 .setMessengerTheme(messenger.getMessengerTheme())
@@ -217,97 +216,124 @@ public class MessengerService {
         if (chatroomMember.getChatroomMemberType().equals("관리자")) {
             chatroom = chatroom.setChatroomTitle(chatroomTitle).builder();
         } else {
-            throw new DataInsertionException("해당 계정은 채팅방 관리자가 아니어서 채팅방 고정여부만 변경됩니다.");
+            return "해당 계정은 채팅방 관리자가 아니어서 채팅방 고정여부만 변경됩니다.";
         }
         return "채팅방 옵션 변경 성공";
     }
 
     /* 전체 사원 목록 출력하기 */
-    public void selectEmployees() {
+    public List<EmployeeDTO> selectEmployees() {
         List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateIsNull();
-
+        List<EmployeeDTO> employeeDTOList = employeeList.stream().map(employee -> modelMapper.map(employee, EmployeeDTO.class))
+                .toList();
+        return employeeDTOList;
     }
 
     /* 채팅방 초대하기 */
     @Transactional
-    public void inviteEmployees(List<Long> inviteEmployeeCodeList, Long chatroomCode, Long userEmployeeCode) {
+    public String inviteEmployees(List<Long> inviteEmployeeCodeList, Long chatroomCode, Long userEmployeeCode) {
         ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 계정 정보가 없습니다."));
         if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
-            return;
+            return "해당 계정은 관리자가 아닙니다";
         }
-        // 내가 관리자인 경우에 초대가 가능하다.
+        try {
+            // 내가 관리자인 경우에 초대가 가능하다.
+            List<ChatroomMember> existChatroomMemberList = chatroomMemberRepository.findAllByChatroomCodeAndChatroomMemberTypeIn(chatroomCode, List.of("관리자", "일반사원"));
+            List<Long> existChatroomMemberEmployeeCodeList = existChatroomMemberList.stream().map(chatroomMember -> chatroomMember.getEmployee().getEmployeeCode())
+                    .collect(Collectors.toList());
+            inviteEmployeeCodeList.removeAll(existChatroomMemberEmployeeCodeList);
+            LocalDateTime now = LocalDateTime.now();
+            inviteEmployeeCodeList.forEach(inviteEmployeeCode -> {
+                Employee employee = employeeRepository.findById(inviteEmployeeCode)
+                        .orElseThrow(() -> new DataNotFoundException("초대할 사원이 존재하지 않습니다."));
+                ChatroomMember newChatroomMember = new ChatroomMember()
+                        .setChatroomCode(chatroomCode)
+                        .setEmployee(employee)
+                        .setChatroomMemberType("일반사원")
+                        .setChatroomMemberInviteTime(now)
+                        .builder();
+                chatroomMemberRepository.save(newChatroomMember);
+            });
+        } catch (Exception e) {
+            throw new DataUpdateException("채팅방 초대 실패");
+        }
+        return "채팅방 초대 성공";
+    }
+
+    /*현재 채팅방에 있는 사람 조회*/
+    public List<ChatroomMemberDTO> selectChatroomMember(Long chatroomCode, Long userEmployeeCode) {
         List<ChatroomMember> existChatroomMemberList = chatroomMemberRepository.findAllByChatroomCodeAndChatroomMemberTypeIn(chatroomCode, List.of("관리자", "일반사원"));
-        List<Long> existChatroomMemberEmployeeCodeList = existChatroomMemberList.stream().map(chatroomMember -> chatroomMember.getEmployee().getEmployeeCode())
+        List<ChatroomMemberDTO> chatroomMemberDTOList = existChatroomMemberList.stream().map(chatroomMember -> modelMapper.map(chatroomMember, ChatroomMemberDTO.class))
                 .collect(Collectors.toList());
-        inviteEmployeeCodeList.removeAll(existChatroomMemberEmployeeCodeList);
-        LocalDateTime now = LocalDateTime.now();
-        inviteEmployeeCodeList.forEach(inviteEmployeeCode -> {
-            Employee employee = employeeRepository.findById(inviteEmployeeCode)
-                    .orElseThrow(() -> new DataNotFoundException("초대할 사원이 존재하지 않습니다."));
-            ChatroomMember newChatroomMember = new ChatroomMember()
-                    .setChatroomCode(chatroomCode)
-                    .setEmployee(employee)
-                    .setChatroomMemberType("일반사원")
-                    .setChatroomMemberInviteTime(now)
-                    .builder();
-            chatroomMemberRepository.save(newChatroomMember);
-        });
+        return chatroomMemberDTOList;
     }
 
     /* 관리자 위임하기 */
     @Transactional
-    public void delegateChatroomAdmin(Long delegateChatroomMemberCode, Long chatroomCode, Long userEmployeeCode) {
+    public String delegateChatroomAdmin(Long delegateChatroomMemberCode, Long chatroomCode, Long userEmployeeCode) {
         ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
         if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
-            return;
+            return "관리자 계정이 아닙니다.";
         }
         ChatroomMember delegateChatroomMember = chatroomMemberRepository.findByChatroomMemberCodeAndChatroomCode(chatroomCode, delegateChatroomMemberCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 관리자를 위임할 계정 정보가 없습니다."));
         if (!delegateChatroomMember.getChatroomMemberType().equals("일반사원")) {
-            return;
+            return "해당 계정은 위임할 수 없습니다.";
         }
         delegateChatroomMember = delegateChatroomMember.setChatroomMemberType("관리자").builder();
         userChatroomMember = userChatroomMember.setChatroomMemberType("일반사원").builder();
+        return "관리자 위임 성공";
     }
     /* 채팅방 프로필 사진 가져오기 */
+    public String chatroomProfileImage(Long chatroomCode, Long userEmployeeCode){
+        ChatroomProfile chatroomProfile = chatroomProfileRepository.findByChatroomCodeAndChatroomProfileDeleteStatus(chatroomCode,"N")
+                .orElseThrow(()->new DataNotFoundException("프로필 사진이 존재하지 않습니다."));
+
+        return chatroomProfile.getChatroomProfileChangedFile();
+    }
 
     /* 채팅방 프로필 사진 변경하기 */
 
     /* 채팅방 내보내기 */
     @Transactional
-    public void kickChatroomMember(Long kickChatroomMemberCode, Long chatroomCode, Long userEmployeeCode) {
+    public String kickChatroomMember(Long kickChatroomMemberCode, Long chatroomCode, Long userEmployeeCode) {
         ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
         if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
-            return;
+            return "현재 접속한 계정은 관리자가 아닙니다.";
         }
         ChatroomMember kickChatroomMember = chatroomMemberRepository.findByChatroomMemberCodeAndChatroomCode(chatroomCode, kickChatroomMemberCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 관리자를 위임할 계정 정보가 없습니다."));
         kickChatroomMember = kickChatroomMember
                 .setChatroomMemberType("삭제")
                 .builder();
+        return "해당 채팅방 멤버를 내보냈습니다.";
     }
 
     /* 채팅방 나가기 */
     @Transactional
-    public void exitChatroomMember(Long chatroomCode, Long userEmployeeCode) {
+    public String exitChatroomMember(Long chatroomCode, Long userEmployeeCode) {
         ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
-        if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
-            return;
-        }
         List<ChatroomMember> chatroomMemberList = chatroomMemberRepository.findAllByChatroomCodeAndChatroomMemberTypeIn(chatroomCode, List.of("일반사원", "관리자"));
         if (chatroomMemberList.size() <= 1) {
             Chatroom chatroom = chatroomRepository.findById(chatroomCode)
                     .orElseThrow(() -> new DataNotFoundException("관리자 한명만 남아서 채팅방을 삭제하려 했으나 채팅방 정보를 찾을 수 없습니다."));
             chatroomRepository.delete(chatroom);
-            return;
+            return "마지막에 채팅방을 나갔으므로 해당 채팅방이 삭제되었습니다.";
         }
-        // 관리자도 아니고 그렇다고 아직 2명이상 있으면
-        userChatroomMember = userChatroomMember.setChatroomMemberType("삭제")
-                .builder();
+        else{
+            if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
+                userChatroomMember = userChatroomMember.setChatroomMemberType("삭제")
+                        .builder();
+                return "채팅방에 나가기 성공했습니다.";
+            }
+            else {
+            return "해당 채팅방의 관리자이므로 나갈 수 없습니다. 다른 사람에게 권한을 위임해야 합니다.";
+            }
+        }
     }
 
     /* 채팅 입력하기 */
@@ -320,7 +346,7 @@ public class MessengerService {
         LocalDateTime now = LocalDateTime.now();
         Chat chat = new Chat()
                 .setChatroomCode(chatroom.getChatroomCode())
-                .setChatroomMemberCode(userChatroomMember.getChatroomMemberCode())
+                .setChatroomMember(userChatroomMember)
                 .setChatWriteDate(now)
                 .setChatContent(chatContent)
                 .builder();
@@ -331,22 +357,13 @@ public class MessengerService {
 
     /* 채팅 관찰 시점 업데이트*/
     @Transactional
-    public void updateChatReadStatus(Long chatCode, Long chatroomCode, Long userEmployeeCode) {
-        Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 계정 정보가 해당 채팅방에 없습니다."));
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
-        Chat readChat = chatRepository.findById(chatCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 발생한 채팅에 대한 정보가 없습니다."));
-
-        ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatCodeAndChatroomMemberCode(readChat.getChatCode(), userChatroomMember.getChatroomMemberCode())
-                .orElseGet(() -> {
-                    ChatReadStatus newChatReadStatus = new ChatReadStatus()
-                            .setChatroomMemberCode(userChatroomMember.getChatroomMemberCode())
-                            .builder();
-                    chatReadStatusRepository.save(newChatReadStatus);
-                    return newChatReadStatus;
-                });
+    public String updateChatReadStatus(Long chatCode, Long chatroomCode, Long userEmployeeCode) {
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
+                .orElseThrow(()->new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
+        ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, chatroomMember.getChatroomMemberCode())
+                .orElseThrow(()->new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
         chatReadStatus.setChatCode(chatCode);
+
+        return "최근 채팅 관찰 시점 갱신 성공";
     }
 }

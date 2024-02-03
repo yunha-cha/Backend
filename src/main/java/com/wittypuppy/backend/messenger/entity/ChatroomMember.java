@@ -38,11 +38,10 @@ public class ChatroomMember {
     private String chatroomMemberPinnedStatus;
 
     @JoinColumn(name = "chatroom_member_code")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "chatroomMember")
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatReadStatus> chatReadStatusList;
 
-    @JoinColumn(name = "chatroom_member_code")
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatroomMember", cascade = CascadeType.ALL)
     private List<Chat> chatList;
 
     public ChatroomMember setChatroomMemberCode(Long chatroomMemberCode) {

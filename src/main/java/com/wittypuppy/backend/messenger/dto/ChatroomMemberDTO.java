@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.messenger.dto;
 
-import com.wittypuppy.backend.project.entity.Employee;
 import lombok.*;
 
 @NoArgsConstructor
@@ -11,7 +10,7 @@ import lombok.*;
 public class ChatroomMemberDTO {
     private Long chatroomMemberCode;
     private Long chatroomCode;
-    private Employee employee;
+    private EmployeeDTO employeeDTO;
     private String chatroomMemberType;
     private String chatroomMemberPinnedStatus;
 }

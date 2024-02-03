@@ -4,6 +4,6 @@ import com.wittypuppy.backend.project.entity.ProjectPostCommentFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("Project_DepartmentRepository")
+@Repository("Project_ProjectPostCommentFileRepository")
 public interface ProjectPostCommentFileRepository extends JpaRepository<ProjectPostCommentFile, Long> {
 }

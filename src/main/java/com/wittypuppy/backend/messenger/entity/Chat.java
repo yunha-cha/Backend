@@ -49,8 +49,8 @@ public class Chat {
         return this;
     }
 
-    public Chat setChatroomMemberCode(Long chatroomMemberCode) {
-        this.chatroomMemberCode = chatroomMemberCode;
+    public Chat setChatroomMember(ChatroomMember chatroomMember) {
+        this.chatroomMember = chatroomMember;
         return this;
     }
 
@@ -75,6 +75,6 @@ public class Chat {
     }
 
     public Chat builder() {
-        return new Chat(chatCode, chatroomCode, chatroomMemberCode, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
+        return new Chat(chatCode, chatroomCode, chatroomMember, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
     }
 }

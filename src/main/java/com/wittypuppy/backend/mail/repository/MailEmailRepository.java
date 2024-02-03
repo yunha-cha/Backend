@@ -12,7 +12,7 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
 
 //    @Query("SELECT e FROM Email e WHERE e.emailStatus = :emailStatus AND e.emailReceiverEmployee = :userCode")
 //    List<EmailDTO> findReceiveMail(
-//            @Param("userCode")Employee userCode,
+//            @Param("userCode")EmployeeDTO userCode,
 //            @Param("emailStatus") String emailStatus
 //    );
     @Query("SELECT e FROM MAIL_EMAIL e JOIN e.emailReceiver ere WHERE e.emailStatus = :emailStatus AND ere.employeeCode = :userCode")
