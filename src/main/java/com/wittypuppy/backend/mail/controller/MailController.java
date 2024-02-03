@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.mail.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import com.wittypuppy.backend.config.scheduler.DynamicTaskScheduler;
 import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.mail.dto.EmployeeDTO;
 import com.wittypuppy.backend.mail.service.EmailService;
@@ -14,17 +15,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @RequestMapping("/mail")
 @RestController
 public class MailController {
     private final EmailService emailService;
     private final SimpMessagingTemplate simp;
+    private final DynamicTaskScheduler dynamicTaskScheduler;
 
-    public MailController(EmailService emailService, SimpMessagingTemplate simp) {
+    public MailController(EmailService emailService, SimpMessagingTemplate simp, DynamicTaskScheduler dynamicTaskScheduler) {
         this.emailService = emailService;
         this.simp = simp;
+        this.dynamicTaskScheduler = dynamicTaskScheduler;
     }
 
     //예약한 메일 보내는 기능, 예약한 메일 전송 됐을 때 알람도 있어야 함
@@ -40,7 +43,7 @@ public class MailController {
                 emailService.sendMail(setDefault(email),"send"));
     }
     /**
-     * 특수한 상태의 이메일 전송 ( 임시 저장, 예약 )
+     *  임시 저장
      * @param email 사용자가 메일 쓰기 중 입력한 데이터
      * @param status send, temporary, reserve 로 나뉜다.(일반, 임시저장, 예약)
      * @return 응답
@@ -50,7 +53,18 @@ public class MailController {
         //에러 처리 하셈
         EmailDTO result = emailService.sendMail(setDefault(email),status);
 
-        return res("메일 보내기에 성공하였습니다.", result);
+        return res("임시저장에 성공했습니다.", result);
+    }
+    //예약 메일 등록 후 예약 처리
+    @GetMapping("send-reserve-mail")
+    public ResponseEntity<ResponseDTO> test(@RequestBody EmailDTO emailDTO){
+
+        EmailDTO result = emailService.sendReserveMail(setDefault(emailDTO));
+        Long emailCode = result.getEmailCode();
+
+        System.out.println("예약한 시간 : "+emailDTO.getEmailReservationTime());
+        dynamicTaskScheduler.scheduleTask(emailDTO.getEmailReservationTime(),emailCode);
+        return res("예약 메일이 정상적으로 등록되었습니다.",null);
     }
 
     @GetMapping("/find-receive-mail")
@@ -120,6 +134,18 @@ public class MailController {
             return resNull(1999,"복합적인 에러가 발생했습니다.");
         }
     }
+    @GetMapping("/find-email")
+    public ResponseEntity<ResponseDTO> findEmail(@RequestParam String word,@RequestParam String option){
+        List<EmailDTO> emails = new ArrayList<>();
+        emails = switch (option) {
+            case "title" -> emailService.findByEmailTitle(word);
+            case "content" -> emailService.findByEmailContent(word);
+            case "sendTime" -> emailService.findByEmailSendTime(word);
+            case "sender" -> emailService.findByEmailSender(word);
+            default -> emails;
+        };
+        return res("메일을 검색했습니다.",emails);
+    }
 
     /**
      * 임시 저장한 메일을 불러오는 메소드
@@ -131,19 +157,9 @@ public class MailController {
         List<EmailDTO> emailDTO = emailService.findByEmailSender(new EmployeeDTO(1L));
         return res("성공",emailDTO);
     }
-//    @PostMapping("/updateEmailSchedule")
-//    public String updateEmailSchedule(@RequestBody ScheduleDTO schedule) {
-//        //구현 필요
-//
-//        //LocalDate date = LocalDate.parse(schedule.getDate(), DateTimeFormatter.ISO_DATE);
-//        //LocalTime time = LocalTime.parse(schedule.getTime(), DateTimeFormatter.ISO_TIME);
-//        //LocalDateTime scheduledDateTime = LocalDateTime.of(date, time);
-//
-//        //emailService.updateScheduledTime(scheduledDateTime); // 서비스 메소드를 호출하여 업데이트
-//
-//        //return res("해보자",);
-//        return null;
-//    }
+
+
+
 
 
 
