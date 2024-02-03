@@ -1,0 +1,34 @@
+
+### 내 출퇴근 내역(목록)
+GET http://localhost:1208/api/v1/attendances/lists
+
+
+### 내가 신청한 문서-기안
+GET http://localhost:1208/api/v1/attendances/my/documents-waiting
+
+
+### 내가 신청한 문서-승인
+GET http://localhost:1208/api/v1/attendances/my/documents-payment
+
+
+### 내가 신청한 문서-반려
+GET http://localhost:1208/api/v1/attendances/my/documents-companion
+
+
+### 내가 결재한 문서-승인
+GET http://localhost:1208/api/v1/attendances/payment/completed
+
+
+### 내가 결재한 문서-반려
+GET http://localhost:1208/api/v1/attendances/payment/rejection
+
+
+### 내가 결재할 문서-대기
+GET http://localhost:1208/api/v1/attendances/payment/waiting
+
+
+### 근태관리 메인 화면 출퇴근 화면
+GET http://localhost:1208/api/v1/attendances/main
+
+
+
