@@ -2,17 +2,15 @@ package com.wittypuppy.backend.auth.config;
 
 import com.wittypuppy.backend.auth.filter.HeaderFilter;
 import com.wittypuppy.backend.auth.interceptor.JwtTokenInterceptor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-public class WebConfig implements WebMvcConfigurer {
+public class LoginWebConfig implements WebMvcConfigurer {
 
 //
 ////    // 정적 자원에 접근을 허용하게 하기 위함
@@ -28,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
 //                .addResourceLocations(ADD_RESOURCE_LOCATION);
 //    }
 
-    @Bean
+    @Bean(name = "filterRegistrationBean")
     public FilterRegistrationBean<HeaderFilter> getFilterRegistrationBean(){
         FilterRegistrationBean<HeaderFilter> registrationBean = new FilterRegistrationBean<>(createHeaderFilter());
         registrationBean.setOrder(Integer.MIN_VALUE);
@@ -36,12 +34,12 @@ public class WebConfig implements WebMvcConfigurer {
         return registrationBean;
     }
 
-    @Bean
+    @Bean(name = "headerFilter")
     public HeaderFilter createHeaderFilter(){
         return new HeaderFilter();
     }
 
-    @Bean
+    @Bean(name = "jwtTokenInterceptor")
     public JwtTokenInterceptor jwtTokenInterceptor(){
         return new JwtTokenInterceptor();
     }

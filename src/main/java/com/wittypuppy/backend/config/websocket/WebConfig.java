@@ -15,7 +15,7 @@ public class WebConfig {
      * WebMvcConfigurer 인터페이스 반환하는 메서드
      * @return WebMvcConfigurer 익명 클래스로 WebMvcConfigurer의 메서드 구현
      */
-    @Bean
+    @Bean(name = "websocket")
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             /**
