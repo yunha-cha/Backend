@@ -85,7 +85,7 @@ public class AttendanceController {
         * -> 자동으로 출근 퇴근 시간 기입 하는 경우 (출근시간에 외근, 퇴근 시간에 외근, 출장) :오늘 날짜가 신청한 날짜와 동일하면 자동으로 넣기 쿼리 조건문
         * -> 출근 시간, 퇴근 시간 " 00:00:00 "  자동 표기할 경우 ( 연차, ..휴가 )
         * -> 퇴근시간 연장근무 시간 자동 퇴근 기록, 출장 (오늘 날짜와 출근 날짜가 동일하면 18:00:00 자동 퇴근 조건 쿼리 부여)
-        * ->
+        * ->/
         * tbl_attendance_management , tbl_attendance_work_type, tbl_approval_document, tbl_approval_line, tbl_work_type, tbl_overwork, tbl_on_leave
         * */
 
