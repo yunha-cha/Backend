@@ -3,11 +3,14 @@ package com.wittypuppy.backend.board.service;
 import com.wittypuppy.backend.board.dto.EmployeeDTO;
 import com.wittypuppy.backend.board.dto.PostCommentDTO;
 import com.wittypuppy.backend.board.dto.PostDTO;
+import com.wittypuppy.backend.board.dto.PostLikeDTO;
 import com.wittypuppy.backend.board.entity.Employee;
 import com.wittypuppy.backend.board.entity.Post;
 import com.wittypuppy.backend.board.entity.PostComment;
+import com.wittypuppy.backend.board.entity.PostLike;
 import com.wittypuppy.backend.board.repository.BoardEmployeeRepository;
 import com.wittypuppy.backend.board.repository.PostCommentRepository;
+import com.wittypuppy.backend.board.repository.PostLikeRepository;
 import com.wittypuppy.backend.board.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -24,12 +27,15 @@ public class BoardService {
     private final PostRepository postRepository;
 
     private final PostCommentRepository postCommentRepository;
+
+    private final PostLikeRepository postLikeRepository;
     private final BoardEmployeeRepository boardEmployeeRepository;
     private final ModelMapper modelMapper;
 
-    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
+    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
         this.postCommentRepository = postCommentRepository;
+        this.postLikeRepository = postLikeRepository;
         this.boardEmployeeRepository = boardEmployeeRepository;
         this.modelMapper = modelMapper;
     }
@@ -276,6 +282,42 @@ public class BoardService {
         return list.stream()
                 .map(value -> modelMapper.map(value, targetClass))
                 .collect(Collectors.toList());
+    }
+
+    public PostLikeDTO findByEmployeeCode(Long employeeCode) {
+        PostLike postLike = postLikeRepository.findByEmployeeCode(employeeCode);
+        System.out.println(postLike);
+        if(postLike == null){
+            return null;
+        } else{
+            return modelMapper.map(postLike, PostLikeDTO.class);
+        }
+    }
+
+    public PostLikeDTO insertPostLike(PostLikeDTO postLikeDTO) {
+
+        PostLike postLike = postLikeRepository.save(modelMapper.map(postLikeDTO, PostLike.class));
+
+        return modelMapper.map(postLike, PostLikeDTO.class);
+
+    }
+
+    public String deletePostLike(PostLikeDTO postLikeDTO) {
+
+        int result = 0;
+
+        try{
+            PostLike postLike = modelMapper.map(postLikeDTO, PostLike.class);
+            postLikeRepository.delete(postLike);
+            System.out.println("dpd?");
+            result = 1;
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+        return result > 0 ? "좋아요 삭제 성공" : "좋아요 삭제 실패";
+
     }
 }
 
