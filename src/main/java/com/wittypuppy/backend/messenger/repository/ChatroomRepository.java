@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository("Messenger_ChatroomRepository")
 public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
     Optional<Chatroom> findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(Long chatroomCode, Long employeeCode);
+
+    Optional<Chatroom> findByChatroomCodeAndMessengerCode(Long chatroomCode, Long messengerCode);
 }

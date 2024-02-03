@@ -20,8 +20,9 @@ public class Chat {
     @Column(name = "chatroom_code")
     private Long chatroomCode;
 
-    @Column(name = "chatroom_member_code")
-    private Long chatroomMemberCode;
+    @JoinColumn(name="chatroom_member_code")
+    @ManyToOne
+    private ChatroomMember chatroomMember;
 
     @Column(name = "chat_write_date")
     private LocalDateTime chatWriteDate;
@@ -36,6 +37,7 @@ public class Chat {
     @JoinColumn(name = "chat_code")
     @OneToMany(cascade = CascadeType.ALL)
     private List<ChatFile> chatFileList;
+
 
     public Chat setChatCode(Long chatCode) {
         this.chatCode = chatCode;

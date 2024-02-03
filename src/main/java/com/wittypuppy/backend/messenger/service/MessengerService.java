@@ -1,9 +1,9 @@
 package com.wittypuppy.backend.messenger.service;
 
+import com.wittypuppy.backend.common.exception.DataInsertionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
-import com.wittypuppy.backend.messenger.dto.ChatroomOptionsDTO;
-import com.wittypuppy.backend.messenger.dto.MessengerMainDTO;
-import com.wittypuppy.backend.messenger.dto.MessengerOptionsDTO;
+import com.wittypuppy.backend.common.exception.DataUpdateException;
+import com.wittypuppy.backend.messenger.dto.*;
 import com.wittypuppy.backend.messenger.entity.*;
 import com.wittypuppy.backend.messenger.repository.*;
 import lombok.AllArgsConstructor;
@@ -45,7 +45,12 @@ public class MessengerService {
                             .setMessengerMiniAlarmOption("N")
                             .setMessengerTheme("DEFAULT")
                             .builder();
-                    messengerRepository.save(newMessenger);
+
+                    try {
+                        messengerRepository.save(newMessenger);
+                    } catch (Exception e) {
+                        throw new DataInsertionException("메신저 정보가 존재하지 않아 추가하려 했으나 실패했습니다.");
+                    }
                     return newMessenger;
                 });
         List<Chatroom> chatroomList = messenger.getChatroomList();
@@ -61,109 +66,166 @@ public class MessengerService {
             return messengerMainDTO;
         }
         // 채팅방이 조금이라도 있을 경우
-        List<Object[]> ChatroomChatCount = messengerRepository.countByChatroomCodeWhereTypeIsNotDelete(); // 채팅방코드 + 채팅방 멤버 숫자 로 이루어진 배열의 리스트
+        List<ChatroomMessengerMainDTO> chatroomMessengerMainDTOList = messengerRepository.getMessengerStatistics(userEmployeeCode);
+        messengerMainDTO.setChatroomList(chatroomMessengerMainDTOList);
 
-        return null;
-    }
-
-    /* 채팅 불러오기*/
-    public void readChatList(Long chatroomCode, Long userEmployeeCode) {
-        Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 계정 정보가 없습니다."));
-        List<Chat> chatList = chatRepository.findAllByChatroomCodeAndChatroomMemberCode(chatroomCode, userChatroomMember.getChatroomMemberCode());
+        return messengerMainDTO;
     }
 
     /* 메신저 옵션창 열기 */
-    public void openMessengerOptions(Long userEmployeeCode) {
+    public MessengerOptionsDTO openMessengerOptions(Long userEmployeeCode) {
         Messenger messenger = messengerRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 메신저 정보가 없습니다."));
+        MessengerOptionsDTO messengerOptionsDTO = new MessengerOptionsDTO()
+                .setMessengerPositionOption(messenger.getMessengerOption())
+                .setMessengerMiniAlarmOption(messenger.getMessengerMiniAlarmOption())
+                .setMessengerTheme(messenger.getMessengerTheme())
+                .builder();
+
+        return messengerOptionsDTO;
     }
 
     /* 메신저 옵션 저장하기*/
     @Transactional
-    public void saveMessengerOptions(MessengerOptionsDTO messengerOptionsDTO, Long userEmployeeCode) {
+    public String saveMessengerOptions(MessengerOptionsDTO messengerOptionsDTO, Long userEmployeeCode) {
         Messenger messenger = messengerRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 메신저 정보가 없습니다."));
-        messenger = messenger
-                .setMessengerOption(messengerOptionsDTO.getMessengerOption())
-                .setMessengerMiniAlarmOption(messengerOptionsDTO.getMessengerMiniAlarmOption())
-                .setMessengerTheme(messengerOptionsDTO.getMessengerTheme())
-                .builder();
+        try {
+            messenger = messenger
+                    .setMessengerOption(messengerOptionsDTO.getMessengerPositionOption())
+                    .setMessengerMiniAlarmOption(messengerOptionsDTO.getMessengerMiniAlarmOption())
+                    .setMessengerTheme(messengerOptionsDTO.getMessengerTheme())
+                    .builder();
+        } catch (Exception e) {
+            throw new DataUpdateException("메신저 옵션 수정 실패");
+        }
+        return "메신저 옵션 수정 성공";
     }
 
     /* 채팅방 고정하기 */
     @Transactional
-    public void pinnedChatroom(Long chatroomCode, Long userEmployeeCode) {
-        Messenger messenger = messengerRepository.findByEmployee_EmployeeCodeAndChatroomList_ChatroomCode(userEmployeeCode, chatroomCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 선택한 채팅방이 존재하지 않습니다.")); // 계정 정보로 확인
-        Chatroom chatroom = chatroomRepository.findById(chatroomCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 선택한 채팅방이 존재하지 않습니다.")); // 실제 데이터 다시 가져오기
-        if (chatroom.getChatroomFixedStatus().equals("N")) {
-            chatroom = chatroom
-                    .setChatroomFixedStatus("Y")
-                    .builder();
-        } else {
-            chatroom = chatroom
-                    .setChatroomFixedStatus("N")
-                    .builder();
+    public String pinnedChatroom(Long chatroomCode, Long userEmployeeCode) {
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 선택한 채팅방이 존재하지 않습니다."));
+        try {
+            if (chatroomMember.getChatroomMemberPinnedStatus().equals("N")) {
+                chatroomMember = chatroomMember
+                        .setChatroomMemberPinnedStatus("Y")
+                        .builder();
+            } else {
+                chatroomMember = chatroomMember
+                        .setChatroomMemberPinnedStatus("N")
+                        .builder();
+            }
+        } catch (Exception e) {
+            throw new DataUpdateException("메신저 고정/고정해제 실패");
         }
+
+        return "메신저 고정/고정해제 성공";
     }
 
-    /* 채팅방 만들기 - 내가 관리자가 되어야 한다. */
+
+    /* 채팅방 만들기 */
     @Transactional
-    public void createChatroom(Long chatroomCode, String chatroomTitle, Long userEmployeeCode) {
-        Messenger messenger = messengerRepository.findByEmployee_EmployeeCodeAndChatroomList_ChatroomCode(userEmployeeCode, chatroomCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 선택한 채팅방이 존재하지 않습니다.")); // 계정 정보로 확인
-        Long messengerCode = messenger.getMessengerCode();
-        Employee employee = employeeRepository.findById(userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 계정 정보를 가져올 수 없습니다."));
+    public String createChatroom(ChatroomOptionsDTO chatroomOptionsDTO, Long userEmployeeCode) {
+        /*
+         * 해야할 작업
+         *
+         * 역순으로 고려해야됨
+         * 메신저 코드로
+         * 채팅방 만들기
+         * 채팅방 프사 만들기 null인 상태로 데이터만
+         * 채팅방 멤버 만들기 1명
+         * 채팅 관찰 만들기. 채팅코드는 null 상태
+         * */
+        String chatroomTitle = chatroomOptionsDTO.getChatroomTitle();
         LocalDateTime now = LocalDateTime.now();
+        Employee employee = employeeRepository.findById(userEmployeeCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 계정 정보가 존재하지 않습니다."));
         ChatroomMember chatroomMember = new ChatroomMember()
                 .setEmployee(employee)
                 .setChatroomMemberType("관리자")
                 .setChatroomMemberInviteTime(now)
+                .setChatroomMemberPinnedStatus("N")
                 .builder();
         ChatroomProfile chatroomProfile = new ChatroomProfile()
                 .setChatroomProfileRegistDate(now)
                 .setChatroomProfileDeleteStatus("N")
                 .builder();
+        ChatReadStatus chatReadStatus = new ChatReadStatus()
+                .builder();
         Chatroom chatroom = new Chatroom()
-                .setMessengerCode(messengerCode)
                 .setChatroomTitle(chatroomTitle)
-                .setChatroomFixedStatus("N")
+                .setChatroomFixedStatus(null)
                 .setChatroomMemberList(Collections.singletonList(chatroomMember))
                 .setChatroomProfileList(Collections.singletonList(chatroomProfile))
+                .setChatReadStatusList(Collections.singletonList(chatReadStatus))
                 .builder();
-        chatroomRepository.save(chatroom);
+        try {
+            chatroomRepository.save(chatroom);
+        } catch (Exception e) {
+            throw new DataInsertionException("채팅방 생성 실패");
+        }
+        return "채팅방 생성 성공";
     }
 
     /* 채팅방 접속하기 */
-    public void openChatroom(Long chatroomCode, Long userEmployeeCode) {
+    public ChatroomMainDTO openChatroom(Long chatroomCode, Long userEmployeeCode) {
         Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
+        ChatroomMainDTO chatroomMainDTO = modelMapper.map(chatroom, ChatroomMainDTO.class);
+        Long memberCount = chatroomMemberRepository.getChatroomMemberCount(chatroomCode);
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
+        ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, chatroomMember.getChatroomMemberCode())
+                .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
+        ChatroomProfile chatroomProfile = chatroomProfileRepository.findByChatroomCodeAndChatroomProfileDeleteStatus(chatroomCode, "N")
+                .orElseThrow(() -> new DataNotFoundException("채팅방 프로필 사진을 가져오지 못했습니다."));
+
+        chatroomMainDTO.setLastReadChatCode(chatReadStatus.getChatCode());
+        chatroomMainDTO.setChatroomProfileFileURL(chatroomProfile.getChatroomProfileChangedFile());
+        chatroomMainDTO.setChatroomMemberCount(memberCount);
+
+        return chatroomMainDTO;
     }
 
     /* 채팅방 옵션창 열기 */
-    public void openChatroomOptions(Long chatroomCode, Long userEmployeeCode) {
+    public ChatroomOptionsDTO openChatroomOptions(Long chatroomCode, Long userEmployeeCode) {
         Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
+        ChatroomOptionsDTO chatroomOptionsDTO = new ChatroomOptionsDTO()
+                .setChatroomCode(chatroom.getChatroomCode())
+                .setChatroomTitle(chatroom.getChatroomTitle())
+                .setChatroomFixedStatus(chatroomMember.getChatroomMemberPinnedStatus())
+                .builder();
+        return chatroomOptionsDTO;
     }
 
     /* 채팅방 옵션 저장하기 */
     @Transactional
-    public void saveChatroomOptions(ChatroomOptionsDTO chatroomOptionsDTO, Long chatroomCode, Long userEmployeeCode) {
+    public String saveChatroomOptions(ChatroomOptionsDTO chatroomOptionsDTO, Long userEmployeeCode) {
+        Long chatroomCode = chatroomOptionsDTO.getChatroomCode();
+        String chatroomTitle = chatroomOptionsDTO.getChatroomTitle();
+        String chatroomFixedStatus = chatroomOptionsDTO.getChatroomFixedStatus();
         Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
-        chatroom = chatroom.setChatroomTitle(chatroomOptionsDTO.getChatroomTitle())
-                .setChatroomFixedStatus(chatroomOptionsDTO.getChatroomFixedStatus())
-                .builder();
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
+        chatroomMember = chatroomMember.setChatroomMemberPinnedStatus(chatroomFixedStatus);
+        if (chatroomMember.getChatroomMemberType().equals("관리자")) {
+            chatroom = chatroom.setChatroomTitle(chatroomTitle).builder();
+        } else {
+            throw new DataInsertionException("해당 계정은 채팅방 관리자가 아니어서 채팅방 고정여부만 변경됩니다.");
+        }
+        return "채팅방 옵션 변경 성공";
     }
 
     /* 전체 사원 목록 출력하기 */
     public void selectEmployees() {
         List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateIsNull();
+
     }
 
     /* 채팅방 초대하기 */

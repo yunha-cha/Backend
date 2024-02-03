@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.messenger.entity;
 
+import com.wittypuppy.backend.messenger.dto.ChatroomOptionsDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +34,11 @@ public class ChatroomMember {
     @Column(name = "chatroom_member_invite_time")
     private LocalDateTime chatroomMemberInviteTime;
 
+    @Column(name = "chatroom_member_pinned_status")
+    private String chatroomMemberPinnedStatus;
+
     @JoinColumn(name = "chatroom_member_code")
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "chatroomMember")
     private List<ChatReadStatus> chatReadStatusList;
 
     @JoinColumn(name = "chatroom_member_code")
@@ -66,6 +70,11 @@ public class ChatroomMember {
         return this;
     }
 
+    public ChatroomMember setChatroomMemberPinnedStatus(String chatroomMemberPinnedStatus) {
+        this.chatroomMemberPinnedStatus = chatroomMemberPinnedStatus;
+        return this;
+    }
+
     public ChatroomMember setChatReadStatusList(List<ChatReadStatus> chatReadStatusList) {
         this.chatReadStatusList = chatReadStatusList;
         return this;
@@ -77,6 +86,6 @@ public class ChatroomMember {
     }
 
     public ChatroomMember builder() {
-        return new ChatroomMember(chatroomMemberCode, chatroomCode, employee, chatroomMemberType, chatroomMemberInviteTime, chatReadStatusList, chatList);
+        return new ChatroomMember(chatroomMemberCode, chatroomCode, employee, chatroomMemberType, chatroomMemberInviteTime, chatroomMemberPinnedStatus, chatReadStatusList, chatList);
     }
 }

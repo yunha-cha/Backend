@@ -26,6 +26,9 @@ public class ChatReadStatus {
     @Column(name = "chat_code")
     private Long chatCode;
 
+    @Column(name = "chatroom_code")
+    private Long chatroomCode;
+
     public ChatReadStatus setChatReadStatusCode(Long chatReadStatusCode) {
         this.chatReadStatusCode = chatReadStatusCode;
         return this;
@@ -41,7 +44,12 @@ public class ChatReadStatus {
         return this;
     }
 
+    public ChatReadStatus setChatroomCode(Long chatroomCode) {
+        this.chatroomCode = chatroomCode;
+        return this;
+    }
+
     public ChatReadStatus builder() {
-        return new ChatReadStatus(chatReadStatusCode, chatroomMemberCode, chatCode);
+        return new ChatReadStatus(chatReadStatusCode, chatroomMemberCode, chatCode, chatroomCode);
     }
 }

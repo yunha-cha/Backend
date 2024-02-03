@@ -10,4 +10,5 @@ import java.util.Optional;
 
 @Repository("Messenger_ChatroomProfileRepository")
 public interface ChatroomProfileRepository extends JpaRepository<ChatroomProfile, Long> {
+    Optional<ChatroomProfile> findByChatroomCodeAndChatroomProfileDeleteStatus(Long chatroomCode, String chatroomProfileDeleteStatus);
 }

@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.messenger.repository;
 
-import com.wittypuppy.backend.messenger.entity.Messenger;
 import com.wittypuppy.backend.messenger.entity.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

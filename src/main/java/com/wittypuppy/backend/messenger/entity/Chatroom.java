@@ -29,7 +29,7 @@ public class Chatroom {
     private String chatroomFixedStatus;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatroomMember> chatroomMemberList;
 
     @JoinColumn(name = "chatroom_code")
@@ -39,6 +39,10 @@ public class Chatroom {
     @JoinColumn(name = "chatroom_code")
     @OneToMany(cascade = CascadeType.ALL)
     private List<Chat> chatList;
+
+    @JoinColumn(name = "chatroom_code")
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<ChatReadStatus> chatReadStatusList;
 
     public Chatroom setChatroomCode(Long chatroomCode) {
         this.chatroomCode = chatroomCode;
@@ -75,7 +79,12 @@ public class Chatroom {
         return this;
     }
 
+    public Chatroom setChatReadStatusList(List<ChatReadStatus> chatReadStatusList) {
+        this.chatReadStatusList = chatReadStatusList;
+        return this;
+    }
+
     public Chatroom builder() {
-        return new Chatroom(chatroomCode, messengerCode, chatroomTitle, chatroomFixedStatus, chatroomMemberList, chatroomProfileList, chatList);
+        return new Chatroom(chatroomCode, messengerCode, chatroomTitle, chatroomFixedStatus, chatroomMemberList, chatroomProfileList, chatList, chatReadStatusList);
     }
 }

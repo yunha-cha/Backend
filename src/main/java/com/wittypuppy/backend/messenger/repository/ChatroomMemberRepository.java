@@ -12,6 +12,11 @@ import java.util.Optional;
 public interface ChatroomMemberRepository extends JpaRepository<ChatroomMember, Long> {
     Optional<ChatroomMember> findByChatroomCodeAndEmployee_EmployeeCode(Long chatroomCode, Long employeeCode);
 
+    @Query(value = "SELECT COUNT(*) FROM tbl_chatroom_member tcm WHERE tcm.chatroom_code AND tcm.chatroom_member_type!='삭제'"
+            , nativeQuery = true
+    )
+    Long getChatroomMemberCount(Long chatroomCode);
+
     Optional<ChatroomMember> findByChatroomMemberCodeAndChatroomCode(Long chatroomMember, Long chatroomCode);
 
     List<ChatroomMember> findAllByChatroomCodeAndChatroomMemberTypeIn(Long chatroomCode, List<String> chatroomMemberTypeList);
