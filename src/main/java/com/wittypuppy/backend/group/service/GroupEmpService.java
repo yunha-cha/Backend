@@ -51,15 +51,6 @@ public class GroupEmpService {
         return groupList;
     }
 
-//    public GroupDeptDTO selectGroupList(String  employeeName, String departmentName){
-//        log.info("부서명이랑 사원명으로 조회하는 서비스 시작");
-//
-//        GroupEmp groupEmp = groupEmpRepository.findByEmpNameOrDeptName(employeeName,departmentName);
-//        GroupEmpDTO groupEmpDTO = modelMapper.map(groupEmp, GroupEmpDTO.class);
-//        return groupEmpDTO;
-//
-//    }
-
     public List<GroupEmpDTO> selectGroupList(String employeeName, String departmentName) {
         log.info("부서명이랑 사원명으로 조회하는 서비스 시작");
 
@@ -71,23 +62,6 @@ public class GroupEmpService {
         log.info("부서명이랑 사원명으로 조회하는 서비스 종료");
         return groupEmpDTOList;
     }
-
-
-//    public List<GroupEmpDTO> selectGroupList(String employeeName, String departmentName) {
-//        log.info("부서명이랑 사원명으로 조회하는 서비스 시작");
-//
-//        List<GroupEmpDTO> groupEmpDTOList = groupEmpRepository.findAllByEmpNameOrDepartment_DeptName(employeeName, departmentName)
-//                .stream()
-//                .map(groupEmp -> {
-//                    GroupEmpDTO empDTO = modelMapper.map(groupEmp, GroupEmpDTO.class);
-//                    GroupEmpDTO.setDepartmentName(groupEmp.getDepartment().getDepartmentName());
-//                    return empDTO;
-//                })
-//                .collect(Collectors.toList());
-//
-//        log.info("부서명이랑 사원명으로 조회하는 서비스 종료");
-//        return groupEmpDTOList;
-//    }
 
 
 
