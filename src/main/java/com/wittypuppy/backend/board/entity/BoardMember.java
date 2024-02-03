@@ -29,9 +29,9 @@ public class BoardMember {
     @Column(name = "board_member_create_post_status", columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String boardMemberCreatePostStatus;
 
-    @JoinColumn(name = "board_member_code")
-    @OneToMany
-    private List<PostComment> postCommentList;
+//    @JoinColumn(name = "board_member_code")
+//    @OneToMany
+//    private List<PostComment> postCommentList;
 
     @JoinColumn(name = "board_member_code")
     @OneToMany
