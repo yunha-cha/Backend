@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.project.service;
 
+import com.wittypuppy.backend.common.exception.DataDeletionException;
 import com.wittypuppy.backend.common.exception.DataInsertionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.common.exception.DataUpdateException;
@@ -8,6 +9,7 @@ import com.wittypuppy.backend.project.entity.*;
 import com.wittypuppy.backend.project.exception.invalidProjectMemberException;
 import com.wittypuppy.backend.project.repository.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +37,7 @@ public class ProjectService {
     private final ModelMapper modelMapper;
 
     /* 전체 프로젝트 목록 확인 */
-    public List<ProjectMainDTO> selectProjectList(Long userEmployeeCode) {
+    public List<ProjectMainDTO> selectProjectList() {
         List<ProjectMainDTO> projectMainDTOList = projectRepository.findAllProjectInfo();
         return projectMainDTOList;
     }
@@ -141,8 +143,8 @@ public class ProjectService {
 
     /* 프로젝트 수정 */
     @Transactional
-    public String modifyProject(ProjectOptionsDTO projectOptionsDTO, Long userEmployeeCode) {
-        Project project = projectRepository.findById(projectOptionsDTO.getProjectCode())
+    public String modifyProject(Long projectCode, ProjectOptionsDTO projectOptionsDTO, Long userEmployeeCode) {
+        Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
         if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
             return "해당 프로젝트의 관리자가 아닙니다.";
@@ -155,7 +157,7 @@ public class ProjectService {
                     .setProjectLockedStatus(projectOptionsDTO.getProjectLockedStatus())
                     .builder();
         } catch (Exception e) {
-            return "프로젝트 수정 실패";
+            throw new DataUpdateException("프로젝트 수정 실패");
         }
         return "프로젝트 수정 성공";
     }
@@ -170,7 +172,7 @@ public class ProjectService {
 
     /* 프로젝트 멤버 초대하기 */
     @Transactional
-    public String inviteProjectMembers(List<Long> inviteEmployeeCodeList, Long projectCode, Long userEmployeeCode) {
+    public String inviteProjectMembers(Long projectCode, List<Long> inviteEmployeeCodeList, Long userEmployeeCode) {
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
         if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
@@ -180,6 +182,9 @@ public class ProjectService {
         List<Long> projectMemberEmployeeCodeList = projectMemberList.stream().map(projectMember -> projectMember.getEmployee().getEmployeeCode())
                 .collect(Collectors.toList());
         inviteEmployeeCodeList.removeAll(projectMemberEmployeeCodeList);
+        if (inviteEmployeeCodeList.size() <= 0) {
+            throw new DataInsertionException("사원 정보가 이미 프로젝트에 존재합니다.");
+        }
 
         try {
             inviteEmployeeCodeList.forEach(inviteEmployeeCode -> {
@@ -193,7 +198,7 @@ public class ProjectService {
                 projectMemberRepository.save(projectMember);
             });
         } catch (Exception e) {
-            return "프로젝트 멤버 초대 실패";
+            throw new DataInsertionException("프로젝트 멤버 초대 실패");
         }
         return "프로젝트 멤버 초대 성공";
     }
@@ -201,31 +206,40 @@ public class ProjectService {
     /* 프로젝트 멤버에서 나가기 */
     @Transactional
     public String exitProjectMember(Long projectCode, Long userEmployeeCode) {
-        Project project = projectRepository.findById(projectCode)
-                .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
-        if (project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
-            return "관리자를 위임해야 나갈 수 있습니다.";
+        try {
+            Project project = projectRepository.findById(projectCode)
+                    .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
+            if (project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
+                return "관리자를 위임해야 나갈 수 있습니다.";
+            }
+            ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
+                    .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 로그인한 계정이 존재하지 않습니다."));
+            projectMember.setProjectMemberDeleteStatus("Y");
+        } catch (Exception e) {
+            throw new DataDeletionException("프로젝트에서 나가기 실패");
         }
-        ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 로그인한 계정이 존재하지 않습니다."));
-        projectMember.setProjectMemberDeleteStatus("Y");
         return "프로젝트에서 나가기 성공";
     }
 
     /* 프로젝트 멤버 내보내기*/
     @Transactional
-    public String kickProjectMember(Long kickProjectMemberCode, Long projectCode, Long userEmployeeCode) {
-        Project project = projectRepository.findById(projectCode)
-                .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
-        if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
-            return "현재 계정이 관리자가 아닙니다.";
+    public String kickProjectMember(Long projectCode, Long kickedProjectMemberCode, Long userEmployeeCode) {
+        try {
+            Project project = projectRepository.findById(projectCode)
+                    .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
+            if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
+                return "현재 계정이 관리자가 아닙니다.";
+            }
+            ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndProjectMemberCode(projectCode, "N", kickedProjectMemberCode)
+                    .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 강퇴할 계정이 존재하지 않습니다."));
+            System.out.println("projectMember = " + projectMember);
+            if (projectMember.getEmployee().getEmployeeCode().equals(userEmployeeCode)) {
+                return "자기자신을 내보낼 수 없습니다.";
+            }
+            projectMember.setProjectMemberDeleteStatus("Y");
+        } catch (Exception e) {
+            throw new DataDeletionException("멤버 내보내기 실패");
         }
-        ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndProjectMemberCode(projectCode, "N", kickProjectMemberCode)
-                .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 강퇴할 계정이 존재하지 않습니다."));
-        if (projectMember.getEmployee().getEmployeeCode().equals(userEmployeeCode)) {
-            return "자기자신을 내보낼 수 없습니다.";
-        }
-        projectMember.setProjectMemberDeleteStatus("Y");
         return "멤버 내보내기 성공";
     }
 
@@ -294,7 +308,7 @@ public class ProjectService {
     /* 프로젝트 게시글 초대를 위한 프로젝트 멤버 목록 가져오기 */
     public List<ProjectMemberDTO> selectProjectMemberList(Long projectCode, Long userEmployeeCode) {
         List<ProjectMember> projectMemberList = projectMemberRepository.findAllByProjectCodeAndProjectMemberDeleteStatus(projectCode, "N");
-        List<ProjectMemberDTO> projectMemberDTOList = projectMemberList.stream().map(projectMember -> modelMapper.map(projectMember,ProjectMemberDTO.class))
+        List<ProjectMemberDTO> projectMemberDTOList = projectMemberList.stream().map(projectMember -> modelMapper.map(projectMember, ProjectMemberDTO.class))
                 .toList();
         return projectMemberDTOList;
     }
@@ -319,7 +333,7 @@ public class ProjectService {
                         .builder();
                 projectPostMemberRepository.save(projectPostMember);
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new DataInsertionException("프로젝트 게시글 멤버 초대 실패");
         }
         return "프로젝트 게시글 멤버 초대 성공";
@@ -339,7 +353,7 @@ public class ProjectService {
                 .orElseThrow(() -> new DataNotFoundException("강퇴할 계정이 해당 프로젝트 게시글에 존재하지 않습니다."));
         try {
             projectPostMember.setProjectPostMemberDeleteStatus("Y");
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new DataUpdateException("프로젝트 게시글 멤버 내보내기 실패");
         }
         return "프로젝트 게시글 멤버 내보내기 성공";

@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,11 @@ public class ProjectPostMainDTO {
     private String projectPostStatus;
     private String projectPostPriority;
     private String projectPostTitle;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime projectPostCreationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime projectPostModifyDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime projectPostDueDate;
 
     public ProjectPostMainDTO setProjectPostCode(Long projectPostCode) {
