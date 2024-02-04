@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.project.service;
+package com.wittypuppy.backend.project.dto;
 
 
 import com.wittypuppy.backend.project.entity.Employee;

@@ -2,6 +2,7 @@ package com.wittypuppy.backend.project.service;
 
 import com.wittypuppy.backend.common.exception.DataInsertionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
+import com.wittypuppy.backend.common.exception.DataUpdateException;
 import com.wittypuppy.backend.project.dto.*;
 import com.wittypuppy.backend.project.entity.*;
 import com.wittypuppy.backend.project.exception.invalidProjectMemberException;
@@ -277,21 +278,30 @@ public class ProjectService {
 
         return resultMap;
     }
+
     /* 프로젝트 게시글 댓글 읽기*/
-    public List<ProjectPostCommentDTO> selectProjectPostCommentList(Long projectPostCode, Long userEmployeeCode){
+    public List<ProjectPostCommentDTO> selectProjectPostCommentList(Long projectPostCode, Long userEmployeeCode) {
         List<ProjectPostCommentDTO> projectPostCommentList = projectPostCommentRepository.selectProjectPostCommentList(projectPostCode);
         return projectPostCommentList;
     }
+
     /* 프로젝트 게시글 댓글 파일 읽기*/
-!!! 여기서부터
+    public List<ProjectPostCommentFileDTO> selectProjectPostCommentFile(Long projectPostCommentCode, Long userEmployeeCode) {
+        List<ProjectPostCommentFileDTO> projectPostCommentFileList = projectPostCommentFileRepository.selectProjectPostCommentFileList(projectPostCommentCode);
+        return projectPostCommentFileList;
+    }
+
     /* 프로젝트 게시글 초대를 위한 프로젝트 멤버 목록 가져오기 */
-    public void selectProjectMemberList(Long projectCode, Long userEmployeeCode) {
+    public List<ProjectMemberDTO> selectProjectMemberList(Long projectCode, Long userEmployeeCode) {
         List<ProjectMember> projectMemberList = projectMemberRepository.findAllByProjectCodeAndProjectMemberDeleteStatus(projectCode, "N");
+        List<ProjectMemberDTO> projectMemberDTOList = projectMemberList.stream().map(projectMember -> modelMapper.map(projectMember,ProjectMemberDTO.class))
+                .toList();
+        return projectMemberDTOList;
     }
 
     /* 프로젝트 게시글 멤버 초대하기 */
     @Transactional
-    public void inviteProjectPostMembers(List<Long> inviteProjectMemberCodeList, Long projectPostCode, Long userEmployeeCode) {
+    public String inviteProjectPostMembers(List<Long> inviteProjectMemberCodeList, Long projectPostCode, Long userEmployeeCode) {
         ProjectPost projectPost = projectPostRepository.findById(projectPostCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트 게시글을 찾을 수 없습니다."));
         Project project = projectRepository.findByProjectPostList_ProjectPostCodeAndProjectMemberList_Employee_EmployeeCode(projectPostCode, userEmployeeCode)
@@ -299,30 +309,40 @@ public class ProjectService {
         List<ProjectMember> projectMemberList = project.getProjectMemberList();
         List<Long> projectMemberCodeList = projectMemberList.stream().map(projectMember -> projectMember.getProjectMemberCode())
                 .toList();
-        inviteProjectMemberCodeList.removeAll(projectMemberCodeList);
-        inviteProjectMemberCodeList.forEach(inviteProjectMemberCode -> {
-            ProjectPostMember projectPostMember = new ProjectPostMember()
-                    .setProjectPostCode(projectPostCode)
-                    .setProjectMemberCode(inviteProjectMemberCode)
-                    .setProjectPostMemberDeleteStatus("N")
-                    .builder();
-            projectPostMemberRepository.save(projectPostMember);
-        });
+        try {
+            inviteProjectMemberCodeList.removeAll(projectMemberCodeList);
+            inviteProjectMemberCodeList.forEach(inviteProjectMemberCode -> {
+                ProjectPostMember projectPostMember = new ProjectPostMember()
+                        .setProjectPostCode(projectPostCode)
+                        .setProjectMemberCode(inviteProjectMemberCode)
+                        .setProjectPostMemberDeleteStatus("N")
+                        .builder();
+                projectPostMemberRepository.save(projectPostMember);
+            });
+        }catch (Exception e){
+            throw new DataInsertionException("프로젝트 게시글 멤버 초대 실패");
+        }
+        return "프로젝트 게시글 멤버 초대 성공";
     }
 
     /* 프로젝트 게시글 멤버에서 내보내기 */
     @Transactional
-    public void kickProjectPostMember(Long kickProjectMemberCode, Long projectPostCode, Long userEmployeeCode) {
+    public String kickProjectPostMember(Long kickProjectMemberCode, Long projectPostCode, Long userEmployeeCode) {
         ProjectPost projectPost = projectPostRepository.findById(projectPostCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트 게시글을 찾을 수 없습니다."));
         Project project = projectRepository.findByProjectPostList_ProjectPostCode(projectPostCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트를 찾을 수 없습니다."));
         if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
-            return; // 관리자가 아니므로
+            return "해당 계정은 관리자가 아닙니다.";
         }
         ProjectPostMember projectPostMember = projectPostMemberRepository.findByProjectPostMemberCodeAndProjectPostMemberDeleteStatus(kickProjectMemberCode, "N")
                 .orElseThrow(() -> new DataNotFoundException("강퇴할 계정이 해당 프로젝트 게시글에 존재하지 않습니다."));
-        projectPostMember.setProjectPostMemberDeleteStatus("Y");
+        try {
+            projectPostMember.setProjectPostMemberDeleteStatus("Y");
+        }catch (Exception e){
+            throw new DataUpdateException("프로젝트 게시글 멤버 내보내기 실패");
+        }
+        return "프로젝트 게시글 멤버 내보내기 성공";
     }
 
     /* 프로젝트 게시글 멤버에서 나가기 */
