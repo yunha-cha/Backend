@@ -7,7 +7,6 @@ import com.wittypuppy.backend.attendance.dto.VacationDTO;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
-import com.wittypuppy.backend.attendance.entity.Vacation;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.repository.ApprovalRepository;
 import com.wittypuppy.backend.attendance.repository.LineRepository;
@@ -17,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 
 @Service
@@ -276,4 +277,57 @@ public class AttendanceService {
     }
 
 
+
+
+    public String insertArrival(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
+
+        System.out.println("============== insertArrival ======> serviceStart ");
+        System.out.println(" ======employeeCode ========== " + employeeCode);
+        System.out.println("========= attendanceManagementDTO ========== " + attendanceManagementDTO);
+
+        int result = 0;
+
+        LocalDateTime arrival = attendanceManagementDTO.getAttendanceManagementArrivalTime();
+
+        System.out.println("==== arrival = " + arrival);
+
+        try {
+
+            AttendanceManagement insertAttendance = modelMapper.map(attendanceManagementDTO, AttendanceManagement.class);
+
+            managementRepository.save(insertAttendance);
+
+            result = 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result > 0 ? "출근 등록 성공" : "출근 등록 실패";
+    }
+
+
+    public String updateDeparture(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
+        System.out.println("===== employeeCode =====> " + employeeCode);
+        System.out.println("======= attendanceManagementDTO ========= " + attendanceManagementDTO);
+
+        int result = 0;
+
+        try {
+            //가장 최근에 인처트 된 출근 시간 조회
+            AttendanceManagement updateAttendance = managementRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeCode);
+
+            System.out.println("======= updateAttendance = " + updateAttendance);
+
+            updateAttendance.setAttendanceManagementDepartureTime(attendanceManagementDTO.getAttendanceManagementDepartureTime());
+            updateAttendance.setAttendanceManagementState(attendanceManagementDTO.getAttendanceManagementState());
+
+
+
+            result = 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result > 0 ? "퇴근시간 수정 성공" : "퇴근시간  수정 실패";
+    }
 }

@@ -51,7 +51,8 @@ public interface ApprovalRepository extends JpaRepository<ApprovalLine, Long> {
             "FROM tbl_approval_document " +
             "WHERE employee_code = :employeeCode) " +
             "AND A.approval_process_order = (SELECT MAX(approval_process_order) " +
-            "FROM tbl_approval_line)",
+            "FROM tbl_approval_line " +
+            "WHERE A.approval_document_code = approval_document_code) ",
             nativeQuery = true)
     Page<ApprovalLine> findMyDocumentPayment(Long employeeCode, Pageable paging);
 
