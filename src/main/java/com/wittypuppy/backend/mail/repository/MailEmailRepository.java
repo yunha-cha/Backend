@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MailEmailRepository extends JpaRepository<Email,Long> {
@@ -25,10 +26,10 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
             @Param("userCode")Long userCode,
             @Param("emailStatus") String emailStatus
     );
-
-    //Email findByEmailCode(Long emailCode);
-
     List<Email> findByEmailCodeIn(List<Long> emailEntity);
-
     List<Email> findByEmailSenderAndEmailStatus(Employee employeeCode, String emailStatus);
+    List<Email> findAllByEmailSender(Employee employee);
+    List<Email> findAllByEmailSendTime(LocalDateTime word);
+    List<Email> findAllByEmailContentLike(String word);
+    List<Object> findAllByEmailTitleLike(String word);
 }

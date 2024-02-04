@@ -20,7 +20,7 @@ public class EmployeeDTO {
     private String employeeAddress;
     private String employeeId;
     private String employeeName;
-    private String employeePassword;
+    //private String employeePassword;
     private String employeePhone;
     private String employeeResidentNumber;
     private String employeeRetirementDate;

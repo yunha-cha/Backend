@@ -2,11 +2,19 @@ package com.wittypuppy.backend.admin.controller;
 
 import com.wittypuppy.backend.admin.dto.*;
 import com.wittypuppy.backend.admin.service.AdminService;
+
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.NoResultException;
+import org.hibernate.QueryTimeoutException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -15,54 +23,97 @@ public class AdminController {
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
-
-    //직원의 상세정보를 조회해 보자
-    //필요한 엔티티 employee, department, job
-    //education, career
-
     /**
      * 유저의 모든 정보를 가져오는 메서드
      * @param employeeDTO 유저 코드를 받음
      * @return 에러코드 9000 = 유저 아이디를 찾을 수 없음
      */
     @GetMapping("/user-info")
-    public ResponseEntity<ResponseDTO> getUserInfo(@RequestBody EmployeeDTO employeeDTO){
+    public ResponseEntity<ResponseDTO> getUserInfo(@RequestBody EmployeeDTO employeeDTO) {
         try {
             employeeDTO = adminService.getUserInfo(employeeDTO);
+            //주민번호 뒤 6자리 * 로
+            employeeDTO.setEmployeeResidentNumber(employeeDTO.getEmployeeResidentNumber().substring(0, employeeDTO.getEmployeeResidentNumber().length() - 6) + "******");
+
+        } catch (NoResultException e){
+            resNull(9000,"유저 아이디를 찾을 수 없습니다.");
+        } catch (IllegalArgumentException e){
+            resNull(9001,"잘못된 인수가 전달되었습니다.");
         } catch (Exception e){
-            return resNull(9000,"유저 아이디를 찾을 수 없습니다,");
+            return resNull(9999,"알 수 없는 에러가 발생했습니다.");
         }
         return res("유저 정보 조회에 성공했습니다.",employeeDTO);
     }
+
+    /**
+     * 수정할 때 유저 전체 정보 받아야 함.
+     * 부서,보직,퇴사,휴가일 수, 권한 모두 설정 가능
+     * (에러 처리 필요)
+     * @param employeeDTO 유저 모든 정보
+     */
     @PutMapping("/user-infor-update")
     public ResponseEntity<ResponseDTO> updateUserInfo(@RequestBody EmployeeDTO employeeDTO){
-        //수정 정보를 받아와서
-        //부서도 여기에서 수정하자
-        //보직도 여기에서 수정
-        //에듀케이션,커리어는 수정할 필요 x
-        //퇴사, 휴가 일, 권한도 이거로 수정 가능
-        System.out.println(employeeDTO);
-
-        employeeDTO = adminService.updateUserInfo(employeeDTO);
-
+        try {
+            employeeDTO = adminService.updateUserInfo(employeeDTO);
+        } catch (DataIntegrityViolationException e){
+            resNull(9002,"외래키 참조 에러 입니다.\n 존재하지 않는 부서, 직급을 사용했습니다.");
+        } catch (TransactionSystemException e){
+            resNull(9003, "트랜젝션 에러입니다.\n 정상적으로 데이터가 수정되지 않았습니다.");
+        } catch (QueryTimeoutException e){
+            resNull(9100,"시간 초과 에러입니다.\n 데드락이 의심됩니다.");
+        } catch (Exception e){
+            resNull(9999,"알 수 없는 에러가 발생했습니다.");
+        }
         return res("유저 정보 수정에 성공했습니다.",employeeDTO);
     }
 
+    /**
+     * 유저 회원 가입 시키기
+     * (비밀번호 암호화 하기)
+     * @param userDTO 유저 정보, 학위, 경력을 받음
+     * @return 9002,9004 에러 있음
+     */
     @PostMapping("/create-user")
     public ResponseEntity<ResponseDTO> createUser(@RequestBody CreateUserDTO userDTO){
-        //유저 create하고
-        EmployeeDTO employeeDTO = adminService.createUser(userDTO.getEmployee());
-        //만들어진 유저 코드를 각 객체에 삽입
-        userDTO.getEducation().setEmployeeCode(employeeDTO.getEmployeeCode());
-        userDTO.getCareer().setEmployeeCode(employeeDTO.getEmployeeCode());
+        try {
+            EmployeeDTO employeeDTO = adminService.createUser(userDTO.getEmployee());
+            userDTO.getEducation().setEmployeeCode(employeeDTO.getEmployeeCode());
+            userDTO.getCareer().setEmployeeCode(employeeDTO.getEmployeeCode());
 
-        //후에 등록한다.
-        EducationDTO educationDTO = adminService.createUserEducation(userDTO.getEducation());
-        CareerDTO careerDTO = adminService.createUserCareer(userDTO.getCareer());
-        userDTO.setEmployee(employeeDTO);
-        userDTO.setCareer(careerDTO);
-        userDTO.setEducation(educationDTO);
+            EducationDTO educationDTO = adminService.createUserEducation(userDTO.getEducation());
+            CareerDTO careerDTO = adminService.createUserCareer(userDTO.getCareer());
+            userDTO.setEmployee(employeeDTO);
+            userDTO.setCareer(careerDTO);
+            userDTO.setEducation(educationDTO);
+        } catch (DataIntegrityViolationException e){
+            resNull(9002,"외래키 참조 오류입니다.");
+        } catch (EntityExistsException e){
+            resNull(9004,"기본 키가 중복됩니다.");
+        }
+
         return res("유저 추가에 성공했습니다.",userDTO);
+    }
+
+    /**
+     * 비밀번호 초기화 메소드 (구현 중)
+     * @param employeeDTO 수정할 유저의 코드를 받아 옴
+     * @return 바뀐 비밀번호
+     */
+    @PutMapping("reset-password")
+    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody EmployeeDTO employeeDTO){
+        return res("구현 중",employeeDTO);
+    }
+    @GetMapping("show-need-to-allow-board")
+    public ResponseEntity<ResponseDTO> showNeedAllowBoard(){
+        List<BoardDTO> boardDTO = adminService.showNeedAllowBoard();
+        return res("성공적인 조회",boardDTO);
+    }
+    @PutMapping("allow-board")
+    public ResponseEntity<ResponseDTO> allowBoardAccessStatus(@RequestParam Long boardCode){
+        BoardDTO boardDTO = adminService.findById(boardCode);
+        boardDTO.setBoardAccessStatus("Y");
+        BoardDTO result = adminService.allowBoard(boardDTO);
+        return res("성공적으로 허가햿습니다.",result);
     }
 
     /**

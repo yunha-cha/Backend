@@ -12,14 +12,20 @@ POST http://localhost:1208/board/posts/regist
 Content-Type: application/json
 
 {
+  "boardCode": 1,
   "postTitle": "첫번째 게시물",
-  "postContext": "5시 00분에 쓴 첫번째 게시물"
+  "postContext": "5시 00분에 쓴 첫번째 게시물",
+  "postNoticeStatus": "Y"
 
 }
 
 
 ### 게시글 열람
 GET http://localhost:1208/board/posts/3
+
+
+### 게시글 추천(좋아요)
+POST http://localhost:1208/board/posts/1/like
 
 
 ### 게시글 수정
@@ -36,8 +42,14 @@ Content-Type: application/json
 DELETE http://localhost:1208/board/posts/6
 
 
+### 게시글 이동 - requestParam, url에 쿼리스트링 사용
+PUT http://localhost:1208/board/posts/7/move?boardCode=2
 
-## 댓글
+
+### 게시글 검색 - 쿼리 스트링
+GET http://localhost:1208/board/1/posts/search?q=물
+
+
 ### 댓글 입력
 POST http://localhost:1208/board/posts/1/comment/regist
 Content-Type: application/json
@@ -47,11 +59,64 @@ Content-Type: application/json
 }
 
 
+### 댓글 수정
+PUT http://localhost:1208/board/posts/comment/3
+Content-Type: application/json
 
-
+{
+  "postCommentContext" : "3번 게시물을 2월1일 오후 3시 35분에 수정하였습니다."
+}
 
 ### 댓글 삭제
 DELETE http://localhost:1208/board/posts/comment/1
+
+
+
+
+### 게시판 생성
+POST http://localhost:1208/board/boards/create
+Content-Type: application/json
+
+{
+  "boardGroupCode": 1,
+  "boardTitle": "IT 소식",
+  "boardDescription": "IT 관련한 최신 트렌드를 작성합니다."
+},
+
+[
+{
+"boardCode": 2,
+"employeeCode": 1,
+"createPostStatus": "Y"
+},
+{
+"boardCode": 2,
+"employeeCode": 2,
+"createPostStatus": "N"
+}
+
+]
+
+
+
+### 게시판 수정
+PUT http://localhost:1208/board/boards
+Content-Type: application/json
+
+{
+  "boardTitle": "IT 소식",
+  "boardDescription": "IT 관련한 최신 트렌드를 작성합니다."
+
+}
+
+
+### 게시판 삭제
+DELETE http://localhost:1208/board/boards/{boardCode}
+
+
+
+
+
 
 
 

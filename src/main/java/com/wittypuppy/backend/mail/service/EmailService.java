@@ -6,10 +6,13 @@ import com.wittypuppy.backend.mail.entity.Email;
 import com.wittypuppy.backend.mail.entity.Employee;
 import com.wittypuppy.backend.mail.repository.MailEmailRepository;
 import com.wittypuppy.backend.mail.repository.MailEmployeeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,17 +55,11 @@ public class EmailService {
     @Transactional
     public EmailDTO sendMail(EmailDTO email, String status){
         switch (status){    //여기에 상태에 맞춰서 처리하자.
-            case "send":break;
             case "temporary":   //임시저장
                 email.setEmailStatus("temporary");break;  //별도 처리 필요 없음
-            case "reserve":     //예약
-                email.setEmailStatus("reserve");break;    //스케쥴링ㄱ 시간 되면 send로 바꿔주면 됨
-
-            default: return null;
+            default: break;
         }
         Email emailEntity = modelMapper.map(email,Email.class);    //엔티티로 변환 됨
-
-
         return modelMapper.map(emailRepository.save(emailEntity),EmailDTO.class);
 
     }
@@ -110,6 +107,39 @@ public class EmailService {
         List<Email> emailEntity = emailRepository.findByEmailSenderAndEmailStatus(employeeCode,"temporary");
         return convert(emailEntity,EmailDTO.class);
     }
+    public List<EmailDTO> findByEmailSender(String word){
+        Employee employee = new Employee();
+        employee.setEmployeeId(word);
+        return convert(emailRepository.findAllByEmailSender(employee),EmailDTO.class);
+    }
+    public List<EmailDTO> findByEmailSendTime(String word) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(word, formatter);
+        System.out.println(dateTime);
+        return convert(emailRepository.findAllByEmailSendTime(dateTime),EmailDTO.class);
+    }
+    public List<EmailDTO> findByEmailContent(String word) {
+        return convert(emailRepository.findAllByEmailContentLike(word),EmailDTO.class);
+    }
+    public List<EmailDTO> findByEmailTitle(String word) {
+        return convert(emailRepository.findAllByEmailTitleLike(word),EmailDTO.class);
+    }
+    //예약상태의 메일을 추가하는 메서드
+    public EmailDTO sendReserveMail(EmailDTO emailDTO) {
+        emailDTO.setEmailStatus("reserve");
+        Email email = modelMapper.map(emailDTO,Email.class);
+        emailRepository.save(email);
+        return modelMapper.map(email,EmailDTO.class);
+    }
+    //예약된 시간에 메일의 상태를 send로 바꿔주는 메서드 알람도 같이 보내자
+    public EmailDTO sendReserveMail(Long emailCode) {
+        Email email = emailRepository.findById(emailCode)
+                .orElseThrow(() -> new EntityNotFoundException(emailCode+"번 이메일을 찾을 수 없습니다."));
+        email.setEmailStatus("send");
+        emailRepository.save(email);
+
+        return modelMapper.map(email,EmailDTO.class);
+    }
 
     /**
      * DTO를 엔티티로, 엔티티를 DTO로 바꿔주는 메소드
@@ -122,6 +152,7 @@ public class EmailService {
                 .map(value -> modelMapper.map(value, targetClass))
                 .collect(Collectors.toList());
     }
+
 
 
 }

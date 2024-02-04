@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity(name = "BOARD_POST_COMMENT")
 @Table(name = "tbl_post_comment")
 public class PostComment {
+
     @Id
     @Column(name = "post_comment_code",columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

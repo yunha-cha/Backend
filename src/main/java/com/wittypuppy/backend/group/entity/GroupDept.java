@@ -19,6 +19,9 @@ public class GroupDept {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long deptCode;
 
+    @Column(name = "department_name")
+    private String deptName;
+
     @OneToMany(mappedBy = "department")
     private List<GroupEmp> employee;
 

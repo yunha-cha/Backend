@@ -19,9 +19,9 @@ public class BoardMemberDTO {
 
     private Long boardCode;
 
-    private String boardMemberCreatePostStatus;
+    private String createPostStatus;
 
-    private List<PostCommentDTO> postCommentList;
+//    private List<PostCommentDTO> postCommentList;
 
     private List<PostAlertDTO> postAlertList;
 

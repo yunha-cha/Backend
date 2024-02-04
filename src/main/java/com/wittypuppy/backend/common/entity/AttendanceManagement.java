@@ -31,7 +31,7 @@ public class AttendanceManagement {
     @Column(name = "attendance_management_state", columnDefinition = "VARCHAR(100)")
     private String attendanceManagementState;
 
-    @Column(name = "attendance_management_work_day", columnDefinition = "DATETIME")
+    @Column(name = "attendance_management_work_day", columnDefinition = "DATE")
     private LocalDateTime attendanceManagementWorkDay;
 
     @JoinColumn(name = "attendence_management_code")
