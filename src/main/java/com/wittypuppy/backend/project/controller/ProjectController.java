@@ -1,12 +1,11 @@
 package com.wittypuppy.backend.project.controller;
 
+import com.wittypuppy.backend.common.dto.Criteria;
+import com.wittypuppy.backend.common.dto.PageDTO;
+import com.wittypuppy.backend.common.dto.PagingResponseDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
-import com.wittypuppy.backend.project.dto.EmployeeDTO;
-import com.wittypuppy.backend.project.dto.ProjectDTO;
-import com.wittypuppy.backend.project.dto.ProjectMainDTO;
-import com.wittypuppy.backend.project.dto.ProjectOptionsDTO;
+import com.wittypuppy.backend.project.dto.*;
 import com.wittypuppy.backend.project.service.ProjectService;
-import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,32 +39,36 @@ public class ProjectController {
      * @return 200, 메시지, 보낼데이터 반환
      */
     @GetMapping("/projects")
-    public ResponseEntity<ResponseDTO> selectProjects(@RequestParam(required = false) String projectType,
-                                                      @RequestParam(required = false) String searchValue,
-                                                      @AuthenticationPrincipal Object object) {
+    public ResponseEntity<ResponseDTO> selectProjectListWithPaging(@RequestParam(required = false) String projectType,
+                                                                   @RequestParam(required = false) String searchValue,
+                                                                   @RequestParam(name = "offset", defaultValue = "1") String offset,
+                                                                   @AuthenticationPrincipal Object object) {
         List<ProjectMainDTO> result = null;
         Long userEmployeeCode = 1L;
+        Criteria cri = new Criteria(Integer.valueOf(offset), 6);
         if (Objects.isNull(projectType) || projectType.isBlank()) {
             if (Objects.isNull(searchValue) || searchValue.isBlank()) {
-                result = projectService.selectProjectList();
+                result = projectService.selectProjectListWithPaging(cri);
             } else {
-                result = projectService.searchProjectList(searchValue);
+                result = projectService.searchProjectListWithPaging(searchValue, cri);
             }
         } else if (projectType.equals("my-project")) {
             if (Objects.isNull(searchValue) || searchValue.isBlank()) {
-                result = projectService.selectMyProjectList(userEmployeeCode);
+                result = projectService.selectMyProjectListWithPaging(userEmployeeCode, cri);
             } else {
-                result = projectService.searchMyProjectList(userEmployeeCode, searchValue);
+                result = projectService.searchMyProjectListWithPaging(userEmployeeCode, searchValue, cri);
             }
         } else if (projectType.equals("my-dept-project")) {
             if (Objects.isNull(searchValue) || searchValue.isBlank()) {
-                result = projectService.selectMyDeptProjectList(userEmployeeCode);
+                result = projectService.selectMyDeptProjectListWithPaging(userEmployeeCode, cri);
             } else {
-                result = projectService.searchMyDeptProjectList(userEmployeeCode, searchValue);
+                result = projectService.searchMyDeptProjectListWithPaging(userEmployeeCode, searchValue, cri);
             }
         }
-
-        return res("프로젝트 검색 성공", result);
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+        pagingResponseDTO.setData(result);
+        pagingResponseDTO.setPageInfo(new PageDTO(cri, (int) result.size()));
+        return res("프로젝트 검색 성공", pagingResponseDTO);
     }
 
     /**
@@ -104,6 +107,22 @@ public class ProjectController {
         Long userEmployeeCode = 12L;
         Map<String, Object> result = projectService.openProject(projectCode, userEmployeeCode);
         return res("프로젝트 열기 성공", result);
+    }
+
+    @GetMapping("/projects/{projectCode}/paging")
+    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
+            @PathVariable Long projectCode,
+            @RequestParam(name = "offset", defaultValue = "1") String offset) {
+        Long userEmployeeCode = 12L;
+        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
+
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+        List<ProjectPostDTO> projectPostList = projectService.selectProjectPostListWithPaging(projectCode, cri, userEmployeeCode);
+        pagingResponseDTO.setData(projectPostList);
+
+        pagingResponseDTO.setPageInfo(new PageDTO(cri, (int) projectPostList.size()));
+
+        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
     }
 
     /**
