@@ -6,6 +6,9 @@ import com.wittypuppy.backend.attendance.entity.Vacation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface ManagementRepository extends JpaRepository <AttendanceManagement, Long> {
 
 
@@ -32,7 +35,7 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
             nativeQuery = true)
     Long attendanceVacation(Long employeeCode);
 
-
+    AttendanceManagement findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(Long employeeCode);
 
 
 //    @Query(value = "SELECT " +
