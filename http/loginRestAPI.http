@@ -81,14 +81,14 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07",
-  "employeeName": "강해린",
-  "employeeEmail": "kkkrrr12@gmail.com",
+  "employeeId": "user09",
+  "employeePassword": "pass09",
+  "employeeName": "서보혜",
+  "employeeEmail": "kkkrrr55@gmail.com",
   "employeeRetirementDate": "",
   "employeeBirthDate": "2003-03-03",
   "empAddress": "동대문구 종로구 하이미디어",
-  "empPhone": "010-3444-4132"
+  "empPhone": "010-3555-4132"
 
 }
 
@@ -99,7 +99,7 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07"
+  "employeeId": "user09",
+  "employeePassword": "pass09"
 }
 

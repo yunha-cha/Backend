@@ -93,6 +93,10 @@ public class AttendanceService {
     }
 
 
+
+
+
+
     public Page<ApprovalLineDTO> myDocumentPaymentList(Criteria cri, Long employeeCode) {
         /*
         * 신청한 문서 결재 완료 상태
@@ -265,14 +269,16 @@ public class AttendanceService {
 
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceWaiting ServiceStart======");
-//
-//        ApprovalLine result = managementRepository.attendanceWaiting(employeeCode);
+
+//        ApprovalLine result = lineRepository.attendanceWaiting(employeeCode);
 //
 //        ApprovalLineDTO results = modelMapper.map(result, ApprovalLineDTO.class);
 //
-//        System.out.println("========== result ======== " + result);
+//        System.out.println("========== result ========> " + result);
 //        System.out.println("========attendanceWaiting end ======");
 //
+//        return results;
+
         return null;
     }
 
@@ -321,8 +327,6 @@ public class AttendanceService {
             updateAttendance.setAttendanceManagementDepartureTime(attendanceManagementDTO.getAttendanceManagementDepartureTime());
             updateAttendance.setAttendanceManagementState(attendanceManagementDTO.getAttendanceManagementState());
 
-
-
             result = 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -330,4 +334,6 @@ public class AttendanceService {
 
         return result > 0 ? "퇴근시간 수정 성공" : "퇴근시간  수정 실패";
     }
+
+
 }

@@ -2,7 +2,6 @@ package com.wittypuppy.backend.attendance.controller;
 
 
 import com.wittypuppy.backend.attendance.dto.*;
-import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
 import com.wittypuppy.backend.attendance.paging.PagingResponseDTO;
@@ -13,10 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 
 @RestController
@@ -87,7 +82,7 @@ public class AttendanceController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
 
-
+    //퇴근 시간 업데이트
     @PutMapping ("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteUpdate(
             @RequestBody AttendanceManagementDTO attendanceManagementDTO
@@ -104,11 +99,6 @@ public class AttendanceController {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 퇴근 수정 성공", login));
     }
-
-
-
-
-
 
 
 
@@ -165,6 +155,7 @@ public class AttendanceController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "내 기안 문서 조회 성공", pagingResponse));
 
     }
+
 
 
     //내가 신청한 문서 결재 완료
