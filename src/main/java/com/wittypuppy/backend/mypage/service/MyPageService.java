@@ -75,7 +75,7 @@ public class MyPageService {
             log.info("마이페이지 비밀번호 변경 중간");
             //현재 비밀번호랑 일치하면 새로운 비밀번호로 업데이트
             String newHashPwd = BCrypt.hashpw(newEmpPwd, BCrypt.gensalt());
-            myPageUpdateEmp.empPwd(newHashPwd);
+            myPageUpdateEmp.setEmpPwd(newHashPwd);
             log.info("마이페이지 비밀번호 변경 중간의 끝");
             myPageUpdateRepository.save(myPageUpdateEmp);
             return modelMapper.map(myPageUpdateEmp, MyPageUpdateDTO.class);

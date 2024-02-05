@@ -25,8 +25,8 @@ Content-Type: application/json
 Authorization: Bearer eyJkYXRlIjoxNzA3MDk5OTk4MzE1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImthbmdoYWVyaW5AZ21haWwuY29tIiwiZXhwIjoxNzA3MTAzNTk4LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlTm8iOjAsImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9BRE1JTiIsImF1dGhvcml0eURlc2MiOiLqtIDrpqzsnpAifX1dfQ.O1IEZ5UDxsKgXK-nxmEpGh3jmlTwuGMof00y_zLHKB0
 
 {
-  "empPwd": "pass35",
-  "newEmpPwd": "pass36"
+  "empPwd": "pass12",
+  "newEmpPwd": "pass13"
 }
 
 
