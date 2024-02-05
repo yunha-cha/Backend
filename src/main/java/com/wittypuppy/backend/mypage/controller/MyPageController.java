@@ -83,7 +83,7 @@ public class MyPageController {
             System.out.println("정보나오냐" + myPageUpdateDTO.getEmpPwd());
             System.out.println("정보나오냐" + myPageUpdateDTO.getNewEmpPwd());
 
-            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경 성공", myPageUpdateEmp));
+            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경 성공","비밀번호 변경 성공"));
         }
        catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ResponseDTO(HttpStatus.BAD_REQUEST, e.getMessage(), null));
