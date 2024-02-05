@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,10 +37,25 @@ public class MessengerService {
     private final MessengerConfig messengerConfig;
 
     /* 초기 채팅방 코드 (구독을 위함) */
-    public Map<String, Object> selectChatroomList(Long userEmployeeCode) {
-        // 1. 내가 어디에 들어있는지.(employeeCode를 기준으로 chatMemberCode를 읽어서. 그걸 이용해 ChatroomCode 를 챙겨가야 한다.
+    public ChatroomInfo selectChatroomList(Long userEmployeeCode) {
+        // 1. 내가 어디에 들어있는지.(employeeCode를 기준으로 chatMemberCode를 읽어서. 그걸 이용해 ChatroomCode 를 우선 챙겨가야 한다.
         // 2. 채팅방에 내가 친 채팅 + 채팅방 각각 최근 채팅
         // 3. 그중 하나라도 내가 못본 채팅이 있으면 그 여부를 반환.
+        ChatroomInfo chatroomInfo = new ChatroomInfo();
+
+        List<Chatroom> chatroomList = chatroomRepository.findAllByChatroomMemberList_ChatroomMember_Employee_EmployeeCode(userEmployeeCode);
+        List<Long> chatroomCodeList = chatroomList.stream().map(chatroom -> chatroom.getChatroomCode()).toList();
+        chatroomInfo.setChatroomCodeList(chatroomCodeList);
+
+        for (Long chatroomCode : chatroomCodeList) {
+            Long[] chatCode = chatRepository.findChatCodesInChatAndChatReadStatus(chatroomCode, userEmployeeCode);
+            if (chatCode != null && chatCode[0] > chatCode[1]) {
+                chatroomInfo.setIsRemainingChat("Y");
+                return chatroomInfo;
+            }
+        }
+        chatroomInfo.setIsRemainingChat("N");
+        return chatroomInfo;
     }
 
     /* 메신저 열기 */

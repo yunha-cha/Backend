@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.messenger.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import com.wittypuppy.backend.messenger.dto.ChatroomInfo;
 import com.wittypuppy.backend.messenger.service.MessengerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,9 @@ public class MessengerController {
             @AuthenticationPrincipal Object object) {
         Long userEmployeeCode = 12L;
 
-        Map<String, Object> resultMap = messengerService.selectChatroomList(userEmployeeCode);
+        ChatroomInfo chatroomInfo = messengerService.selectChatroomList(userEmployeeCode);
 
-        return res("채팅방 목록 식별 코드와 안읽은 채팅 존재 여부 반환", resultMap);
+        return res("채팅방 목록 식별 코드와 안읽은 채팅 존재 여부 반환", chatroomInfo);
     }
 
     /**

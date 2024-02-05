@@ -15,6 +15,5 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
 
     List<Chatroom> findAllByChatroomMemberList_ChatroomMemberTypeNot(String chatroomMemberType);
 
-    @Query("SELECT c.chatroomCode, MAX(c.)")
-    List<Chat> findMaxValueByChatroomCodeIn(List<Long> chatroomCodeList);
+    List<Chatroom> findAllByChatroomMemberList_ChatroomMember_Employee_EmployeeCode(Long userEmployeeCode);
 }

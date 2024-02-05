@@ -21,4 +21,5 @@ public interface ChatroomMemberRepository extends JpaRepository<ChatroomMember, 
 
     List<ChatroomMember> findAllByChatroomCodeAndChatroomMemberTypeIn(Long chatroomCode, List<String> chatroomMemberTypeList);
 
+    List<ChatroomMember> findAllByEmployee_EmployeeCode(Long userEmployeeCode);
 }
