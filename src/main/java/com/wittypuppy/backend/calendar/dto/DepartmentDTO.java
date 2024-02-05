@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.calendar.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor

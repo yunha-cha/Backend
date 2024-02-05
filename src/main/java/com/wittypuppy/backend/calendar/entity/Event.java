@@ -1,7 +1,10 @@
 package com.wittypuppy.backend.calendar.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -9,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "CALENDAR_EVENT")
 @Table(name = "tbl_event")
 public class Event {
@@ -32,4 +34,33 @@ public class Event {
     @JoinColumn(name = "event_code")
     @OneToMany(cascade = CascadeType.ALL)
     private List<EventAttendee> eventAttendeeList;
+
+    public Event setEventCode(Long eventCode) {
+        this.eventCode = eventCode;
+        return this;
+    }
+
+    public Event setCalendarCode(Long calendarCode) {
+        this.calendarCode = calendarCode;
+        return this;
+    }
+
+    public Event setDepartment(Department department) {
+        this.department = department;
+        return this;
+    }
+
+    public Event setEventOptions(EventOptions eventOptions) {
+        this.eventOptions = eventOptions;
+        return this;
+    }
+
+    public Event setEventAttendeeList(List<EventAttendee> eventAttendeeList) {
+        this.eventAttendeeList = eventAttendeeList;
+        return this;
+    }
+
+    public Event builder() {
+        return new Event(eventCode, calendarCode, department, eventOptions, eventAttendeeList);
+    }
 }

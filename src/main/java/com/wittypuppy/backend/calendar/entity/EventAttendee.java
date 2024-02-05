@@ -3,8 +3,6 @@ package com.wittypuppy.backend.calendar.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -18,14 +16,14 @@ public class EventAttendee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventAttendeeCode;
 
-    @Column(name="event_code")
+    @Column(name = "event_code")
     private Long eventCode;
 
-    @JoinColumn(name="employee_code")
+    @JoinColumn(name = "employee_code")
     @ManyToOne
     private Employee employee;
 
-    @JoinColumn(name="event_attendee_code")
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<EventAlert> eventAlertList;
+    @JoinColumn(name = "event_attendee_code")
+    @OneToOne(cascade = CascadeType.ALL)
+    private EventAlert eventAlert;
 }

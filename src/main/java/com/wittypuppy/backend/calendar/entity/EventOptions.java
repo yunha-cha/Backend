@@ -1,7 +1,10 @@
 package com.wittypuppy.backend.calendar.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -9,9 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "CALENDAR_EVENT_OPTIONS")
-@Table(name = "tbl_EVENT_OPTIONS")
+@Table(name = "tbl_event_options")
 public class EventOptions {
     @Id
     @Column(name = "event_options_code", columnDefinition = "BIGINT")
@@ -59,4 +61,83 @@ public class EventOptions {
 
     @Column(name = "event_border_color", columnDefinition = "VARCHAR(100)")
     private String eventBorderColor;
+
+    public EventOptions setEventOptionsCode(Long eventOptionsCode) {
+        this.eventOptionsCode = eventOptionsCode;
+        return this;
+    }
+
+    public EventOptions setEventCode(Long eventCode) {
+        this.eventCode = eventCode;
+        return this;
+    }
+
+    public EventOptions setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
+        return this;
+    }
+
+    public EventOptions setEventContent(String eventContent) {
+        this.eventContent = eventContent;
+        return this;
+    }
+
+    public EventOptions setEventStartDate(LocalDateTime eventStartDate) {
+        this.eventStartDate = eventStartDate;
+        return this;
+    }
+
+    public EventOptions setEventEndDate(LocalDateTime eventEndDate) {
+        this.eventEndDate = eventEndDate;
+        return this;
+    }
+
+    public EventOptions setEventLocation(String eventLocation) {
+        this.eventLocation = eventLocation;
+        return this;
+    }
+
+    public EventOptions setEventRecurrenceRule(String eventRecurrenceRule) {
+        this.eventRecurrenceRule = eventRecurrenceRule;
+        return this;
+    }
+
+    public EventOptions setEventDeleteTime(LocalDateTime eventDeleteTime) {
+        this.eventDeleteTime = eventDeleteTime;
+        return this;
+    }
+
+    public EventOptions setEventDeleteStatus(String eventDeleteStatus) {
+        this.eventDeleteStatus = eventDeleteStatus;
+        return this;
+    }
+
+    public EventOptions setEventEditable(String eventEditable) {
+        this.eventEditable = eventEditable;
+        return this;
+    }
+
+    public EventOptions setEventColor(String eventColor) {
+        this.eventColor = eventColor;
+        return this;
+    }
+
+    public EventOptions setEventBackgroundColor(String eventBackgroundColor) {
+        this.eventBackgroundColor = eventBackgroundColor;
+        return this;
+    }
+
+    public EventOptions setEventDragBackgroundColor(String eventDragBackgroundColor) {
+        this.eventDragBackgroundColor = eventDragBackgroundColor;
+        return this;
+    }
+
+    public EventOptions setEventBorderColor(String eventBorderColor) {
+        this.eventBorderColor = eventBorderColor;
+        return this;
+    }
+
+    public EventOptions builder() {
+        return new EventOptions(eventOptionsCode, eventCode, eventTitle, eventContent, eventStartDate, eventEndDate, eventLocation, eventRecurrenceRule, eventDeleteTime, eventDeleteStatus, eventEditable, eventColor, eventBackgroundColor, eventDragBackgroundColor, eventBorderColor);
+    }
 }
