@@ -16,7 +16,6 @@ import java.util.Date;
 @ToString
 public class MyPageUpdateDTO {
 
-//    @NotNull(message = "이 컬럼에 데이터 무조건 들어와야됨")
     private Long empCode;
 
     private String empName;
@@ -33,5 +32,10 @@ public class MyPageUpdateDTO {
 
     private String address;
 
+    private String empPwd;
+
+    private String empId;
+
+    private String newEmpPwd;
 
 }

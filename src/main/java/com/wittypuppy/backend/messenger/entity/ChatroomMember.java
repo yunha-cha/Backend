@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.messenger.entity;
 
+import com.wittypuppy.backend.messenger.dto.ChatroomOptionsDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,12 +34,14 @@ public class ChatroomMember {
     @Column(name = "chatroom_member_invite_time")
     private LocalDateTime chatroomMemberInviteTime;
 
-    @JoinColumn(name = "chatroom_member_code")
-    @OneToMany
-    private List<ChatReadStatus> chatReadStatusList;
+    @Column(name = "chatroom_member_pinned_status")
+    private String chatroomMemberPinnedStatus;
 
     @JoinColumn(name = "chatroom_member_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<ChatReadStatus> chatReadStatusList;
+
+    @OneToMany(mappedBy = "chatroomMember", cascade = CascadeType.ALL)
     private List<Chat> chatList;
 
     public ChatroomMember setChatroomMemberCode(Long chatroomMemberCode) {
@@ -66,6 +69,11 @@ public class ChatroomMember {
         return this;
     }
 
+    public ChatroomMember setChatroomMemberPinnedStatus(String chatroomMemberPinnedStatus) {
+        this.chatroomMemberPinnedStatus = chatroomMemberPinnedStatus;
+        return this;
+    }
+
     public ChatroomMember setChatReadStatusList(List<ChatReadStatus> chatReadStatusList) {
         this.chatReadStatusList = chatReadStatusList;
         return this;
@@ -77,6 +85,6 @@ public class ChatroomMember {
     }
 
     public ChatroomMember builder() {
-        return new ChatroomMember(chatroomMemberCode, chatroomCode, employee, chatroomMemberType, chatroomMemberInviteTime, chatReadStatusList, chatList);
+        return new ChatroomMember(chatroomMemberCode, chatroomCode, employee, chatroomMemberType, chatroomMemberInviteTime, chatroomMemberPinnedStatus, chatReadStatusList, chatList);
     }
 }

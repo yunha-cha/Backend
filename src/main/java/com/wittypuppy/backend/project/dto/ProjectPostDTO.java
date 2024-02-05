@@ -4,30 +4,23 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@ToString
 @Setter
+@ToString
 public class ProjectPostDTO {
-    private Long projectPostCode;
-
     private Long projectCode;
-
+    private Long projectPostCode;
     private String projectPostStatus;
-
     private String projectPostPriority;
-
     private String projectPostTitle;
-
     private LocalDateTime projectPostCreationDate;
-
     private LocalDateTime projectPostModifyDate;
-
     private LocalDateTime projectPostDueDate;
-
-    private List<ProjectPostMemberDTO> projectPostMemberDTOList;
-
-    private List<ProjectPostCommentDTO> projectPostCommentDTOList;
+    private String employeeName;
+    private String employeeDeptName;
+    private Long projectPostMemberCount;
 }

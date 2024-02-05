@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.mypage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wittypuppy.backend.group.entity.GroupDept;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 //@ToString
 public class MyPageUpdateEmp {
 
@@ -22,7 +24,7 @@ public class MyPageUpdateEmp {
     @Column(name = "employee_name")
     private String empName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_code")
     private GroupDept department;
 
@@ -41,23 +43,31 @@ public class MyPageUpdateEmp {
     @Column(name = "employee_address")
     private String address;
 
+    @Column(name = "employee_id")
+    private String empId;
+
+    @Column(name = "employee_password")
+    private String empPwd;
+
+
+
     //이게 빌더 패턴이다
-    public MyPageUpdateEmp EmpCode(Long empCode) {
+    public MyPageUpdateEmp empCode(Long empCode) {
         this.empCode = empCode;
         return this;
     }
 
-    public MyPageUpdateEmp EmpName(String empName) {
+    public MyPageUpdateEmp empName(String empName) {
         this.empName = empName;
         return this;
     }
 
-    public MyPageUpdateEmp Department(GroupDept department) {
+    public MyPageUpdateEmp department(GroupDept department) {
         this.department = department;
         return this;
     }
 
-    public MyPageUpdateEmp EmpEmail(String empEmail) {
+    public MyPageUpdateEmp empEmail(String empEmail) {
         this.empEmail = empEmail;
         return this;
     }
@@ -67,27 +77,35 @@ public class MyPageUpdateEmp {
         return this;
     }
 
-    public MyPageUpdateEmp RetirementDate(Date retirementDate) {
+    public MyPageUpdateEmp retirementDate(Date retirementDate) {
         this.retirementDate = retirementDate;
         return this;
     }
 
-    public MyPageUpdateEmp EmpBirth(Date empBirth) {
+    public MyPageUpdateEmp empBirth(Date empBirth) {
         this.empBirth = empBirth;
         return this;
     }
 
-    public MyPageUpdateEmp Address(String address) {
+    public MyPageUpdateEmp address(String address) {
         this.address = address;
         return this;
     }
 
-    public MyPageUpdateEmp build() {
-        return new MyPageUpdateEmp(empCode, empName , department, empEmail, phone, retirementDate, empBirth, address);
+    public MyPageUpdateEmp empId(String empId) {
+        this.empId = empId;
+        return this;
     }
 
-//    public MyPageUpdateEmp build() {
-//        return new MyPageUpdateEmp(empCode, empEmail, phone, address);
-//    }
+    public MyPageUpdateEmp empPwd(String empPwd) {
+        this.empPwd = empPwd;
+        return this;
+    }
+
+    public MyPageUpdateEmp build() {
+        return new MyPageUpdateEmp(empCode, empName , department, empEmail, phone, retirementDate, empBirth, address,empId,empPwd);
+    }
+
+
 }
 

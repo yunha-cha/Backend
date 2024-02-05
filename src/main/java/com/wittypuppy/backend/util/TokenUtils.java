@@ -16,11 +16,13 @@ import java.util.Map;
  *  yml -> jwt-key, jwt-time 설정이 필요하다.
  *  jwt lib 버전 "io.jsonwebtoken:jjwt:0.9.1" 사용
  * */
+
 @Component
 public class TokenUtils {
 
     private static String jwtSecretKey;
     private static Long tokenValidateTime;
+
 
     @Value("${jwt.key}")
     public void setJwtSecretKey(String jwtSecretKey) {
@@ -133,6 +135,7 @@ public class TokenUtils {
         claims.put("employeeName", employee.getEmployeeName());
         claims.put("employeeRole", employee.getEmployeeRole());
         claims.put("employeeEmail", employee.getEmployeeEmail());
+        claims.put("empCode", employee.getEmployeeCode());
         //클래임은 문자열 키와 그에 해당하는 값으로 이루어진 맵 형태이다.
 
         return claims;

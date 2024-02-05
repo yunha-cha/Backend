@@ -1,7 +1,10 @@
 package com.wittypuppy.backend.project.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "PROJECT_PROJECT_POST")
 @Table(name = "tbl_project_post")
 public class ProjectPost {
@@ -41,10 +43,64 @@ public class ProjectPost {
     private LocalDateTime projectPostDueDate;
 
     @JoinColumn(name = "project_post_code")
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ProjectPostMember> projectPostMemberList;
 
-    @JoinColumn(name="project_post_code")
-    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_post_code")
+    @OneToMany
     private List<ProjectPostComment> projectPostCommentList;
+
+    public ProjectPost setProjectPostCode(Long projectPostCode) {
+        this.projectPostCode = projectPostCode;
+        return this;
+    }
+
+    public ProjectPost setProjectCode(Long projectCode) {
+        this.projectCode = projectCode;
+        return this;
+    }
+
+    public ProjectPost setProjectPostStatus(String projectPostStatus) {
+        this.projectPostStatus = projectPostStatus;
+        return this;
+    }
+
+    public ProjectPost setProjectPostPriority(String projectPostPriority) {
+        this.projectPostPriority = projectPostPriority;
+        return this;
+    }
+
+    public ProjectPost setProjectPostTitle(String projectPostTitle) {
+        this.projectPostTitle = projectPostTitle;
+        return this;
+    }
+
+    public ProjectPost setProjectPostCreationDate(LocalDateTime projectPostCreationDate) {
+        this.projectPostCreationDate = projectPostCreationDate;
+        return this;
+    }
+
+    public ProjectPost setProjectPostModifyDate(LocalDateTime projectPostModifyDate) {
+        this.projectPostModifyDate = projectPostModifyDate;
+        return this;
+    }
+
+    public ProjectPost setProjectPostDueDate(LocalDateTime projectPostDueDate) {
+        this.projectPostDueDate = projectPostDueDate;
+        return this;
+    }
+
+    public ProjectPost setProjectPostMemberList(List<ProjectPostMember> projectPostMemberList) {
+        this.projectPostMemberList = projectPostMemberList;
+        return this;
+    }
+
+    public ProjectPost setProjectPostCommentList(List<ProjectPostComment> projectPostCommentList) {
+        this.projectPostCommentList = projectPostCommentList;
+        return this;
+    }
+
+    public ProjectPost builder() {
+        return new ProjectPost(projectPostCode, projectCode, projectPostStatus, projectPostPriority, projectPostTitle, projectPostCreationDate, projectPostModifyDate, projectPostDueDate, projectPostMemberList, projectPostCommentList);
+    }
 }
