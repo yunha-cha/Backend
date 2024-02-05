@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.messenger.repository;
 
+import com.wittypuppy.backend.messenger.entity.Chat;
 import com.wittypuppy.backend.messenger.entity.Chatroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,5 +13,8 @@ import java.util.Optional;
 public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
     Optional<Chatroom> findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(Long chatroomCode, Long employeeCode);
 
-    Optional<Chatroom> findByChatroomCodeAndMessengerCode(Long chatroomCode, Long messengerCode);
+    List<Chatroom> findAllByChatroomMemberList_ChatroomMemberTypeNot(String chatroomMemberType);
+
+    @Query("SELECT c.chatroomCode, MAX(c.)")
+    List<Chat> findMaxValueByChatroomCodeIn(List<Long> chatroomCodeList);
 }

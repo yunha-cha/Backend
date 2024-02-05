@@ -3,6 +3,7 @@ package com.wittypuppy.backend.messenger.service;
 import com.wittypuppy.backend.common.exception.DataInsertionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.common.exception.DataUpdateException;
+import com.wittypuppy.backend.messenger.config.MessengerConfig;
 import com.wittypuppy.backend.messenger.dto.*;
 import com.wittypuppy.backend.messenger.entity.*;
 import com.wittypuppy.backend.messenger.repository.*;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,14 @@ public class MessengerService {
     private final MessengerRepository messengerRepository;
     private final ProfileRepository profileRepository;
     private final ModelMapper modelMapper;
+    private final MessengerConfig messengerConfig;
+
+    /* 초기 채팅방 코드 (구독을 위함) */
+    public Map<String, Object> selectChatroomList(Long userEmployeeCode) {
+        // 1. 내가 어디에 들어있는지.(employeeCode를 기준으로 chatMemberCode를 읽어서. 그걸 이용해 ChatroomCode 를 챙겨가야 한다.
+        // 2. 채팅방에 내가 친 채팅 + 채팅방 각각 최근 채팅
+        // 3. 그중 하나라도 내가 못본 채팅이 있으면 그 여부를 반환.
+    }
 
     /* 메신저 열기 */
     @Transactional
@@ -53,17 +63,12 @@ public class MessengerService {
                     }
                     return newMessenger;
                 });
-        List<Chatroom> chatroomList = messenger.getChatroomList();
 
         MessengerMainDTO messengerMainDTO = new MessengerMainDTO()
                 .setMessengerOption(messenger.getMessengerOption())
                 .setMessengerMiniAlarmOption(messenger.getMessengerMiniAlarmOption())
                 .setMessengerTheme(messenger.getMessengerTheme())
                 .builder();
-
-        if (chatroomList.size() == 0) {
-            return messengerMainDTO;
-        }
         // 채팅방이 조금이라도 있을 경우
         List<ChatroomMessengerMainDTO> chatroomMessengerMainDTOList = messengerRepository.getMessengerStatistics(userEmployeeCode);
         messengerMainDTO.setChatroomList(chatroomMessengerMainDTOList);
@@ -286,10 +291,11 @@ public class MessengerService {
         userChatroomMember = userChatroomMember.setChatroomMemberType("일반사원").builder();
         return "관리자 위임 성공";
     }
+
     /* 채팅방 프로필 사진 가져오기 */
-    public String chatroomProfileImage(Long chatroomCode, Long userEmployeeCode){
-        ChatroomProfile chatroomProfile = chatroomProfileRepository.findByChatroomCodeAndChatroomProfileDeleteStatus(chatroomCode,"N")
-                .orElseThrow(()->new DataNotFoundException("프로필 사진이 존재하지 않습니다."));
+    public String chatroomProfileImage(Long chatroomCode, Long userEmployeeCode) {
+        ChatroomProfile chatroomProfile = chatroomProfileRepository.findByChatroomCodeAndChatroomProfileDeleteStatus(chatroomCode, "N")
+                .orElseThrow(() -> new DataNotFoundException("프로필 사진이 존재하지 않습니다."));
 
         return chatroomProfile.getChatroomProfileChangedFile();
     }
@@ -323,15 +329,13 @@ public class MessengerService {
                     .orElseThrow(() -> new DataNotFoundException("관리자 한명만 남아서 채팅방을 삭제하려 했으나 채팅방 정보를 찾을 수 없습니다."));
             chatroomRepository.delete(chatroom);
             return "마지막에 채팅방을 나갔으므로 해당 채팅방이 삭제되었습니다.";
-        }
-        else{
+        } else {
             if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
                 userChatroomMember = userChatroomMember.setChatroomMemberType("삭제")
                         .builder();
                 return "채팅방에 나가기 성공했습니다.";
-            }
-            else {
-            return "해당 채팅방의 관리자이므로 나갈 수 없습니다. 다른 사람에게 권한을 위임해야 합니다.";
+            } else {
+                return "해당 채팅방의 관리자이므로 나갈 수 없습니다. 다른 사람에게 권한을 위임해야 합니다.";
             }
         }
     }
@@ -359,11 +363,12 @@ public class MessengerService {
     @Transactional
     public String updateChatReadStatus(Long chatCode, Long chatroomCode, Long userEmployeeCode) {
         ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(()->new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
+                .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
         ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, chatroomMember.getChatroomMemberCode())
-                .orElseThrow(()->new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
+                .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
         chatReadStatus.setChatCode(chatCode);
 
         return "최근 채팅 관찰 시점 갱신 성공";
     }
+
 }

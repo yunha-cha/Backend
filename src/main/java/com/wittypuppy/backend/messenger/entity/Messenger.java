@@ -32,10 +32,6 @@ public class Messenger {
     @Column(name = "messenger_theme")
     private String messengerTheme;
 
-    @JoinColumn(name = "messenger_code")
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Chatroom> chatroomList;
-
     public Messenger setMessengerCode(Long messengerCode) {
         this.messengerCode = messengerCode;
         return this;
@@ -61,12 +57,7 @@ public class Messenger {
         return this;
     }
 
-    public Messenger setChatroomList(List<Chatroom> chatroomList) {
-        this.chatroomList = chatroomList;
-        return this;
-    }
-
     public Messenger builder() {
-        return new Messenger(messengerCode, employee, messengerOption, messengerMiniAlarmOption, messengerTheme, chatroomList);
+        return new Messenger(messengerCode, employee, messengerOption, messengerMiniAlarmOption, messengerTheme);
     }
 }
