@@ -4,14 +4,14 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07",
-  "employeeName": "강해린",
-  "employeeEmail": "kkkrrr12@gmail.com",
+  "employeeId": "inji",
+  "employeePassword": "0202",
+  "employeeName": "연인지",
+  "employeeEmail": "inji@gmail.com",
   "employeeRetirementDate": "",
-  "employeeBirthDate": "2003-03-03",
-  "empAddress": "동대문구 종로구 하이미디어",
-  "empPhone": "010-3444-4132"
+  "employeeBirthDate": "1993-12-08",
+  "empAddress": "서울시 서초구 강남대로305",
+  "empPhone": "010-1111-2222"
 
 }
 
@@ -22,7 +22,7 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass34"
+  "employeeId": "inji",
+  "employeePassword": "0202"
 }
 

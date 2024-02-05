@@ -87,7 +87,7 @@ public class Employee {
 
     @JoinColumn(name = "employee_code")
     @OneToMany
-    private List<ApprovalDocument> approvalDocumentList;
+    private List<ApprovalDoc> approvalDocList;
 
     @OneToMany(mappedBy = "approvalRepresentativeEmployee")
     private List<ApprovalRepresent> approvalRepresentativeList; /*manytoone 을 2번 걸어버리자!*/
