@@ -49,7 +49,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/auth/signup","/auth/login",
                 "/api/v1/reviews",
                 "/api/v1/reviews/\\d++",
-                "/api/v1/reviews/(\\d+)?offset=\\d+"
+                "/api/v1/reviews/(\\d+)?offset=\\d+",
+                "/websocket"
         );
 
 

@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.project.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -8,16 +7,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@ToString
 @Setter
+@ToString
 public class ProjectPostCommentFileDTO {
+    private Long projectPostCommentCode;
     private Long projectPostCommentFileCode;
-
-    private Long projectPostCode;
-
-    private String projectPostCommentFileOgFile;
-
-    private String projectPostCommentFileChangedFile;
-
-    private LocalDateTime projectPostCommentFileCreationDate;
+    private String fileURL;
+    private LocalDateTime fileCreationDate;
 }

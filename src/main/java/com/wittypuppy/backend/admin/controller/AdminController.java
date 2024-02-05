@@ -2,6 +2,7 @@ package com.wittypuppy.backend.admin.controller;
 
 import com.wittypuppy.backend.admin.dto.*;
 import com.wittypuppy.backend.admin.service.AdminService;
+
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -98,9 +101,19 @@ public class AdminController {
      */
     @PutMapping("reset-password")
     public ResponseEntity<ResponseDTO> resetPassword(@RequestBody EmployeeDTO employeeDTO){
-
-
         return res("구현 중",employeeDTO);
+    }
+    @GetMapping("show-need-to-allow-board")
+    public ResponseEntity<ResponseDTO> showNeedAllowBoard(){
+        List<BoardDTO> boardDTO = adminService.showNeedAllowBoard();
+        return res("성공적인 조회",boardDTO);
+    }
+    @PutMapping("allow-board")
+    public ResponseEntity<ResponseDTO> allowBoardAccessStatus(@RequestParam Long boardCode){
+        BoardDTO boardDTO = adminService.findById(boardCode);
+        boardDTO.setBoardAccessStatus("Y");
+        BoardDTO result = adminService.allowBoard(boardDTO);
+        return res("성공적으로 허가햿습니다.",result);
     }
 
     /**

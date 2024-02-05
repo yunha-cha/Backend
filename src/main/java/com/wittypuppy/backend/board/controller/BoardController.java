@@ -1,9 +1,7 @@
 package com.wittypuppy.backend.board.controller;
 
 
-import com.wittypuppy.backend.board.dto.EmployeeDTO;
-import com.wittypuppy.backend.board.dto.PostCommentDTO;
-import com.wittypuppy.backend.board.dto.PostDTO;
+import com.wittypuppy.backend.board.dto.*;
 import com.wittypuppy.backend.board.service.BoardService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +83,38 @@ public class BoardController {
     }
 
 
+    /* 게시글 추천 */
+    @PostMapping ("/posts/{postCode}/like")
+    public ResponseEntity<ResponseDTO> likePost(@PathVariable Long postCode){
+
+        System.out.println("postCode = " + postCode);
+
+        Long employeeCode = 1L;
+
+        // 좋아요
+        PostLikeDTO postLikeDTO = boardService.findByEmployeeCode(employeeCode);
+
+        if(postLikeDTO == null){
+            PostLikeDTO postLikeDTO1 = new PostLikeDTO();
+
+            postLikeDTO1.setPostCode(postCode);
+            postLikeDTO1.setEmployeeCode(employeeCode);
+            postLikeDTO1 = boardService.insertPostLike(postLikeDTO1);
+
+            return res("좋아요~~~", postLikeDTO1);
+
+        } else{
+            System.out.println("삭제");
+            String result = boardService.deletePostLike(postLikeDTO);
+            System.out.println("result = " + result);
+
+            return res("좋아요 삭제", null);
+
+        }
+
+    }
+
+
     /* 게시글 수정 */
     @PutMapping("/posts/{postCode}")
     public ResponseEntity<ResponseDTO> updatePost(@RequestBody PostDTO postDTO, @PathVariable Long postCode){
@@ -96,7 +126,6 @@ public class BoardController {
         System.out.println("postCode = " + postCode);
 
         PostDTO updatePostDTO = boardService.updatePost(postDTO, postCode);
-
 
         return res("성공", updatePostDTO);
 
@@ -139,15 +168,6 @@ public class BoardController {
     }
 
 
-    /* 게시글 */
-
-
-    /* 게시글 추천 */
-    @PutMapping("")
-
-
-
-
 
     /* 댓글 등록 */
     @PostMapping("/posts/{postCode}/comment/regist")
@@ -184,6 +204,44 @@ public class BoardController {
 
         return res("댓글 삭제 성공", resultStr);
     }
+
+
+
+    /*********** 게시판 ***********/
+
+    /* 게시판 생성 */
+    @PostMapping("/boards/create")
+    public ResponseEntity<ResponseDTO> createBoard(@RequestBody BoardDTO boardDTO){
+
+
+
+        return null;
+    }
+
+
+    /* 게시판 수정 */
+    @PutMapping("/boards")
+    public ResponseEntity<ResponseDTO> modifyBoard(@RequestBody BoardDTO boardDTO){
+
+
+
+
+        return null;
+
+    }
+
+
+    /* 게시판 삭제 */
+    @DeleteMapping("/boards/{boardCode}")
+    public ResponseEntity<ResponseDTO> deleteBoard(@RequestBody BoardDTO boardDTO){
+
+
+
+        return null;
+
+    }
+
+
 
 
 

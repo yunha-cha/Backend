@@ -1,23 +1,20 @@
 package com.wittypuppy.backend.project.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@ToString
 @Setter
+@ToString
 public class ProjectPostMemberDTO {
     private Long projectPostMemberCode;
-
     private Long projectPostCode;
-
     private Long projectMemberCode;
-
     private String projectPostMemberDeleteStatus;
-
-    private List<ProjectPostCommentDTO> projectPostCommentDTOList;
+    private Long employeeCode;
+    private String employeeName;
+    private String profileFileURL;
+    private String departmentName;
+    private String jobName;
 }

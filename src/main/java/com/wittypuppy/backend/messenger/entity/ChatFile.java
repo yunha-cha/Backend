@@ -28,5 +28,5 @@ public class ChatFile {
     private String chatFileChangedFile;
 
     @Column(name = "upload_date")
-    private LocalDateTime chatroomFixedStatus;
+    private LocalDateTime chatFileUpdateDate;
 }

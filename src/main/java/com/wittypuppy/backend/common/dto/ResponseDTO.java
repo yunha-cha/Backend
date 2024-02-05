@@ -1,5 +1,8 @@
 package com.wittypuppy.backend.common.dto;
 
+import com.wittypuppy.backend.attendance.dto.ApprovalLineDTO;
+import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
+import com.wittypuppy.backend.attendance.dto.VacationDTO;
 import com.wittypuppy.backend.board.dto.PostDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,4 +28,5 @@ public class ResponseDTO {
         this.message = message;
         this.data = data;
     }
+
 }

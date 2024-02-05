@@ -1,6 +1,9 @@
 package com.wittypuppy.backend.project.dto;
 
+
 import com.wittypuppy.backend.project.entity.Employee;
+import com.wittypuppy.backend.project.entity.ProjectPostMember;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -8,16 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@ToString
 @Setter
+@ToString
 public class ProjectMemberDTO {
     private Long projectMemberCode;
 
     private Long projectCode;
 
-    private Employee employeeCode;
+    private Employee employee;
 
     private String projectMemberDeleteStatus;
-
-    private List<ProjectPostMemberDTO> projectPostMemberDTOList;
 }

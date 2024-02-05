@@ -20,8 +20,9 @@ public class Chat {
     @Column(name = "chatroom_code")
     private Long chatroomCode;
 
-    @Column(name = "chatroom_member_code")
-    private Long chatroomMemberCode;
+    @JoinColumn(name="chatroom_member_code")
+    @ManyToOne
+    private ChatroomMember chatroomMember;
 
     @Column(name = "chat_write_date")
     private LocalDateTime chatWriteDate;
@@ -30,12 +31,13 @@ public class Chat {
     private String chatContent;
 
     @JoinColumn(name = "chat_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatReadStatus> chatReadStatusList;
 
     @JoinColumn(name = "chat_code")
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ChatFile> chatFileList;
+
 
     public Chat setChatCode(Long chatCode) {
         this.chatCode = chatCode;
@@ -47,8 +49,8 @@ public class Chat {
         return this;
     }
 
-    public Chat setChatroomMemberCode(Long chatroomMemberCode) {
-        this.chatroomMemberCode = chatroomMemberCode;
+    public Chat setChatroomMember(ChatroomMember chatroomMember) {
+        this.chatroomMember = chatroomMember;
         return this;
     }
 
@@ -72,7 +74,7 @@ public class Chat {
         return this;
     }
 
-    public Chat build() {
-        return new Chat(chatCode, chatroomCode, chatroomMemberCode, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
+    public Chat builder() {
+        return new Chat(chatCode, chatroomCode, chatroomMember, chatWriteDate, chatContent, chatReadStatusList, chatFileList);
     }
 }

@@ -24,6 +24,10 @@ Content-Type: application/json
 GET http://localhost:1208/board/posts/3
 
 
+### 게시글 추천(좋아요)
+POST http://localhost:1208/board/posts/1/like
+
+
 ### 게시글 수정
 PUT http://localhost:1208/board/posts/2
 Content-Type: application/json
@@ -63,9 +67,56 @@ Content-Type: application/json
   "postCommentContext" : "3번 게시물을 2월1일 오후 3시 35분에 수정하였습니다."
 }
 
-
 ### 댓글 삭제
 DELETE http://localhost:1208/board/posts/comment/1
+
+
+
+
+### 게시판 생성
+POST http://localhost:1208/board/boards/create
+Content-Type: application/json
+
+{
+  "boardGroupCode": 1,
+  "boardTitle": "IT 소식",
+  "boardDescription": "IT 관련한 최신 트렌드를 작성합니다."
+},
+
+[
+{
+"boardCode": 2,
+"employeeCode": 1,
+"createPostStatus": "Y"
+},
+{
+"boardCode": 2,
+"employeeCode": 2,
+"createPostStatus": "N"
+}
+
+]
+
+
+
+### 게시판 수정
+PUT http://localhost:1208/board/boards
+Content-Type: application/json
+
+{
+  "boardTitle": "IT 소식",
+  "boardDescription": "IT 관련한 최신 트렌드를 작성합니다."
+
+}
+
+
+### 게시판 삭제
+DELETE http://localhost:1208/board/boards/{boardCode}
+
+
+
+
+
 
 
 
