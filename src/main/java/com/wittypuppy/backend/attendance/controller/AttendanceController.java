@@ -93,6 +93,7 @@ public class AttendanceController {
         System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
+        System.out.println(attendanceManagementDTO.getAttendanceManagementDepartureTime());
 
         // 퇴근 업데이트
         String login = attendanceService.updateDeparture(employeeCode, attendanceManagementDTO);

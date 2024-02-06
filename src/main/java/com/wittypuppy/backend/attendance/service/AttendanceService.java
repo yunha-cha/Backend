@@ -12,6 +12,7 @@ import com.wittypuppy.backend.attendance.repository.AttendanceApprovalRepository
 import com.wittypuppy.backend.attendance.repository.CommuteWorkTypeRepository;
 import com.wittypuppy.backend.attendance.repository.AttendanceLineRepository;
 import com.wittypuppy.backend.attendance.repository.ManagementRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
@@ -284,7 +285,7 @@ public class AttendanceService {
 
 
 
-
+@Transactional
     public String insertArrival(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
 
         System.out.println("============== insertArrival ======> serviceStart ");
@@ -312,6 +313,7 @@ public class AttendanceService {
     }
 
 
+    @Transactional
     public String updateDeparture(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
         System.out.println("===== employeeCode =====> " + employeeCode);
         System.out.println("======= attendanceManagementDTO ========= " + attendanceManagementDTO);
@@ -324,9 +326,13 @@ public class AttendanceService {
 
             System.out.println("======= updateAttendance = " + updateAttendance);
 
+            System.out.println("=========> " + attendanceManagementDTO.getAttendanceManagementDepartureTime());
+
             updateAttendance.setAttendanceManagementDepartureTime(attendanceManagementDTO.getAttendanceManagementDepartureTime());
             updateAttendance.setAttendanceManagementState(attendanceManagementDTO.getAttendanceManagementState());
 
+
+            System.out.println("======= updateAttendance ======> " + updateAttendance);
             result = 1;
         } catch (Exception e) {
             e.printStackTrace();
