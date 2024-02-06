@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ApprovalRepository extends JpaRepository<ApprovalDoc, Long> {
-    List<ApprovalDoc> findByemployeeCode(EmployeeDTO employeeDTO);
+//    List<ApprovalDoc> findByEmployee_EmployeeCode(Long asd); // 고쳐야 됩니다!!
 }

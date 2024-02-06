@@ -8,10 +8,10 @@ import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
 import com.wittypuppy.backend.attendance.paging.Criteria;
-import com.wittypuppy.backend.attendance.repository.ApprovalRepository;
-import com.wittypuppy.backend.attendance.repository.LineRepository;
+import com.wittypuppy.backend.attendance.repository.AttendanceApprovalRepository;
+import com.wittypuppy.backend.attendance.repository.CommuteWorkTypeRepository;
+import com.wittypuppy.backend.attendance.repository.AttendanceLineRepository;
 import com.wittypuppy.backend.attendance.repository.ManagementRepository;
-import com.wittypuppy.backend.attendance.repository.WorkTypeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
@@ -25,21 +25,21 @@ import java.time.LocalDateTime;
 public class AttendanceService {
 
 
-    private final WorkTypeRepository workTypeRepository;
+    private final CommuteWorkTypeRepository commuteWorkTypeRepository;
 
     private final ModelMapper modelMapper;
 
-    private final ApprovalRepository approvalRepository;
+    private final AttendanceApprovalRepository attendanceApprovalRepository;
 
-    private final LineRepository lineRepository;
+    private final AttendanceLineRepository attendanceLineRepository;
 
     private final ManagementRepository managementRepository;
 
-    public AttendanceService(WorkTypeRepository workTypeRepository, ModelMapper modelMapper, ApprovalRepository approvalRepository, LineRepository lineRepository, ManagementRepository managementRepository) {
-        this.workTypeRepository = workTypeRepository;
+    public AttendanceService(CommuteWorkTypeRepository commuteWorkTypeRepository, ModelMapper modelMapper, AttendanceApprovalRepository attendanceApprovalRepository, AttendanceLineRepository attendanceLineRepository, ManagementRepository managementRepository) {
+        this.commuteWorkTypeRepository = commuteWorkTypeRepository;
         this.modelMapper = modelMapper;
-        this.approvalRepository = approvalRepository;
-        this.lineRepository = lineRepository;
+        this.attendanceApprovalRepository = attendanceApprovalRepository;
+        this.attendanceLineRepository = attendanceLineRepository;
         this.managementRepository = managementRepository;
     }
 
@@ -53,7 +53,7 @@ public class AttendanceService {
         System.out.println("========= employeeCode ====== " + employeeCode);
         System.out.println("========== yearMonth ======= " + yearMonth);
 
-        Page<AttendanceWorkType> result = workTypeRepository.attendanceList(yearMonth, employeeCode, paging);
+        Page<AttendanceWorkType> result = commuteWorkTypeRepository.attendanceList(yearMonth, employeeCode, paging);
 
         Page<AttendanceWorkTypeDTO> workTypeList = result.map(attendance -> modelMapper.map(attendance, AttendanceWorkTypeDTO.class));
 
@@ -82,7 +82,7 @@ public class AttendanceService {
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = approvalRepository.findByApplyDocument(employeeCode, paging);
+        Page<ApprovalLine> result = attendanceApprovalRepository.findByApplyDocument(employeeCode, paging);
 
         Page<ApprovalLineDTO> resultList = result.map(myDocumentWaiting -> modelMapper.map(myDocumentWaiting, ApprovalLineDTO.class));
 
@@ -109,7 +109,7 @@ public class AttendanceService {
         System.out.println("employeeCode========> " + employeeCode);
 
         // approvalProcessOrder 전체를 고려하여 조회
-        Page<ApprovalLine> result = approvalRepository.findMyDocumentPayment (employeeCode, paging);
+        Page<ApprovalLine> result = attendanceApprovalRepository.findMyDocumentPayment (employeeCode, paging);
 
         Page<ApprovalLineDTO> resultList = result.map(myDocumentWaiting -> modelMapper.map(myDocumentWaiting, ApprovalLineDTO.class));
 
@@ -138,7 +138,7 @@ public class AttendanceService {
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = approvalRepository.findByApprovalProcessStatusAndLineEmployeeCode_EmployeeCodeNative(paging, employeeCode);
+        Page<ApprovalLine> result = attendanceApprovalRepository.findByApprovalProcessStatusAndLineEmployeeCode_EmployeeCodeNative(paging, employeeCode);
 
         Page<ApprovalLineDTO> resultList = result.map(myDocumentCompanion -> modelMapper.map(myDocumentCompanion, ApprovalLineDTO.class));
 
@@ -164,7 +164,7 @@ public class AttendanceService {
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = approvalRepository.findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(paging, employeeCode, "결재");
+        Page<ApprovalLine> result = attendanceApprovalRepository.findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(paging, employeeCode, "결재");
 
         Page<ApprovalLineDTO> resultList = result.map(paymentCompleted -> modelMapper.map(paymentCompleted, ApprovalLineDTO.class));
 
@@ -190,7 +190,7 @@ public class AttendanceService {
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = lineRepository.findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(paging, employeeCode, "반려");
+        Page<ApprovalLine> result = attendanceLineRepository.findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(paging, employeeCode, "반려");
 
         Page<ApprovalLineDTO> resultList = result.map(paymentRejection -> modelMapper.map(paymentRejection, ApprovalLineDTO.class));
 
@@ -218,7 +218,7 @@ public class AttendanceService {
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = approvalRepository.paymentWaiting(paging, employeeCode);
+        Page<ApprovalLine> result = attendanceApprovalRepository.paymentWaiting(paging, employeeCode);
 
         Page<ApprovalLineDTO> resultList = result.map(paymentWaiting -> modelMapper.map(paymentWaiting, ApprovalLineDTO.class));
 
