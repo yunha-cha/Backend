@@ -1,20 +1,33 @@
-//package com.wittypuppy.backend.messenger.controller;
-//
-//import com.wittypuppy.backend.messenger.dto.MessageDTO;
-//import com.wittypuppy.backend.messenger.service.MessengerService;
-//import lombok.AllArgsConstructor;
-//import org.springframework.messaging.handler.annotation.DestinationVariable;
-//import org.springframework.messaging.handler.annotation.MessageMapping;
-//import org.springframework.messaging.handler.annotation.Payload;
-//import org.springframework.messaging.simp.SimpMessagingTemplate;
-//import org.springframework.stereotype.Controller;
-//
-//@Controller
-//@AllArgsConstructor
-//public class MessengerWebsocketController {
-//    private final SimpMessagingTemplate messagingTemplate;
-//
-//    private final MessengerService messengerService;
+package com.wittypuppy.backend.messenger.controller;
+
+import com.wittypuppy.backend.messenger.dto.ChatDTO;
+import com.wittypuppy.backend.messenger.dto.SendDTO;
+import com.wittypuppy.backend.messenger.service.MessengerService;
+import lombok.AllArgsConstructor;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+
+@Controller
+@AllArgsConstructor
+public class MessengerWebsocketController {
+    private final SimpMessagingTemplate messagingTemplate;
+    private final MessengerService messengerService;
+
+    @MessageMapping("/messenger/chatrooms/{chatroomCode}/send")
+    public void sendChat(@DestinationVariable Long chatroomCode, @Payload SendDTO sendDTO) {
+        /* 1. 메시지 수신 정보 */
+        System.out.println("어떤 채팅방? " + chatroomCode);
+        System.out.println(">>> 어떤 메시지? " + sendDTO); // 처음에 전달할때는 분명 드라이브에 파일이 저장되어야 하므로.내부적으로 MultipartFile이 있다.
+
+        /* 2. 데이터베이스 저장 + 보낸 채팅을 return.(적절한 형식의 반환값을 얻기 위해) */
+//        ChatDTO chatDTO = messengerService.sendChat(chatroomCode, sendDTO);
+
+        /* 3. 만약 초대한 사람이 있다면 강제 구독. */
+    }
+}
 //
 //    @MessageMapping("/messenger/rooms/{roomCode}/send")
 //    public void sendMessage(@DestinationVariable Long roomId, @Payload MessageDTO message) {

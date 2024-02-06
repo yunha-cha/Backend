@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ public class MessengerConfig {
      * @return key가 채팅방 식별 코드이고 value가 그 채팅방의 멤버의 식별코드들의 Set 인 Map
      */
     @Bean
+    @Scope("singleton")
     public Map<Long, Set<Long>> oldChatMemberMap() {
         Map<Long, Set<Long>> oldChatMemberMap = new HashMap<>();
         // 여기서 위의 repository를 통해 최초의 oldChatMemberMap을 구해야 한다.
@@ -52,6 +54,7 @@ public class MessengerConfig {
      * @return key가 채팅방 식별 코드이고 value가 그 채팅방의 멤버의 식별코드들의 Set 인 Map
      */
     @Bean
+    @Scope("singleton")
     public Map<Long, Set<Long>> newChatMemberMap() {
         return new HashMap<>();
     }

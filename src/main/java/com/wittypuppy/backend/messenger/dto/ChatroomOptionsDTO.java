@@ -10,14 +10,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class ChatroomOptionsDTO {
-    private Long chatroomCode;
     private String chatroomTitle;
     private String chatroomFixedStatus;
-
-    public ChatroomOptionsDTO setChatroomCode(Long chatroomCode) {
-        this.chatroomCode = chatroomCode;
-        return this;
-    }
 
     public ChatroomOptionsDTO setChatroomTitle(String chatroomTitle) {
         this.chatroomTitle = chatroomTitle;
@@ -30,6 +24,6 @@ public class ChatroomOptionsDTO {
     }
 
     public ChatroomOptionsDTO builder() {
-        return new ChatroomOptionsDTO(chatroomCode, chatroomTitle, chatroomFixedStatus);
+        return new ChatroomOptionsDTO(chatroomTitle, chatroomFixedStatus);
     }
 }
