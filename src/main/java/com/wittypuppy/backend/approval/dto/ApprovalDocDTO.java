@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class ApprovalDocDTO {
 
-    private Long ApprovalDocCode;
+    private Long approvalDocCode;
     private String approvalForm;
     private EmployeeDTO employeeDTO;
     private LocalDateTime approvalRequestDate;

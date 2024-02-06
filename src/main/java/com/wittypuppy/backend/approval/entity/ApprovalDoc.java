@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class ApprovalDoc {
     @Id
     @Column(name = "approval_document_code")
-    private Long ApprovalDocCode;
+    private Long approvalDocCode;
 
     @Column(name = "approval_form")
     private String approvalForm;
@@ -25,7 +25,7 @@ public class ApprovalDoc {
     @ManyToOne
     private Employee employee;
 
-    @Column(name = "apprvoal_request_date")
+    @Column(name = "approval_request_date")
     private LocalDateTime approvalRequestDate;
 
     @Column(name = "whether_saving_approval")
