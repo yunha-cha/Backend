@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class SoftwareUse {
     @Id
     @Column(name = "software_use_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long softwareUseCode;
 
     @JoinColumn(name = "approval_document_code")

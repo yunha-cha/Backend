@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class ApprovalDoc {
     @Id
     @Column(name = "approval_document_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalDocCode;
 
     @Column(name = "approval_form")

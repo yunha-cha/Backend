@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class WorkType {
     @Id
     @Column(name = "work_type_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long workTypeCode;
 
     @JoinColumn(name = "approval_document_code")

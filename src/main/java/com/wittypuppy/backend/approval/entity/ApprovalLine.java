@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class ApprovalLine {
     @Id
     @Column(name = "approval_line_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalLineCode;
 
     @JoinColumn(name = "approval_document_code")

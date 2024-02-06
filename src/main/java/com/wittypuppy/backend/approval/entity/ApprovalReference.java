@@ -14,6 +14,7 @@ import lombok.*;
 public class ApprovalReference {
     @Id
     @Column(name = "approval_reference_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalReferenceCode;
 
     @JoinColumn(name = "approval_document_code")

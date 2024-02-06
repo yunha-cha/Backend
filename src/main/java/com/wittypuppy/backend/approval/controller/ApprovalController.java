@@ -1,14 +1,12 @@
 package com.wittypuppy.backend.approval.controller;
 
+import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
 import com.wittypuppy.backend.approval.service.ApprovalService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/approval")
@@ -24,5 +22,11 @@ public class ApprovalController {
     @GetMapping("/{approvalDocCode}")
     public ResponseEntity<ResponseDTO> selectInboxDoc(@PathVariable Long approvalDocCode){
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalService.selectInboxDoc(approvalDocCode)));
+    }
+
+    @PostMapping("/submit-approval")
+    public ResponseEntity<ResponseDTO> submitApproval(@RequestBody ApprovalDocDTO approvalDocDTO){
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공", approvalService.submitApproval(approvalDocDTO)));
     }
 }

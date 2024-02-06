@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class OnLeave {
     @Id
     @Column(name = "on_leave_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long onLeaveCode;
 
     @JoinColumn(name = "approval_document_code")
