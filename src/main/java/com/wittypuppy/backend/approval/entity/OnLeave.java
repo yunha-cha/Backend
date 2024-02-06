@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.approval.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +28,7 @@ public class OnLeave {
 
     @JoinColumn(name = "remaining_on_leave")
     @ManyToOne
-    private Employee onLeaveCount;
+    private LoginEmployee onLeaveCount;
 
     @Column(name = "kind_of_on_leave")
     private String kindOfOnLeave;

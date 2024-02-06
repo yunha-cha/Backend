@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +25,7 @@ public class ApprovalLine {
 
     @JoinColumn(name = "employee_code")
     @ManyToOne
-    private Employee employee;
+    private LoginEmployee loginEmployee;
 
     @Column(name = "approval_process_order")
     private Long approvalProcessOrder;

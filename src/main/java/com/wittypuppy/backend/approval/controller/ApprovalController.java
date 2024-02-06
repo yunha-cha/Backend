@@ -1,11 +1,13 @@
 package com.wittypuppy.backend.approval.controller;
 
+import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
 import com.wittypuppy.backend.approval.service.ApprovalService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +27,7 @@ public class ApprovalController {
     }
 
     @PostMapping("/submit-approval")
-    public ResponseEntity<ResponseDTO> submitApproval(@RequestBody ApprovalDocDTO approvalDocDTO){
-
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공", approvalService.submitApproval(approvalDocDTO)));
+    public ResponseEntity<ResponseDTO> submitApproval(@RequestBody ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal EmployeeDTO employeeDTO){
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공", approvalService.submitApproval(approvalDocDTO, employeeDTO)));
     }
 }

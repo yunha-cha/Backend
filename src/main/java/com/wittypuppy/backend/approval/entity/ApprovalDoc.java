@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,11 +24,12 @@ public class ApprovalDoc {
 
     @JoinColumn(name = "employee_code")
     @ManyToOne
-    private Employee employee;
+    private LoginEmployee employeeCode;
 
     @Column(name = "approval_request_date")
     private LocalDateTime approvalRequestDate;
 
     @Column(name = "whether_saving_approval")
     private String whetherSavingApproval;
+
 }

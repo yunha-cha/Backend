@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.approval.entity;
-
-import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +24,7 @@ public class ApprovalComment {
 
     @JoinColumn(name = "employee_code")
     @ManyToOne
-    private Employee employee;
+    private LoginEmployee loginEmployee;
 
     @Column(name = "approval_comment_content")
     private String approvalCommentContent;
