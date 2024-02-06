@@ -3,7 +3,7 @@
 GET http://localhost:1208/board/
 
 ### 게시판에 따른 게시글 조회
-GET http://localhost:1208/board/1
+GET http://localhost:1208/board/6
 
 
 
@@ -33,7 +33,7 @@ PUT http://localhost:1208/board/posts/2
 Content-Type: application/json
 
 {
-  "postTitle": "[수정] 2번째 게시물",
+  "postTitle": "[수정수정수정] 2번째 게시물",
   "postContext": "1월 31일 3시 46분에 게시물을 수정했습니다. 확인해주세요."
 }
 
@@ -78,43 +78,87 @@ POST http://localhost:1208/board/boards/create
 Content-Type: application/json
 
 {
-  "boardGroupCode": 1,
-  "boardTitle": "IT 소식",
-  "boardDescription": "IT 관련한 최신 트렌드를 작성합니다."
-},
+  "board": {
+    "boardGroupCode": 1,
+    "boardTitle": "IT 소식",
+    "boardDescription": "IT 최신 트렌드를 작성합니다."
+  },
 
-[
-{
-"boardCode": 2,
-"employeeCode": 1,
-"createPostStatus": "Y"
-},
-{
-"boardCode": 2,
-"employeeCode": 2,
-"createPostStatus": "N"
+  "memberList": [
+    {
+      "employeeCode": 1,
+      "createPostStatus": "Y"
+    },
+    {
+      "employeeCode": 2,
+      "createPostStatus": "N"
+    }
+
+  ]
+
 }
-
-]
 
 
 
 ### 게시판 수정
-PUT http://localhost:1208/board/boards
+PUT http://localhost:1208/board/boards/2
 Content-Type: application/json
 
 {
-  "boardTitle": "IT 소식",
-  "boardDescription": "IT 관련한 최신 트렌드를 작성합니다."
+  "board": {
+
+    "boardDescription": "IT 최신 트렌드를 작성합니다."
+  },
+
+  "memberList": [
+    {
+      "employeeCode": 1,
+      "createPostStatus": "Y"
+    },
+    {
+      "employeeCode": 2,
+      "createPostStatus": "N"
+    }
+
+  ]
 
 }
 
 
 ### 게시판 삭제
-DELETE http://localhost:1208/board/boards/{boardCode}
+DELETE http://localhost:1208/board/boards/7
 
 
 
+## 게시판 관리
+### 게시글 여러 개 삭제
+DELETE http://localhost:1208/board/boards/remove-posts
+Content-Type: application/json
+
+[
+  {
+    "postCode": 5
+  },
+
+  {
+    "postCode": 7
+  }
+]
+
+
+### 게시글 여러 개 공지 설정
+PUT http://localhost:1208/board/boards/notice-posts
+Content-Type: application/json
+
+[
+  {
+    "postCode": 1
+  },
+
+  {
+    "postCode": 2
+  }
+]
 
 
 
