@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository("Messenger_ChatRepository")
 public interface ChatRepository extends JpaRepository<Chat, Long> {
@@ -51,4 +52,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             "FROM MESSENGER_CHAT MC " +
             "WHERE MC.chatroomCode = :chatroomCode ")
     List<Chat> selectChatListByChatroomCodeWithPaging(Long chatroomCode, Pageable pageable);
+
+    Optional<Chat> findFirstByChatroomCodeOrderByChatCodeDesc(Long chatroomCode);
+
 }

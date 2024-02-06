@@ -232,7 +232,7 @@ public class MessengerService {
         // 그러면 이제 페이지가 얼추 계산된다.
         Pageable pageable = null;
         Long pageNumLong = 0L;
-        int pageSize = 10;
+        int pageSize = 50;
         List<Chat> chatList = null;
         if (lastReadChatCode == null) { // 처음 들어왔으면 맨 처음 페이지
             pageable = PageRequest.of(0, pageSize);
@@ -249,6 +249,14 @@ public class MessengerService {
                 chatList = beforeChatList;
             }
         }
+        /*맨 마지막의 페이지 번호*/
+        Long recentPageNum = chatCount == 0L ? 0L : (chatCount - 1L) / pageSize;
+        /*채팅 코드*/
+        Long recentChatCode = chatRepository.findFirstByChatroomCodeOrderByChatCodeDesc(chatroomCode)
+                .orElseThrow(() -> new DataNotFoundException("현재 마지막 채팅을 찾을 수 없습니다."))
+                .getChatCode();
+        /*그 채팅이 몇번째 데이터인지.*/
+        Long recentPageChatCount = chatCount / pageSize;
 
         List<ChatDTO> chatDTOList = chatList.stream().map(chat -> modelMapper.map(chat, ChatDTO.class))
                 .collect(Collectors.toList());
@@ -281,9 +289,9 @@ public class MessengerService {
         List<Chat> chatList = null;
         Pageable pageable = null;
         Long pageNumLong = 0L;
-        int pageSize = 10;
-        Long lastPageNum = chatCount == 0L ? 0L : (chatCount - 1L) / 10L;
-        Long myRequestChatPageNum = myRequestChatCount == 0L ? 0L : (myRequestChatCount - 1L) / 10L;
+        int pageSize = 50;
+        Long lastPageNum = chatCount == 0L ? 0L : (chatCount - 1L) / pageSize;
+        Long myRequestChatPageNum = myRequestChatCount == 0L ? 0L : (myRequestChatCount - 1L) / pageSize;
         if (direction.equals("UP")) {
             if (myRequestChatPageNum > 0L) {
                 pageable = PageRequest.of((int) (myRequestChatPageNum - 1), pageSize);
@@ -371,6 +379,13 @@ public class MessengerService {
                         .builder();
                 chatroomMemberRepository.save(newChatroomMember);
 
+                ChatReadStatus newChatReadStatus = new ChatReadStatus()
+                        .setChatroomCode(chatroomCode)
+                        .setChatroomMemberCode(newChatroomMember.getChatroomMemberCode())
+                        .builder();
+                chatReadStatusRepository.save(newChatReadStatus);
+
+                newChatMemberMap.get(chatroomCode).add(newChatroomMember.getChatroomMemberCode());
             });
         } catch (Exception e) {
             throw new DataUpdateException("채팅방 초대 실패");
@@ -464,6 +479,7 @@ public class MessengerService {
                 .setChatroomMemberType("삭제")
                 .builder();
         chatroomMemberRepository.save(kickChatroomMember);
+        oldChatMemberMap.get(chatroomCode).remove(kickChatroomMemberCode);
         return "해당 채팅방 멤버를 내보냈습니다.";
     }
 
@@ -477,12 +493,14 @@ public class MessengerService {
             Chatroom chatroom = chatroomRepository.findById(chatroomCode)
                     .orElseThrow(() -> new DataNotFoundException("채팅방 멤버가 한명만 남아서 채팅방을 삭제하려 했으나 채팅방 정보를 찾을 수 없습니다."));
             chatroomRepository.delete(chatroom);
+            oldChatMemberMap.remove(chatroomCode);
             return "마지막에 채팅방을 나갔으므로 해당 채팅방이 삭제되었습니다.";
         } else {
             if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
                 userChatroomMember = userChatroomMember.setChatroomMemberType("삭제")
                         .builder();
                 chatroomMemberRepository.save(userChatroomMember);
+                oldChatMemberMap.get(chatroomCode).remove(userEmployeeCode);
                 return "채팅방에 나가기 성공했습니다.";
             } else {
                 return "해당 채팅방의 관리자이므로 나갈 수 없습니다. 다른 사람에게 권한을 위임해야 합니다.";
@@ -490,24 +508,57 @@ public class MessengerService {
         }
     }
 
-    /* 채팅 입력하기 */
     @Transactional
-    public void createChat(String chatContent, Long chatroomCode, Long userEmployeeCode) {
-        Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 계정 정보가 해당 채팅방에 없습니다."));
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
-        LocalDateTime now = LocalDateTime.now();
-        Chat chat = new Chat()
-                .setChatroomCode(chatroom.getChatroomCode())
-                .setChatroomMember(userChatroomMember)
-                .setChatWriteDate(now)
-                .setChatContent(chatContent)
-                .builder();
-        chatRepository.save(chat);
+    public ChatDTO sendChat(Long chatroomCode, SendDTO sendDTO) {
+        try {
+            Long chatroomMemberCode = sendDTO.getChatroomMemberCode();
+            LocalDateTime chatWriteDate = sendDTO.getChatWriteDate();
+            String chatContent = sendDTO.getChatContent();
+            List<MultipartFile> chatFileList = sendDTO.getChatFileList();
+
+            ChatroomMember chatroomMember = chatroomMemberRepository.findById(chatroomMemberCode)
+                    .orElseThrow(() -> new DataNotFoundException("현재 데이터베이스에 계정 정보가 없습니다."));
+
+            Chat chat = new Chat()
+                    .setChatroomCode(chatroomCode)
+                    .setChatroomMember(chatroomMember)
+                    .setChatWriteDate(chatWriteDate)
+                    .setChatContent(chatContent)
+                    .builder();
+            if (chatFileList != null && !chatFileList.isEmpty()) {
+                LocalDateTime now = LocalDateTime.now();
+                List<ChatFile> chatFileEntityList = new ArrayList<>();
+                for (MultipartFile chatFile : chatFileList) {
+                    String imageName = UUID.randomUUID().toString().replace("-", "");
+                    String replaceFileName = null;
+                    try {
+                        replaceFileName = FileUploadUtils.saveFile(IMAGE_DIR, imageName, chatFile);
+                        ChatFile chatFileEntity = new ChatFile()
+                                .setChatFileOgFile(chatFile.getOriginalFilename())
+                                .setChatFileChangedFile(replaceFileName)
+                                .setChatFileUpdateDate(now)
+                                .builder();
+                        chatFileEntityList.add(chatFileEntity);
+                    } catch (IOException e) {
+                        FileUploadUtils.deleteFile(IMAGE_DIR, replaceFileName);
+                        throw new DataInsertionException("채팅 사진 저장 실패");
+                    }
+                }
+                chat = chat.setChatFileList(chatFileEntityList);
+                chatRepository.save(chat);
+            }
+            ChatDTO chatDTO = modelMapper.map(chat, ChatDTO.class);
+            return chatDTO;
+        } catch (Exception e) {
+            throw new DataInsertionException("채팅메시지 전송 실패");
+        }
     }
 
-    /* 채팅 사진 입력하기 */
+    public Long getEmployeeCode(Long chatroomMemberCode) {
+        ChatroomMember chatroomMember = chatroomMemberRepository.findById(chatroomMemberCode)
+                .orElseThrow(() -> new DataNotFoundException("잘못된 접근"));
+        return chatroomMember.getEmployee().getEmployeeCode();
+    }
 
     /* 채팅 관찰 시점 업데이트*/
     @Transactional

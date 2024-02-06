@@ -20,6 +20,9 @@ public class ChatroomMainDTO {
     private String pinnedStatus;
     private List<ChatroomMemberDTO> chatroomMemberDTOList;
     private List<ChatDTO> chatDTOList;
+    private Long recentPageNum;
+    private Long recentChatCode;
+    private Long recentPageChatCount;
 
     public ChatroomMainDTO setChatroomCode(Long chatroomCode) {
         this.chatroomCode = chatroomCode;
@@ -56,7 +59,22 @@ public class ChatroomMainDTO {
         return this;
     }
 
+    public ChatroomMainDTO setRecentPageNum(Long recentPageNum) {
+        this.recentPageNum = recentPageNum;
+        return this;
+    }
+
+    public ChatroomMainDTO setRecentChatCode(Long recentChatCode) {
+        this.recentChatCode = recentChatCode;
+        return this;
+    }
+
+    public ChatroomMainDTO setRecentPageChatCount(Long recentPageChatCount) {
+        this.recentPageChatCount = recentPageChatCount;
+        return this;
+    }
+
     public ChatroomMainDTO builder() {
-        return new ChatroomMainDTO(chatroomCode, chatroomTitle, chatroomProfileFileURL, lastReadChatCode, pinnedStatus, chatroomMemberDTOList, chatDTOList);
+        return new ChatroomMainDTO(chatroomCode, chatroomTitle, chatroomProfileFileURL, lastReadChatCode, pinnedStatus, chatroomMemberDTOList, chatDTOList, recentPageNum, recentChatCode, recentPageChatCount);
     }
 }

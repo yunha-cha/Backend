@@ -1,16 +1,20 @@
 package com.wittypuppy.backend.messenger.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @ToString
-@Setter
 @Entity(name = "MESSENGER_CHAT_FILE")
 @Table(name = "tbl_chat_file")
 public class ChatFile {
@@ -29,4 +33,33 @@ public class ChatFile {
 
     @Column(name = "upload_date")
     private LocalDateTime chatFileUpdateDate;
+
+    public ChatFile setChatFileCode(Long chatFileCode) {
+        this.chatFileCode = chatFileCode;
+        return this;
+    }
+
+    public ChatFile setChatCode(Long chatCode) {
+        this.chatCode = chatCode;
+        return this;
+    }
+
+    public ChatFile setChatFileOgFile(String chatFileOgFile) {
+        this.chatFileOgFile = chatFileOgFile;
+        return this;
+    }
+
+    public ChatFile setChatFileChangedFile(String chatFileChangedFile) {
+        this.chatFileChangedFile = chatFileChangedFile;
+        return this;
+    }
+
+    public ChatFile setChatFileUpdateDate(LocalDateTime chatFileUpdateDate) {
+        this.chatFileUpdateDate = chatFileUpdateDate;
+        return this;
+    }
+
+    public ChatFile builder() {
+        return new ChatFile(chatFileCode, chatCode, chatFileOgFile, chatFileChangedFile, chatFileUpdateDate);
+    }
 }

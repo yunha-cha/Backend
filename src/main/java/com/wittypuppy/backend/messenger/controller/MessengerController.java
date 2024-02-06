@@ -224,11 +224,20 @@ public class MessengerController {
     }
 
     @PutMapping("/chatrooms/{chatroomCode}/exit")
-    public ResponseEntity<ResponseDTO> kickChatroomMember(
+    public ResponseEntity<ResponseDTO> exitChatroomMember(
             @PathVariable Long chatroomCode,
             @AuthenticationPrincipal EmployeeDTO principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.exitChatroomMember(chatroomCode, userEmployeeCode));
+    }
+
+    @PutMapping("/chatrooms/{chatroomCode}/read-status-update")
+    public ResponseEntity<ResponseDTO> updateChatReadStatus(
+            @PathVariable Long chatroomCode,
+            @RequestParam Long chatCode,
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = 12L;
+        return res(messengerService.updateChatReadStatus(chatCode, chatroomCode, userEmployeeCode));
     }
 
     /**
