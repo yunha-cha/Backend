@@ -13,4 +13,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     List<Post> findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(Long boardCode, String s, Long boardCode1, String s1);
 
+
+    void findByBoardCode(Long boardCode);
 }

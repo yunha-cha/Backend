@@ -35,6 +35,8 @@ public class PostDTO {
 
     private Long postViews;
 
+    private Long postLikes;
+
 
     private LocalDateTime postDate;
 
