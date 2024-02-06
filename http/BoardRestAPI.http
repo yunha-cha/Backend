@@ -1,6 +1,8 @@
 
 ### 최근 순서대로 게시글 조회
 GET http://localhost:1208/board/
+Authorization: Bearer eyJkYXRlIjoxNzA3MTk4MDE2NTcxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyMDE2MTYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.HQtTuUz_Cvwr1kwwDMaXhtVXT3BTIxmvEIOyQZAHecs
+
 
 ### 게시판에 따른 게시글 조회
 GET http://localhost:1208/board/1
