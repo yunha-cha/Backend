@@ -4,14 +4,14 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "inji",
-  "employeePassword": "0202",
-  "employeeName": "연인지",
-  "employeeEmail": "inji@gmail.com",
+  "employeeId": "user07",
+  "employeePassword": "pass07",
+  "employeeName": "강해린",
+  "employeeEmail": "kkkrrr12@gmail.com",
   "employeeRetirementDate": "",
-  "employeeBirthDate": "1993-12-08",
-  "empAddress": "서울시 서초구 강남대로305",
-  "empPhone": "010-1111-2222"
+  "employeeBirthDate": "2003-03-03",
+  "empAddress": "동대문구 종로구 하이미디어",
+  "empPhone": "010-3444-4132"
 
 }
 
@@ -22,7 +22,26 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "inji",
-  "employeePassword": "0202"
+  "employeeId": "user07",
+  "employeePassword": "pass07"
 }
+
+###비밀번호 찾기
+POST http://localhost:1208/api/v1/employee/searchpwd
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MTkyMDg4OTAyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcxOTU2ODgsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.qGk3G8sePbmN3ILCIW-mUGzm6QQnlU5-28dTr1vV9fk
+
+{
+  "employeeId": "user07",
+  "employeeEmail": "kimmin699@gmail.com"
+}
+
+#### 로그아웃
+#POST http://localhost:1208/api/v1/employee/logout
+#Content-Type: application/json
+#Authorization: Bearer eyJkYXRlIjoxNzA3MTQ2OTE4NzYwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcxNTA1MTgsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.w8ni94uA7IRa4JFQR880Kj93qXoLIe269VUot7V7MnM
+#
+
+
+
 

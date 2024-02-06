@@ -1,0 +1,9 @@
+### 메인페이지 정보 조회
+
+### 메인페이지 최근순서대로 게시판 리스트 조회 <게시글 번호, 게시글 제목, 게시글 내용, 날짜, 조회수>
+GET http://localhost:1208/api/v1/mainpage/postlist
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA3MTk4MDE2NTcxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyMDE2MTYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.HQtTuUz_Cvwr1kwwDMaXhtVXT3BTIxmvEIOyQZAHecs
+
+###메인페이지 프로젝트 리스트 조회
+GET

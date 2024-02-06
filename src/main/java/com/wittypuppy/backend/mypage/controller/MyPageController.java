@@ -4,16 +4,15 @@ import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
-import com.wittypuppy.backend.mypage.entity.MyPageUpdateEmp;
 import com.wittypuppy.backend.mypage.service.MyPageService;
 import com.wittypuppy.backend.util.TokenUtils;
-import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/mypage")
@@ -83,13 +82,20 @@ public class MyPageController {
             System.out.println("정보나오냐" + myPageUpdateDTO.getEmpPwd());
             System.out.println("정보나오냐" + myPageUpdateDTO.getNewEmpPwd());
 
-            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경 성공", myPageUpdateEmp));
+            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경 성공","비밀번호 변경 성공"));
         }
        catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ResponseDTO(HttpStatus.BAD_REQUEST, e.getMessage(), null));
         }
 
     }
+
+//    @PostMapping("/update-profile")
+//    public ResponseEntity<ResponseDTO> updateProfile(@RequestParam("file") MultipartFile file,
+//                                                     @RequestParam("employeeCode") Long employeeCode) {
+//        String imageUrl = String.valueOf(myPageService.updateProfile(employeeCode, file));
+//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "imageUrl", "프로필사진 변경 성공"));
+//    }
 
 
 
