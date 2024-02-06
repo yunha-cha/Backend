@@ -29,8 +29,4 @@ public class Messenger {
 
     @Column(name = "messenger_theme", columnDefinition = "VARCHAR(100) DEFAULT 'DEFAULT'")
     private String messengerTheme;
-
-    @JoinColumn(name = "messenger_code")
-    @OneToMany
-    private List<Chatroom> chatroomList;
 }

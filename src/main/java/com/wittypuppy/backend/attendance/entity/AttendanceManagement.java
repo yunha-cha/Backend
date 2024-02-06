@@ -34,4 +34,6 @@ public class AttendanceManagement {
 
     @Column(name = "attendance_management_work_day", columnDefinition = "DATE")
     private LocalDate attendanceManagementWorkDay;
+
+
 }

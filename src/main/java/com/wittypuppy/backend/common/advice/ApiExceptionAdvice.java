@@ -1,6 +1,9 @@
-package com.wittypuppy.backend.common.exception;
+package com.wittypuppy.backend.common.advice;
 
 import com.wittypuppy.backend.common.dto.ApiExceptionDTO;
+import com.wittypuppy.backend.common.exception.DuplicatedMemberEmailException;
+import com.wittypuppy.backend.common.exception.LoginFailedException;
+import com.wittypuppy.backend.common.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

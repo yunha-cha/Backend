@@ -1,7 +1,6 @@
 package com.wittypuppy.backend.attendance.repository;
 
 
-import com.wittypuppy.backend.attendance.entity.ApprovalDocument;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,10 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
-
-public interface ApprovalRepository extends JpaRepository<ApprovalLine, Long> {
+public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine, Long> {
 
 
     //내 신청 문서 반려

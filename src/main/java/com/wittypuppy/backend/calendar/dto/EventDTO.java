@@ -1,9 +1,8 @@
 package com.wittypuppy.backend.calendar.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,13 +10,37 @@ import java.util.List;
 @ToString
 @Setter
 public class EventDTO {
-    private Long eventCode;
-
     private Long calendarCode;
 
-    private DepartmentDTO departmentDTO;
+    private Long eventCode;
 
-    private EventOptionsDTO eventOptionsDTO;
+    private String departmentName;
 
-    private List<EventAttendeeDTO> eventAttendeeDTOList;
+    private Long eventAttendeeCount;
+
+    private String eventTitle;
+
+    private String eventContent;
+
+    private LocalDateTime eventStartDate;
+
+    private LocalDateTime eventEndDate;
+
+    private String eventLocation;
+
+    private String eventRecurrenceRule;
+
+    private LocalDateTime eventDeleteTime;
+
+    private String eventDeleteStatus;
+
+    private String eventEditable;
+
+    private String eventColor;
+
+    private String eventBackgroundColor;
+
+    private String eventDragBackgroundColor;
+
+    private String eventBorderColor;
 }

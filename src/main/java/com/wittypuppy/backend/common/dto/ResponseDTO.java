@@ -17,7 +17,7 @@ public class ResponseDTO {
     private String message; // 응답메시지
     private Object data; // 응답데이터
 
-    public ResponseDTO(int status,String message, Object data){
+    public ResponseDTO(int status, String message, Object data) {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -29,4 +29,9 @@ public class ResponseDTO {
         this.data = data;
     }
 
+    public ResponseDTO(HttpStatus status, String message) {
+        this.status = status.value();
+        this.message = message;
+        this.data = message;
+    }
 }
