@@ -5,8 +5,12 @@ import com.wittypuppy.backend.board.dto.*;
 import com.wittypuppy.backend.board.service.BoardService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +22,11 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    public BoardController(BoardService boardService) {
+    private final SimpMessagingTemplate simp;
+
+    public BoardController(BoardService boardService, SimpMessagingTemplate simpMessagingTemplate) {
         this.boardService = boardService;
+        this.simp = simpMessagingTemplate;
     }
 
 
@@ -44,6 +51,7 @@ public class BoardController {
     public ResponseEntity<ResponseDTO> selectPostListByBoardCode(@PathVariable Long boardCode) {
         log.info("BoardController >>> selectPostsOfBoard >>> start");
 
+        // 1. 게시판 중 허가 상태가 "Y"인거 find
         List<PostDTO> postDTOList = boardService.selectPostListByBoardCode(boardCode);
 
         log.info("BoardController >>> selectPostsOfBoard >>> end");
@@ -208,38 +216,93 @@ public class BoardController {
 
 
     /*********** 게시판 ***********/
-
     /* 게시판 생성 */
     @PostMapping("/boards/create")
-    public ResponseEntity<ResponseDTO> createBoard(@RequestBody BoardDTO boardDTO){
+    public ResponseEntity<ResponseDTO> createBoard(@RequestBody BoardAndMemberDTO boardAndMemberDTO){
 
+        String result = boardService.createBoard(boardAndMemberDTO.getBoard(), boardAndMemberDTO.getMemberList());
 
+        return res("게시판 생성", result );
 
-        return null;
     }
 
 
     /* 게시판 수정 */
-    @PutMapping("/boards")
-    public ResponseEntity<ResponseDTO> modifyBoard(@RequestBody BoardDTO boardDTO){
+    // 카테고리랑 이름 빼고 수정할 수 있게
+//    @PutMapping("/boards/{boardCode}")
+//    public ResponseEntity<ResponseDTO> updateBoard(@PathVariable Long boardCode, @RequestBody BoardAndMemberDTO boardAndMemberDTO) {
+//
+//        BoardDTO boardDTO = boardAndMemberDTO.getBoard();
+//        List<BoardMemberDTO> memberDTOList = boardAndMemberDTO.getMemberList();
+//
+//        String result = boardService.updateBoard(boardCode, boardDTO, memberDTOList);
+//
+//        return null;
+//
+//    }
 
-
-
-
-        return null;
-
-    }
 
 
     /* 게시판 삭제 */
     @DeleteMapping("/boards/{boardCode}")
-    public ResponseEntity<ResponseDTO> deleteBoard(@RequestBody BoardDTO boardDTO){
+    public ResponseEntity<ResponseDTO> deleteBoard(@PathVariable Long boardCode) {
 
+        String result = boardService.deleteBoard(boardCode);
 
-
-        return null;
+        return res("게시판 삭제", result);
 
     }
+
+
+
+
+    /********* 게시판 관리 *********/
+    /* 게시판에 따른 게시글 여러 개 삭제 */
+    @DeleteMapping("/boards/remove-posts")
+    public ResponseEntity<ResponseDTO> deletePostList(@RequestBody List<PostDTO> postDTOList) {
+
+        String result = boardService.deletePostList(postDTOList);
+
+
+        return res("게시글 여러 개 삭제", result);
+    }
+
+
+
+    /* 여러 개의 게시글을 공지글로 설정 */
+    @PutMapping("/boards/notice-posts")
+    public ResponseEntity<ResponseDTO> noticePostList(@RequestBody List<PostDTO> postDTOList) {
+
+        String result = boardService.noticePostList(postDTOList);
+
+        return res("게시글 여러 개 공지글로 설정", result);
+
+    }
+
+
+
+    /* 게시글 등록 시 알림 전송 */
+    @MessageMapping("/boards/{boardCode}/alert")
+    public void postAlert(@Payload PostDTO postDTO, @PathVariable Long boardCode){
+
+        // 보드 멤버 조회해서 사용자에게 전달
+        List<BoardMemberDTO> memberDTOList = boardService.selectBoardMember(boardCode);
+
+        System.out.println("memberDTOList = " + memberDTOList);
+
+
+        simp.convertAndSend("/topic/boards/alert/"+ 2,    //구독한 사람들한테 메세지, 사용자2 : 알림 보내기
+                boardService.postAlert(boardCode)); // 보낼 데이터, dto alert를 보냄
+    }
+
+
+
+
+    /* 게시판에 따른 게시글 순서 이동 */
+
+
+
+
 
 
 

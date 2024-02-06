@@ -73,6 +73,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     EmployeeDTO authentication = new EmployeeDTO();
                     authentication.setEmployeeName(claims.get("employeeName").toString());
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
+                    authentication.setEmployeeCode((Integer) claims.get("empCode"));
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
                     AbstractAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(authentication, token, authentication.getAuthorities());

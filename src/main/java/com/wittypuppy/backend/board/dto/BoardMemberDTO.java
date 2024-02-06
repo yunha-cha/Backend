@@ -23,6 +23,6 @@ public class BoardMemberDTO {
 
 //    private List<PostCommentDTO> postCommentList;
 
-    private List<PostAlertDTO> postAlertList;
+//    private List<PostAlertDTO> postAlertList;
 
 }

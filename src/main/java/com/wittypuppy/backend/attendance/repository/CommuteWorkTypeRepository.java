@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface WorkTypeRepository extends  JpaRepository<AttendanceWorkType, Integer>{
+public interface CommuteWorkTypeRepository extends  JpaRepository<AttendanceWorkType, Integer>{
 
     @Query(value = "SELECT " +
             "A.attendance_management_code, " +

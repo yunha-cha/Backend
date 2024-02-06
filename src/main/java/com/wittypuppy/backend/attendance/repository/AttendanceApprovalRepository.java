@@ -1,18 +1,14 @@
 package com.wittypuppy.backend.attendance.repository;
 
 
-import com.wittypuppy.backend.attendance.entity.ApprovalDocument;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 
-public interface ApprovalRepository extends JpaRepository<ApprovalLine, Long> {
+public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine, Long> {
 
 
     //내 신청 문서 반려
@@ -51,7 +47,8 @@ public interface ApprovalRepository extends JpaRepository<ApprovalLine, Long> {
             "FROM tbl_approval_document " +
             "WHERE employee_code = :employeeCode) " +
             "AND A.approval_process_order = (SELECT MAX(approval_process_order) " +
-            "FROM tbl_approval_line)",
+            "FROM tbl_approval_line " +
+            "WHERE A.approval_document_code = approval_document_code) ",
             nativeQuery = true)
     Page<ApprovalLine> findMyDocumentPayment(Long employeeCode, Pageable paging);
 

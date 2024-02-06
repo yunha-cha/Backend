@@ -13,10 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @RestController
 @Slf4j
@@ -45,6 +41,7 @@ public class AttendanceController {
         * 결재 대기건 보여주기 수량 ->
         * 오늘 출근한 시간 보여주기 )
         * 오늘 퇴근한 시간 보여주기
+        *
         * */
 
         // 오늘 출퇴근 보여 주기
@@ -61,9 +58,8 @@ public class AttendanceController {
     }
 
     @PostMapping("/attendances/main")
-    public ResponseEntity<AttendanceResponseDTO> commuteInput(
-            @RequestParam(name = "arrival", defaultValue = "2024-02-03 08:57:33") LocalDateTime arrival
-
+    public ResponseEntity<ResponseDTO> commuteInput(
+            @RequestBody AttendanceManagementDTO attendanceManagementDTO
     ){
 
         Long employeeCode = 1L; // 로그인한 코드 넣기
@@ -73,27 +69,36 @@ public class AttendanceController {
 
         /*
         * 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
-        * 공휴일, 주말 제외 조건
         *
+        *로그인 하면 출근을 찍고 -> 출근 정보를 인서트 (퇴근 00:00:00) 같이 인서트
+        * -> 오늘 날짜 출근 9시 지나면 지각, 9까지 오면 정상:래액트 기능으로 조건 설정
         *
-        * 결재선의 상태에서 마지막 단계 까지 승인된(결재)것이 없는 경우
-        * -> 출근 9시 지나면 지각, 9까지 오면 정상:
-        * -> 18:00:00 까지 출근 찍히지 않은 경우 결근으로 인서트
-         *
-        *
-        * 결재선의 상태에서 마지막 단계 까지 승인된(결재)것 ->  결재문서 양식 (SW사용신청서 제외한 모든 양식 ( 근태신청서- 외근,출장) ) :
-        * -> 자동으로 출근 퇴근 시간 기입 하는 경우 (출근시간에 외근, 퇴근 시간에 외근, 출장) :오늘 날짜가 신청한 날짜와 동일하면 자동으로 넣기 쿼리 조건문
-        * -> 출근 시간, 퇴근 시간 " 00:00:00 "  자동 표기할 경우 ( 연차, ..휴가 )
-        * -> 퇴근시간 연장근무 시간 자동 퇴근 기록, 출장 (오늘 날짜와 출근 날짜가 동일하면 18:00:00 자동 퇴근 조건 쿼리 부여)
-        * ->/
-        * tbl_attendance_management , tbl_attendance_work_type, tbl_approval_document, tbl_approval_line, tbl_work_type, tbl_overwork, tbl_on_leave
-        * */
+        * 퇴근 업데이트 -> 가장 최근 출근 목록에서 업데이트 (로그인 정보 동일) //
+* */
 
-        return null;
+        // 로그인 해서 출근 인서트
+        String login = attendanceService.insertArrival(employeeCode, attendanceManagementDTO);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
 
+    //퇴근 시간 업데이트
+    @PutMapping ("/attendances/main")
+    public ResponseEntity<ResponseDTO> commuteUpdate(
+            @RequestBody AttendanceManagementDTO attendanceManagementDTO
+    ){
+
+        Long employeeCode = 1L; // 로그인한 코드 넣기
+
+        System.out.println("========== employeeCode ==========> " + employeeCode);
+        System.out.println("=========== commuteUpdate ControllerStart ============");
 
 
+        // 퇴근 업데이트
+        String login = attendanceService.updateDeparture(employeeCode, attendanceManagementDTO);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 퇴근 수정 성공", login));
+    }
 
 
 
@@ -150,6 +155,7 @@ public class AttendanceController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "내 기안 문서 조회 성공", pagingResponse));
 
     }
+
 
 
     //내가 신청한 문서 결재 완료

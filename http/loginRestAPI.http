@@ -1,94 +1,17 @@
-#### 전체 목록조회
-#GET http://localhost:8001/api/v1/products?offset=2
-#Content-Type: application/json
-#Accept: */*
-#
-#
-#### 상품 조회
-#GET http://localhost:8001/api/v1/products-management/1
-#Content-Type: application/json
-#Accept: */*
-#
-#
-#### 상품 검색
-#GET http://localhost:8001/api/v1/products/search?s=국
-#Content-Type: application/json
-#Accept: */*
-#
-#### 식사 조회
-#GET http://localhost:8001/api/v1/products/meals
-#Content-Type: application/json
-#Accept: */*
-#
-#### 디저트 조회
-#GET http://localhost:8001/api/v1/products/dessert
-#Content-Type: application/json
-#Accept: */*
-#
-#### 음료 조회
-#GET http://localhost:8001/api/v1/products/beverage
-#Content-Type: application/json
-#Accept: */*
-#
-#### 상품 조회
-#GET http://localhost:8001/api/v1/products-management?offset=2
-#Content-Type: application/json
-#Accept: */*
-#
-#### 상품 상세정보 조회
-#GET http://localhost:8001/api/v1/products-management/12
-#Content-Type: application/json
-#Accept: */*
-#
-#### 상품 등록
-#POST http://localhost:8001/api/v1/products
-#Content-Type: multipart/form-data; boundary=WebAppBoundary
-#Accept: */*
-#
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productName"
-#
-#피카츄
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productPrice"
-#
-#1000000
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productDescription"
-#
-#백만볼트
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productOrderable"
-#
-#Y
-#--WebAppBoundary
-#Content-Disposition: form-data; name="categoryCode"
-#
-#1
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productStock"
-#
-#1
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productImage"; filename="pikachu.png"
-#
-#< ./pikachu.png
-#--WebAppBoundary--
-
 ### 회원가입
 POST http://localhost:1208/auth/signup
 Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07",
-  "employeeName": "강해린",
-  "employeeEmail": "kkkrrr12@gmail.com",
+  "employeeId": "inji",
+  "employeePassword": "0202",
+  "employeeName": "연인지",
+  "employeeEmail": "inji@gmail.com",
   "employeeRetirementDate": "",
-  "employeeBirthDate": "2003-03-03",
-  "empAddress": "동대문구 종로구 하이미디어",
-  "empPhone": "010-3444-4132"
+  "employeeBirthDate": "1993-12-08",
+  "empAddress": "서울시 서초구 강남대로305",
+  "empPhone": "010-1111-2222"
 
 }
 
@@ -99,7 +22,7 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07"
+  "employeeId": "inji",
+  "employeePassword": "0202"
 }
 
