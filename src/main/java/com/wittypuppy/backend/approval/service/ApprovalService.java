@@ -3,7 +3,6 @@ package com.wittypuppy.backend.approval.service;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
 import com.wittypuppy.backend.approval.entity.ApprovalDoc;
 import com.wittypuppy.backend.approval.repository.ApprovalDocRepository;
-import com.wittypuppy.backend.attendance.repository.ApprovalRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ public class ApprovalService {
     private final ModelMapper modelMapper;
     private final ApprovalDocRepository approvalDocRepository;
 
-    public ApprovalService(ModelMapper modelMapper, ApprovalRepository approvalRepository, ApprovalDocRepository approvalDocRepository) {
+    public ApprovalService(ModelMapper modelMapper, ApprovalDocRepository approvalDocRepository) {
         this.modelMapper = modelMapper;
         this.approvalDocRepository = approvalDocRepository;
     }
