@@ -90,7 +90,7 @@ public class AttendanceController {
 
         Long employeeCode = 1L; // 로그인한 코드 넣기
 
-        System.out.println("========== employeeCode =========> " + employeeCode);
+        System.out.println("========== employeeCode ==========> " + employeeCode);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
 
