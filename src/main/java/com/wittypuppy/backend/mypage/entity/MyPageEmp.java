@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "MYPAGE_EMPLOYEE")
 @Table(name = "tbl_employee")
@@ -41,6 +42,9 @@ public class MyPageEmp {
     @Column(name = "employee_birth_date")
     private Date empBirth;
 
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MyPageProfile> profiles;
 
 
 }

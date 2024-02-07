@@ -1,10 +1,7 @@
 package com.wittypuppy.backend.Employee.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.List;
 //@NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @ToString
 public class LoginEmployee {
 

@@ -1,0 +1,36 @@
+package com.wittypuppy.backend.mypage.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity(name = "MYPAGE_PROFILE")
+@Table(name = "tbl_profile")
+public class MyPageProfile {
+    @Id
+    @Column(name = "profile_code", columnDefinition = "BIGINT")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long profileCode;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_code")
+    private MyPageEmp employee;
+
+    @Column(name = "profile_og_file")
+    private String profileOgFile;
+
+    @Column(name = "profile_changed_file")
+    private String profileChangedFile;
+
+    @Column(name = "profile_regist_date")
+    private LocalDateTime profileRegistDate;
+
+    @Column(name = "profile_delete_status")
+    private String profileDeleteStatus;
+}

@@ -19,9 +19,6 @@ public class Chatroom {
     @Column(name = "chatroom_code")
     private Long chatroomCode;
 
-    @Column(name = "messenger_code")
-    private Long messengerCode;
-
     @Column(name = "chatroom_title")
     private String chatroomTitle;
 
@@ -46,11 +43,6 @@ public class Chatroom {
 
     public Chatroom setChatroomCode(Long chatroomCode) {
         this.chatroomCode = chatroomCode;
-        return this;
-    }
-
-    public Chatroom setMessengerCode(Long messengerCode) {
-        this.messengerCode = messengerCode;
         return this;
     }
 
@@ -85,6 +77,6 @@ public class Chatroom {
     }
 
     public Chatroom builder() {
-        return new Chatroom(chatroomCode, messengerCode, chatroomTitle, chatroomFixedStatus, chatroomMemberList, chatroomProfileList, chatList, chatReadStatusList);
+        return new Chatroom(chatroomCode, chatroomTitle, chatroomFixedStatus, chatroomMemberList, chatroomProfileList, chatList, chatReadStatusList);
     }
 }

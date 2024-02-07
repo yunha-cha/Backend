@@ -1,12 +1,15 @@
 package com.wittypuppy.backend.util;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,10 +21,14 @@ import java.util.Map;
  * */
 
 @Component
+@Slf4j
 public class TokenUtils {
 
     private static String jwtSecretKey;
     private static Long tokenValidateTime;
+
+    private static final SecureRandom secureRandom = new SecureRandom();
+
 
 
     @Value("${jwt.key}")
@@ -154,5 +161,23 @@ public class TokenUtils {
         //여기서 secretBytes는 디코딩된 비밀키를 나타내고, SignatureAlgorithm.HS256.getJcaName()이라는 알고리즘을 지정해서
         //이 알고리즘에 사용될 수 잇는 key객체를 생성하여 반환
     }
+
+//    /***
+//     * 토큰이나 임시 비밀번호를 위한 랜덤 문자열 생성 매서드이다.
+//     * @return 랜덤 문자열
+//     */
+    public static String randomString() {
+        byte[] randomBytes = new byte[8];
+        try {
+            secureRandom.nextBytes(randomBytes);
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리 - 원하는 방식으로 처리하도록 수정 가능
+        }
+        System.out.println("randomBytes 출력 = " + randomBytes);
+        log.info("ramdom번호 출력 나오냐", randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+
+
 
 }

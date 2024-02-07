@@ -6,9 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
-@Repository("AttendanceLine")
+
 public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine, Long> {
 
 
@@ -76,7 +75,6 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
 
 
 
-
     //내가 결재할 문서 - 대기
 
     @Query(value = "SELECT " +
@@ -101,11 +99,6 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "                                           WHERE approval_process_status IN ('대기'or '반려'or '회수'))))",
             nativeQuery = true)
     Page<ApprovalLine> paymentWaiting(Pageable paging, Long employeeCode);
-
-
-
-
-
 }
 
 

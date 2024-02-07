@@ -1,80 +1,3 @@
-#### 전체 목록조회
-#GET http://localhost:8001/api/v1/products?offset=2
-#Content-Type: application/json
-#Accept: */*
-#
-#
-#### 상품 조회
-#GET http://localhost:8001/api/v1/products-management/1
-#Content-Type: application/json
-#Accept: */*
-#
-#
-#### 상품 검색
-#GET http://localhost:8001/api/v1/products/search?s=국
-#Content-Type: application/json
-#Accept: */*
-#
-#### 식사 조회
-#GET http://localhost:8001/api/v1/products/meals
-#Content-Type: application/json
-#Accept: */*
-#
-#### 디저트 조회
-#GET http://localhost:8001/api/v1/products/dessert
-#Content-Type: application/json
-#Accept: */*
-#
-#### 음료 조회
-#GET http://localhost:8001/api/v1/products/beverage
-#Content-Type: application/json
-#Accept: */*
-#
-#### 상품 조회
-#GET http://localhost:8001/api/v1/products-management?offset=2
-#Content-Type: application/json
-#Accept: */*
-#
-#### 상품 상세정보 조회
-#GET http://localhost:8001/api/v1/products-management/12
-#Content-Type: application/json
-#Accept: */*
-#
-#### 상품 등록
-#POST http://localhost:8001/api/v1/products
-#Content-Type: multipart/form-data; boundary=WebAppBoundary
-#Accept: */*
-#
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productName"
-#
-#피카츄
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productPrice"
-#
-#1000000
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productDescription"
-#
-#백만볼트
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productOrderable"
-#
-#Y
-#--WebAppBoundary
-#Content-Disposition: form-data; name="categoryCode"
-#
-#1
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productStock"
-#
-#1
-#--WebAppBoundary
-#Content-Disposition: form-data; name="productImage"; filename="pikachu.png"
-#
-#< ./pikachu.png
-#--WebAppBoundary--
-
 ### 회원가입
 POST http://localhost:1208/auth/signup
 Content-Type: application/json
@@ -99,8 +22,26 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-
-  "employeeId": "user09",
-  "employeePassword": "pass09"
+  "employeeId": "user07",
+  "employeePassword": "pass07"
 }
+
+###비밀번호 찾기
+POST http://localhost:1208/api/v1/employee/searchpwd
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MTkyMDg4OTAyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcxOTU2ODgsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.qGk3G8sePbmN3ILCIW-mUGzm6QQnlU5-28dTr1vV9fk
+
+{
+  "employeeId": "user07",
+  "employeeEmail": "kimmin699@gmail.com"
+}
+
+#### 로그아웃
+#POST http://localhost:1208/api/v1/employee/logout
+#Content-Type: application/json
+#Authorization: Bearer eyJkYXRlIjoxNzA3MTQ2OTE4NzYwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcxNTA1MTgsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.w8ni94uA7IRa4JFQR880Kj93qXoLIe269VUot7V7MnM
+#
+
+
+
 

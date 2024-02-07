@@ -13,7 +13,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "tbl_approval_document")
-public class ApprovalDocument {
+public class ApprovalDoc {
     @Id
     @Column(name = "approval_document_code",columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

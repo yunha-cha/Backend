@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository("Calendar_CalendarRepository")
 public interface CalendarRepository extends JpaRepository<Calendar, Long> {
-    Calendar findByEmployee_EmployeeCodeAndEventList_EventOptions_EventDeleteStatus(Long employeeCode, String eventDeleteStatus);
+
+    Optional<Calendar> findByEmployee_EmployeeCode(Long userEmployeeCode);
+
 }

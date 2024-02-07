@@ -29,7 +29,9 @@ public interface ProjectPostRepository extends JpaRepository<ProjectPost, Long> 
                     "LEFT JOIN tbl_project_member tpm ON tpm.project_member_code=tppm.project_member_code " +
                     "LEFT JOIN tbl_employee te ON te.employee_code = tpm.employee_code " +
                     "LEFT JOIN tbl_department td ON td.department_code = te.department_code " +
-                    "WHERE tpm.project_code=:projectCode",
+                    "WHERE tpm.project_code=:projectCode " +
+                    "ORDER BY tpp.project_code DESC " +
+                    "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectPostDTO> selectProjectPostList(Long projectCode);
+    List<ProjectPostDTO> selectProjectPostListWithPaging(Long projectCode, Integer startCount, Integer searchCount);
 }

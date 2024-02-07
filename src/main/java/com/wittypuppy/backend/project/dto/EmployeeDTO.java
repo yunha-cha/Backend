@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,13 +14,14 @@ import java.util.List;
 public class EmployeeDTO {
     private Long employeeCode;
 
-    private DepartmentDTO departmentDTO;
+    private DepartmentDTO department;
 
-    private JobDTO jobDTO;
+    private JobDTO job;
 
     private String employeeName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime employeeRetirementDate;
 
-    private List<ProfileDTO> profileDTOList;
+    private List<ProfileDTO> profileList;
 }

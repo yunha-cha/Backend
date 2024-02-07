@@ -1,11 +1,55 @@
+### 로그인
+POST http://localhost:1208/auth/login
+Content-Type: application/json
+Accept: */*
+Access-Control-Allow-Origin: *
+
+{
+  "employeeId": "user07",
+  "employeePassword": "pass07"
+}
+
 ### 프로젝트 리스트 조회
 GET http://localhost:1208/api/v1/project/projects
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MDU0Mjc3MjkzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwNTc4NzcsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.mUGyAwSDa5e-CYEvk0AEismgMLhFsLj3S7FIBQF6980
 
-### 나의 프로젝트 리스트 조회
-GET http://localhost:1208/api/v1/project/projects?condition=me
+### 프로젝트 생성
+POST http://localhost:1208/api/v1/project/projects
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MDU0NjM5NDU0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwNTgyMzksImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.hvOzFn4TxXlW4z4YChc-AlCBOmVzMt55B1G86BTfwQo
 
-### 나의 조직의 프로젝트 리스트 조회
-GET http://localhost:1208/api/v1/project/projects?condition=myteam
+{
+  "projectTitle": "프로젝트 생성 데모 1",
+  "projectDescription": "프로젝트 생성 완료.",
+  "projectDeadline": "2023-01-03T12:00:00",
+  "projectLockedStatus": "Y"
+}
 
-### 위의 상황에 검색 추가(제목)
-GET http://localhost:1208/api/v1/project/projects?condition=myteam&searchValue=asd
+### 프로젝트 조회
+GET http://localhost:1208/api/v1/project/projects/1
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MDU0MzU4ODc1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwNTc5NTgsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.JBi9CR0_71oCyrPwf9KkTfe3U6IOEoqFaSmJhy29vnk
+Authorization: Bearer eyJkYXRlIjoxNzA3MTk4MDE2NTcxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyMDE2MTYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.HQtTuUz_Cvwr1kwwDMaXhtVXT3BTIxmvEIOyQZAHecs
+
+
+### 프로젝트 멤버 초대
+POST http://localhost:1208/api/v1/project/projects/1/invite
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MDU0MzU4ODc1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwNTc5NTgsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.JBi9CR0_71oCyrPwf9KkTfe3U6IOEoqFaSmJhy29vnk
+
+[
+  1,
+  2,
+  3
+]
+
+###사원 목록 조회
+GET http://localhost:1208/api/v1/project/employees
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MDU0ODMxMDQzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwNTg0MzEsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.dBsuUjxvKbAHYOAIYK1_cOcZhqf-mK9n4h1OrLpsT1Q
+
+### 사원 내보내기
+DELETE http://localhost:1208/api/v1/project/projects/1/kick/5
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA3MDU3MTI2MDUxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwNjA3MjYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.G28o0odgmDlgRJ7NvoGS-JIi6-3c4CWRKTHiKnzp_TQ

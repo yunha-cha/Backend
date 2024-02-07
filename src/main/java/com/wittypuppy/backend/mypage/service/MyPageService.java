@@ -1,21 +1,30 @@
 package com.wittypuppy.backend.mypage.service;
 
-import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.common.exception.DataUpdateException;
 import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
+import com.wittypuppy.backend.mypage.dto.MyPageProfileDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
 import com.wittypuppy.backend.mypage.entity.MyPageEmp;
+import com.wittypuppy.backend.mypage.entity.MyPageProfile;
 import com.wittypuppy.backend.mypage.entity.MyPageUpdateEmp;
+import com.wittypuppy.backend.mypage.repository.MyPageProfileRepository;
 import com.wittypuppy.backend.mypage.repository.MyPageRepository;
 import com.wittypuppy.backend.mypage.repository.MyPageUpdateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,10 +34,17 @@ public class MyPageService {
     private final ModelMapper modelMapper;
     private final MyPageUpdateRepository myPageUpdateRepository;
 
-    public MyPageService(MyPageRepository myPageRepository, ModelMapper modelMapper, MyPageUpdateRepository myPageUpdateRepository) {
+    @Autowired
+    private final MyPageProfileRepository myPageProfileRepository;
+
+    private final String imageDirectory = "classpath:/static/web-images/";
+
+
+    public MyPageService(MyPageRepository myPageRepository, ModelMapper modelMapper, MyPageUpdateRepository myPageUpdateRepository, MyPageProfileRepository myPageProfileRepository) {
         this.myPageRepository = myPageRepository;
         this.modelMapper = modelMapper;
         this.myPageUpdateRepository = myPageUpdateRepository;
+        this.myPageProfileRepository = myPageProfileRepository;
     }
 
 
@@ -83,11 +99,46 @@ public class MyPageService {
         }else {
             throw new RuntimeException("현재 비밀번호가 잘못되었습니다. 비밀번호 변경에 실패했습니다. ");
         }
-
-
     }
 
 
 
-
+//    public MyPageProfileDTO updateProfile(Long employeeCode, MultipartFile file) {
+//        MyPageEmp myPageEmp = new MyPageEmp();
+//        myPageEmp.setEmpCode(employeeCode);
+//
+//        // 프로필 사진 업데이트 로직 구현
+//        myPageProfileRepository.updateProfileDeleteStatusByEmployeeCode(employeeCode);
+//
+//        List<MyPageProfile> profilesToUpdate = myPageProfileRepository.findByEmployee_EmpCodeAndProfileDeleteStatus(employeeCode, "y");
+//
+//        MyPageProfileDTO fileSavePath = saveProfileImage(file);
+//
+//        for (MyPageProfile profile : profilesToUpdate) {
+//            profile.setProfileOgFile(String.valueOf(fileSavePath));
+//            profile.setProfileChangedFile(String.valueOf(fileSavePath));
+//            profile.setProfileRegistDate(LocalDateTime.now());
+//            profile.setProfileDeleteStatus("N");
+//        }
+//
+//        myPageProfileRepository.saveAll(profilesToUpdate);
+//
+////        return imageDirectory + fileSavePath; // 완전한 이미지 URL 반환
+//        return fileSavePath;
+//    }
+//
+//    private MyPageProfileDTO saveProfileImage(MultipartFile file) {
+//        try {
+//            // 실제 파일 저장 로직
+//            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//            Path filePath = Path.of(imageDirectory, fileName);
+//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+////            return fileName;
+//            return new MyPageProfileDTO(fileName); // MyPageProfileDTO 객체 생성 후 반환
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("파일 변경 실", e);
+//        }
+//    }
 }
