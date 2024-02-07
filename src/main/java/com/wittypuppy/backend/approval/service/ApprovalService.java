@@ -2,15 +2,16 @@ package com.wittypuppy.backend.approval.service;
 
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
-import com.wittypuppy.backend.Employee.repository.EmployeeRepository;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
+import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
 import com.wittypuppy.backend.approval.entity.ApprovalDoc;
+import com.wittypuppy.backend.approval.entity.ApprovalLine;
+import com.wittypuppy.backend.approval.repository.AdditionalApprovalLineRepository;
 import com.wittypuppy.backend.approval.repository.ApprovalDocRepository;
 import com.wittypuppy.backend.approval.repository.ApprovalLineRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -19,15 +20,15 @@ import java.time.LocalDateTime;
 public class ApprovalService {
     private final ModelMapper modelMapper;
     private final ApprovalDocRepository approvalDocRepository;
-    private final EmployeeRepository employeeRepository;
     private final ApprovalLineRepository approvalLineRepository;
+    private final AdditionalApprovalLineRepository additionalApprovalLineRepository;
 
 
-    public ApprovalService(ModelMapper modelMapper, ApprovalDocRepository approvalDocRepository, EmployeeRepository employeeRepository, ApprovalLineRepository approvalLineRepository) {
+    public ApprovalService(ModelMapper modelMapper, ApprovalDocRepository approvalDocRepository, ApprovalLineRepository approvalLineRepository, AdditionalApprovalLineRepository additionalApprovalLineRepository) {
         this.modelMapper = modelMapper;
         this.approvalDocRepository = approvalDocRepository;
-        this.employeeRepository = employeeRepository;
         this.approvalLineRepository = approvalLineRepository;
+        this.additionalApprovalLineRepository = additionalApprovalLineRepository;
     }
 
     public ApprovalDocDTO selectInboxDoc(Long approvalDocCode) {
@@ -41,30 +42,67 @@ public class ApprovalService {
         return approvalDocDTO;
     }
 
-    @Transactional
-    public String submitApproval(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
-        log.info("[ApprovalService] submitApproval start=====");
-
-        int result = 0;
-
-        // 문서 정보 저장
-        ApprovalDoc newDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-        newDoc.setApprovalRequestDate(LocalDateTime.now());
-
-        // 로그인한 사용자의 employeeCode를 가져와서 설정
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
-        newDoc.setEmployeeCode(loginEmployee);
-
-        approvalDocRepository.save(newDoc);
-
-//        // 결재선 정보 저장
-//        ApprovalLine newApprovalLine = new ApprovalLine();
-//        newApprovalLine.setApprovalDoc(newDoc);
+//    @Transactional
+//    public String submitApproval(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
+//        log.info("[ApprovalService] submitApproval start=====");
 //
-//        approvalLineRepository.save(newApprovalLine);
+//        int result = 0;
+//
+//        // 문서 정보 저장
+//        ApprovalDoc newDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+//        newDoc.setApprovalRequestDate(LocalDateTime.now());
+//
+//        // 로그인한 사용자의 employeeCode를 가져와서 설정
+//        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+//        newDoc.setEmployeeCode(loginEmployee);
+//
+//        approvalDocRepository.save(newDoc);
+//
+//        result = 1;
+//
+//    return result > 0 ? "상신 성공" : "상신 실패";
+//    }
 
-        result = 1;
 
-    return result > 0 ? "상신 성공" : "상신 실패";
+    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
+        log.info("[ApprovalService] saving doc info started =====");
+
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("휴가신청서");
+
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+        approvalDoc.setWhetherSavingApproval("N");
+        saveFirstApprovalLine(approvalDoc, employeeDTO);
+
+        return approvalDocRepository.save(approvalDoc);
     }
+
+    public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, EmployeeDTO employeeDTO) {
+        log.info("[ApprovalService] saving first approval line started =====");
+        ApprovalLine approvalLine = new ApprovalLine();
+        approvalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        approvalLine.setEmployeeCode((long) loginEmployee.getEmployeeCode());
+
+        approvalLine.setApprovalProcessOrder(1L);
+        approvalLine.setApprovalProcessStatus("기안");
+        approvalLine.setApprovalProcessDate(LocalDateTime.now());
+        approvalLine.setApprovalRejectedReason(null);
+        approvalLineRepository.save(approvalLine);
+    }
+    public void saveApprovalLines(ApprovalDoc savedApprovalDoc){
+        log.info("[ApprovalService] saving line info started =====");
+        AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
+        additionalApprovalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        additionalApprovalLine.setEmployeeCode(12L);
+        additionalApprovalLine.setApprovalProcessOrder(2L);
+        additionalApprovalLine.setApprovalProcessStatus("대기");
+        additionalApprovalLine.setApprovalRejectedReason(null);
+        additionalApprovalLineRepository.save(additionalApprovalLine);
+    }
+
 }

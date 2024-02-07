@@ -1,7 +1,9 @@
 package com.wittypuppy.backend.approval.controller;
 
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.approval.dto.AdditionalApprovalLineDTO;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
+import com.wittypuppy.backend.approval.entity.ApprovalDoc;
 import com.wittypuppy.backend.approval.service.ApprovalService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,8 @@ public class ApprovalController {
 
     @PostMapping("/submit-approval")
     public ResponseEntity<ResponseDTO> submitApproval(@RequestBody ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal EmployeeDTO employeeDTO){
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공", approvalService.submitApproval(approvalDocDTO, employeeDTO)));
+        ApprovalDoc savedApprovalDoc = approvalService.saveApprovalDoc(approvalDocDTO, employeeDTO);
+        approvalService.saveApprovalLines(savedApprovalDoc);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
     }
 }

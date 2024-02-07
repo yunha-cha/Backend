@@ -4,12 +4,13 @@ import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @ToString
 @Setter
-public class ApprovalLineDTO {
+public class AdditionalApprovalLineDTO {
     private Long approvalLineCode;
     private Long approvalDocCode;
     private Long employeeCode;

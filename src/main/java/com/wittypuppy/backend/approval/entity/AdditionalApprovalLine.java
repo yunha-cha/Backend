@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Entity(name = "APPROVAL_LINE")
+@Entity(name = "ADDITIONAL_APPROVAL_LINE")
 @Table(name = "tbl_approval_line")
-public class ApprovalLine {
+public class AdditionalApprovalLine {
     @Id
     @Column(name = "approval_line_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
