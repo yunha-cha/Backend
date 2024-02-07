@@ -51,7 +51,7 @@ public class AttendanceService {
 
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by(Sort.Direction.ASC, "attendance_management_work_day"));
+        Pageable paging = PageRequest.of(index, count, Sort.by(Sort.Direction.ASC, "attendance_management_code"));
 
         System.out.println("========= employeeCode ====== " + employeeCode);
         System.out.println("========== yearMonth ======= " + yearMonth);

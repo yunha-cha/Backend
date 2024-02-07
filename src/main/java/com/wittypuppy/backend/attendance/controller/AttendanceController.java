@@ -9,6 +9,7 @@ import com.wittypuppy.backend.attendance.service.AttendanceService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -109,7 +110,8 @@ public class AttendanceController {
     @GetMapping("/attendances/lists")
     public ResponseEntity<ResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "2023-12") String yearMonth  //리액트 값 받기
+            @RequestParam(name = "now", defaultValue = "2024-01") String yearMonth  //리액트 값 받기
+
 
     ) {
         System.out.println("==============selectCommuteList==================");
@@ -125,6 +127,8 @@ public class AttendanceController {
 
         Page<AttendanceWorkTypeDTO> attendanceList = attendanceService.selectCommuteList(cri, yearMonth, employeeCode);
         pagingResponse.setData(attendanceList);
+
+        System.out.println("==================attendanceList = " + attendanceList);
         pagingResponse.setPageInfo(new PageDTO(cri, (int) attendanceList.getTotalElements()));
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "출퇴근 목록 조회 성공", pagingResponse));

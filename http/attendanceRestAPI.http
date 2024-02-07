@@ -1,37 +1,37 @@
 
 ### 내 출퇴근 내역(목록)
-GET http://localhost:1208/api/v1/attendances/lists
-
+GET http://localhost:1208/api/v1/attendances/lists?offset=1
+Content-Type: application/json
+Accept: */*
+Authorization:Bear eyJkYXRlIjoxNzA3MjkwNjE3MTIwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI5NDIxNywiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.SR6WY-pIU9aj4W9x_4aZRr9kNP_sjx21UQocbT3IDwY
 
 ### 내가 신청한 문서-기안
-GET http://localhost:1208/api/v1/attendances/my/documents-waiting
+GET http://localhost:1208/api/v1/attendances/my/documents-waiting?offset=1
 
 
 ### 내가 신청한 문서-승인
-GET http://localhost:1208/api/v1/attendances/my/documents-payment
+GET http://localhost:1208/api/v1/attendances/my/documents-payment?offset=1
 Content-Type: application/json
 Accept: */*
 Authorization:Bear eyJkYXRlIjoxNzA3MDE2NjA2MzMyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwMjAyMDYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.sQ8gky1FcdD4mPHtAHo3cjBYBG9tsxAcwVE8MT5A0Yo
 
 ### 내가 신청한 문서-반려
-GET http://localhost:1208/api/v1/attendances/my/documents-companion
+GET http://localhost:1208/api/v1/attendances/my/documents-companion?offset=1
 
 
 ### 내가 결재한 문서-승인
-GET http://localhost:1208/api/v1/attendances/payment/completed
+GET http://localhost:1208/api/v1/attendances/payment/completed?offset=1
 
 
 ### 내가 결재한 문서-반려
-GET http://localhost:1208/api/v1/attendances/payment/rejection
+GET http://localhost:1208/api/v1/attendances/payment/rejection?offset=1
 Content-Type: application/json
 Accept: */*
-Authorization:Bear eyJkYXRlIjoxNzA3MjY5OTkwNDg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI3MzU5MCwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.-dKi1ffqCgAqXy8QW15Y4j2-oUB7JXTKHxXGUe_-fLw
-
-
+Authorization:Bear eyJkYXRlIjoxNzA3Mjg2MTgzMDQ5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI4OTc4MywiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.R-D89H01TrPQcrPFGEqqVTJNh6DTakH1sGpqUI8uPIg
 
 
 ### 내가 결재할 문서-대기
-GET http://localhost:1208/api/v1/attendances/payment/waiting
+GET http://localhost:1208/api/v1/attendances/payment/waiting?offset=1
 
 
 ### 근태관리 메인 화면 출퇴근 화면
