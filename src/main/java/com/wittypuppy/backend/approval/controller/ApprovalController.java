@@ -23,15 +23,22 @@ public class ApprovalController {
         this.approvalService = approvalService;
     }
 
-    @GetMapping("/{approvalDocCode}")
-    public ResponseEntity<ResponseDTO> selectInboxDoc(@PathVariable Long approvalDocCode){
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalService.selectInboxDoc(approvalDocCode)));
-    }
+//    @GetMapping("/{approvalDocCode}")
+//    public ResponseEntity<ResponseDTO> selectInboxDoc(@PathVariable Long approvalDocCode){
+//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalService.selectInboxDoc(approvalDocCode)));
+//    }
 
+    // 결재 문서 상신하기
     @PostMapping("/submit-approval")
     public ResponseEntity<ResponseDTO> submitApproval(@RequestBody ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal EmployeeDTO employeeDTO){
         ApprovalDoc savedApprovalDoc = approvalService.saveApprovalDoc(approvalDocDTO, employeeDTO);
         approvalService.saveApprovalLines(savedApprovalDoc);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
+    }
+
+    // 상신한 문서 조회
+    @GetMapping("/inbox-approval")
+    public ResponseEntity<ResponseDTO> inboxApproval(){
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공"));
     }
 }

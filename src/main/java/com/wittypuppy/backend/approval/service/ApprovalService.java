@@ -31,16 +31,16 @@ public class ApprovalService {
         this.additionalApprovalLineRepository = additionalApprovalLineRepository;
     }
 
-    public ApprovalDocDTO selectInboxDoc(Long approvalDocCode) {
-        log.info("[ApprovalService] selectInboxDoc start=====");
-
-        ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).get();
-        ApprovalDocDTO approvalDocDTO = modelMapper.map(approvalDoc, ApprovalDocDTO.class);
-
-        log.info("[ApprovalService] selectInboxDoc End=====");
-
-        return approvalDocDTO;
-    }
+//    public ApprovalDocDTO selectInboxDoc(Long approvalDocCode) {
+//        log.info("[ApprovalService] selectInboxDoc start=====");
+//
+//        ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).get();
+//        ApprovalDocDTO approvalDocDTO = modelMapper.map(approvalDoc, ApprovalDocDTO.class);
+//
+//        log.info("[ApprovalService] selectInboxDoc End=====");
+//
+//        return approvalDocDTO;
+//    }
 
 //    @Transactional
 //    public String submitApproval(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
@@ -64,6 +64,7 @@ public class ApprovalService {
 //    }
 
 
+    // 기안 문서 정보 저장 및 기안자 결재선 저장
     public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
         log.info("[ApprovalService] saving doc info started =====");
 
@@ -80,6 +81,7 @@ public class ApprovalService {
         return approvalDocRepository.save(approvalDoc);
     }
 
+    // 기안자 결재선 저장
     public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, EmployeeDTO employeeDTO) {
         log.info("[ApprovalService] saving first approval line started =====");
         ApprovalLine approvalLine = new ApprovalLine();
@@ -94,6 +96,8 @@ public class ApprovalService {
         approvalLine.setApprovalRejectedReason(null);
         approvalLineRepository.save(approvalLine);
     }
+
+    // 추가 결재선 저장
     public void saveApprovalLines(ApprovalDoc savedApprovalDoc){
         log.info("[ApprovalService] saving line info started =====");
         AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
@@ -104,5 +108,6 @@ public class ApprovalService {
         additionalApprovalLine.setApprovalRejectedReason(null);
         additionalApprovalLineRepository.save(additionalApprovalLine);
     }
+
 
 }
