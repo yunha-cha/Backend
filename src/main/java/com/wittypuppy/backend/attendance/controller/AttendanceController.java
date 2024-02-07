@@ -44,14 +44,16 @@ public class AttendanceController {
         *
         * */
 
-        // 오늘 출퇴근 보여 주기
-        AttendanceManagementDTO commute = attendanceService.attendanceMain(employeeCode);
 
         //남은 연차 수량
         VacationDTO vacation = attendanceService.attendanceVacation(employeeCode);
 
         //결재 대기 수량 보여 주기
         ApprovalLineDTO approvalWaiting = attendanceService.attendanceWaiting(employeeCode);
+
+        // 오늘 출퇴근 보여 주기
+        AttendanceManagementDTO commute = attendanceService.attendanceMain(employeeCode);
+
 
         return ResponseEntity.ok().body(new AttendanceResponseDTO(HttpStatus.OK, "근태 메인 화면 조회 성공", commute, vacation, approvalWaiting));
 

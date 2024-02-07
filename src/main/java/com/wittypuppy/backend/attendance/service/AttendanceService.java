@@ -9,8 +9,8 @@ import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.repository.AttendanceApprovalRepository;
-import com.wittypuppy.backend.attendance.repository.CommuteWorkTypeRepository;
 import com.wittypuppy.backend.attendance.repository.AttendanceLineRepository;
+import com.wittypuppy.backend.attendance.repository.CommuteWorkTypeRepository;
 import com.wittypuppy.backend.attendance.repository.ManagementRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Service
@@ -209,7 +211,7 @@ public class AttendanceService {
         * 결재 순서 전 단계가 대기면 안 보여준다
         * 결재 순서 전 단계가 기안, 결재면 보여주기
         *
-        * 승인, 반려 상태값 업데이트 하기
+        * 승인, 반려 상태값 업데이트 하기 -->리액트에서 같이 하기
         * */
 
         System.out.println("=====service=====paymentWaitingLis tStart========");
@@ -237,12 +239,20 @@ public class AttendanceService {
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceMainServiceStart======");
 
-        AttendanceManagement result = managementRepository.attendanceCommute(employeeCode);
+        AttendanceManagement commute = managementRepository.attendanceCommute(employeeCode);
 
-        AttendanceManagementDTO results = modelMapper.map(result, AttendanceManagementDTO.class);
+        // commute 값이 null인지 체크
+        if (commute == null) {
+            // null인 경우, 시간을 00:00:00으로 설정
+            commute = new AttendanceManagement();
+            commute.setAttendanceManagementArrivalTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
+            // 또는 다른 필요한 처리 수행
+        }
+
+        AttendanceManagementDTO commutes = modelMapper.map(commute, AttendanceManagementDTO.class);
 
         System.out.println("========attendanceMainService end ======");
-        return results;
+        return commutes;
     }
 
 
@@ -252,11 +262,19 @@ public class AttendanceService {
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceVacation ServiceStart======");
 
-        Long result = managementRepository.attendanceVacation(employeeCode);
+        Long total = managementRepository.attendanceTotalVacation(employeeCode);
+        Long useVacation = managementRepository.attendanceUseVacation(employeeCode);
+        Long useHalfVacation = managementRepository.attendanceUseHalfVacation(employeeCode);
+
+        System.out.println("========== total ===========> " + total);
+        System.out.println("=========== useVacation =========> " + useVacation);
+        System.out.println("============== useHalfVacation ==========> " + useHalfVacation);
+
+        double result = total - useVacation - (useHalfVacation * 0.5);
 
         VacationDTO results = modelMapper.map(result, VacationDTO.class);
 
-        System.out.println("========= result ======== " + result);
+        System.out.println("========= 남은 연차 result ======== " + result);
 
         System.out.println("========attendanceVacation end ======");
 
@@ -271,7 +289,7 @@ public class AttendanceService {
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceWaiting ServiceStart======");
 
-//        ApprovalLine result = lineRepository.attendanceWaiting(employeeCode);
+//        ApprovalLine result = attendanceApprovalRepository.attendanceWaiting(employeeCode);
 //
 //        ApprovalLineDTO results = modelMapper.map(result, ApprovalLineDTO.class);
 //
