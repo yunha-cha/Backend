@@ -112,13 +112,17 @@ public class CalendarService {
     }
 
     @Transactional
-    public String createEvent(EventDTO eventDTO, List<Long> eventAttendeeEmployeeCodeList, EventAlertDTO eventAlertDTO, Long userEmployeeCode) {
+    public String createEvent(EventOptionsDTO eventOptions, Long userEmployeeCode) {
         try {
+            EventDTO eventDTO = eventOptions.getEvent();
+            EventAlertDTO eventAlertDTO = eventOptions.getEventAlert();
+            List<Long> eventAttendeeEmployeeCodeList = eventOptions.getEventAttendeeEmployeeCodeList();
+
             Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 사원의 캘린더가 존재하지 않습니다."));
             Employee employee = employeeRepository.findById(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 사원이 존재하지 않습니다."));
-            EventOptions eventOptions = new EventOptions()
+            EventOptions eventOptionsEntity = new EventOptions()
                     .setEventTitle(eventDTO.getEventTitle())
                     .setEventContent(eventDTO.getEventContent())
                     .setEventStartDate(eventDTO.getEventStartDate())
@@ -146,7 +150,7 @@ public class CalendarService {
             Event event = new Event()
                     .setCalendarCode(calendar.getCalendarCode())
                     .setDepartment(employee.getDepartment())
-                    .setEventOptions(eventOptions)
+                    .setEventOptions(eventOptionsEntity)
                     .setEventAttendeeList(newAttendeeList)
                     .builder();
             eventRepository.save(event);
@@ -157,15 +161,19 @@ public class CalendarService {
     }
 
     @Transactional
-    public String modifyEventOptions(Long eventCode, EventDTO eventDTO, Long userEmployeeCode) {
+    public String modifyEventOptions(Long eventCode, EventOptionsDTO eventOptions, Long userEmployeeCode) {
         try {
+            EventDTO eventDTO = eventOptions.getEvent();
+            EventAlertDTO eventAlertDTO = eventOptions.getEventAlert();
+            List<Long> eventAttendeeEmployeeCodeList = eventOptions.getEventAttendeeEmployeeCodeList();
+
             Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 캘린더가 존재하지 않습니다."));
             Event event = eventRepository.findByCalendarCodeAndEventCode(calendar.getCalendarCode(), eventCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 이벤트가 존재하지 않습니다."));
-            EventOptions eventOptions = eventOptionsRepository.findByEventCode(event.getEventCode())
+            EventOptions eventOptionsEntity = eventOptionsRepository.findByEventCode(event.getEventCode())
                     .orElseThrow(() -> new DataNotFoundException("해당 이벤트의 옵션이 존재하지 않습니다."));
-            eventOptions = eventOptions
+            eventOptionsEntity = eventOptionsEntity
                     .setEventTitle(eventDTO.getEventTitle())
                     .setEventContent(eventDTO.getEventContent())
                     .setEventStartDate(eventDTO.getEventStartDate())
@@ -180,16 +188,8 @@ public class CalendarService {
                     .setEventDragBackgroundColor(eventDTO.getEventDragBackgroundColor())
                     .setEventBorderColor(eventDTO.getEventBorderColor())
                     .builder();
-            eventOptionsRepository.save(eventOptions);
-        } catch (Exception e) {
-            throw new DataUpdateException("일정 수정 실패");
-        }
-        return "일정 수정 성공";
-    }
+            eventOptionsRepository.save(eventOptionsEntity);
 
-    @Transactional
-    public String modifyEventAttendeeAndEventAlert(Long eventCode, List<Long> eventAttendeeEmployeeCodeList, EventAlertDTO eventAlertDTO, Long userEmployeeCode) {
-        try {
             List<EventAttendee> oldEventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventCode);
             eventAttendeeRepository.deleteAll(oldEventAttendeeList);
 
@@ -204,11 +204,13 @@ public class CalendarService {
             }).collect(Collectors.toList());
 
             eventAttendeeRepository.saveAll(newAttendeeList);
+
         } catch (Exception e) {
-            throw new DataUpdateException("일정 참석자, 알람 수정 실패");
+            throw new DataUpdateException("일정 수정 실패");
         }
-        return "일정 참석자, 알람 수정 성공";
+        return "일정 수정 성공";
     }
+
 
     @Transactional
     public String deleteEvent(Long eventCode, Long userEmployeeCode) {

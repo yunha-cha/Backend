@@ -2,9 +2,8 @@ package com.wittypuppy.backend.calendar.controller;
 
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.calendar.dto.CalendarDTO;
-import com.wittypuppy.backend.calendar.dto.EventAlertDTO;
-import com.wittypuppy.backend.calendar.dto.EventAttendeeDTO;
 import com.wittypuppy.backend.calendar.dto.EventDTO;
+import com.wittypuppy.backend.calendar.dto.EventOptionsDTO;
 import com.wittypuppy.backend.calendar.service.CalendarService;
 import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.common.dto.PageDTO;
@@ -74,51 +73,40 @@ public class CalendarController {
 
     @GetMapping("/employees")
     public ResponseEntity<ResponseDTO> selectEmployeeList(
-            @AuthenticationPrincipal Object object) {
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res("이벤트 참여자 초대를 위한 사원 목록 가져오기 성공", calendarService.selectEmployeeList());
     }
 
     @PostMapping("/events")
     public ResponseEntity<ResponseDTO> createEvent(
-            @RequestBody EventDTO eventDTO,
-            @RequestBody List<Long> eventAttendeeEmployeeCodeList,
-            @RequestBody EventAlertDTO eventAlertDTO,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        return res("이벤트 만들기 성공", calendarService.createEvent(eventDTO, eventAttendeeEmployeeCodeList, eventAlertDTO, userEmployeeCode));
+            @RequestBody EventOptionsDTO eventOptions,
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res(calendarService.createEvent(eventOptions, userEmployeeCode));
     }
 
-    @PutMapping("/events/{eventCode}/options")
-    public ResponseEntity<ResponseDTO> modifyEventOptions(
+    @PutMapping("/events/{eventCode}")
+    public ResponseEntity<ResponseDTO> modifyEvent(
             @PathVariable Long eventCode,
-            @RequestBody EventDTO eventDTO,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        return res(calendarService.modifyEventOptions(eventCode, eventDTO, userEmployeeCode));
-    }
-
-    @PutMapping("/events/{eventCode}/attendee-and-alert")
-    public ResponseEntity<ResponseDTO> modifyEventAttendeeAndEventAlert(
-            @PathVariable Long eventCode,
-            @RequestBody List<Long> eventAttendeeEmployeeCodeList,
-            @RequestBody EventAlertDTO eventAlertDTO,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        return res(calendarService.modifyEventAttendeeAndEventAlert(eventCode, eventAttendeeEmployeeCodeList, eventAlertDTO, userEmployeeCode));
+            @RequestBody EventOptionsDTO eventOptions,
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res(calendarService.modifyEventOptions(eventCode, eventOptions, userEmployeeCode));
     }
 
     @DeleteMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> deleteEvent(
             @PathVariable Long eventCode,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res(calendarService.deleteEvent(eventCode, userEmployeeCode));
     }
 
     @GetMapping("/events/deleted-temporary")
     public ResponseEntity<ResponseDTO> selectTemporarilyDeleteEventList(
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         List<EventDTO> eventDTOList = calendarService.selectTemporarilyDeleteEventList(userEmployeeCode);
         return res("임시 삭제 일정 목록 가져오기 성공", eventDTOList);
     }
@@ -126,8 +114,8 @@ public class CalendarController {
     @PutMapping("/events/{eventCode}/deleted-rollback")
     public ResponseEntity<ResponseDTO> rollbackEvent(
             @PathVariable Long eventCode,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res(calendarService.rollbackEvent(eventCode, userEmployeeCode));
     }
 
