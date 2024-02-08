@@ -15,9 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,26 +47,26 @@ public class CalendarService {
         try {
             employee = employeeRepository.findById(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 사원이 존재하지 않습니다."));
-            if (employee.getEmployeeRetirementDate() != null) {
+            log.info("employee1 : " + employee.toString());
+            if (!Objects.isNull(employee.getEmployeeRetirementDate())) {
                 throw new DataNotFoundException("해당 사원은 이미 사퇴했습니다.");
             }
+            log.info("employee2 : " + employee.toString());
             calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseGet(() -> {
                         Calendar newCalendar = new Calendar()
                                 .setEmployee(employee)
                                 .setCalendarName("cal_employee_" + userEmployeeCode)
                                 .builder();
+                        calendarRepository.save(newCalendar);
                         return newCalendar;
                     });
         } catch (Exception e) {
             throw new DataInsertionException("해당 사원의 캘린더가 존재하지 않아서 생성하려 했으나 실패했습니다.");
         }
 
-        log.info("[CalendarService] >>> selectEventList >>> end");
         CalendarDTO calendarDTO = modelMapper.map(calendar, CalendarDTO.class);
-
-        Optional<Profile> maxDateProfile = calendar.getEmployee().getProfileList().stream().max(Comparator.comparing(Profile::getProfileRegistDate));
-        maxDateProfile.ifPresent(profile -> calendarDTO.getEmployee().setProfileImageURL(profile.getProfileChangedFile()));
+        log.info("[CalendarService] >>> selectEventList >>> end");
 
         return calendarDTO;
     }
@@ -79,23 +80,24 @@ public class CalendarService {
         return eventList;
     }
 
-    public EventDTO selectEventByEventCode(Long eventCode, Long userEmployeeCode) {
+    public Map<String, Object> selectEventByEventCode(Long eventCode, Long userEmployeeCode) {
         Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 사원의 캘린더가 존재하지 않습니다."));
+
+        Map<String, Object> eventInfo = new HashMap<>();
 
         EventDTO event = eventRepository.findEventByCalendarCodeAndEventCodeAndIsNotDelete(calendar.getCalendarCode(), eventCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 이벤트가 존재하지 않습니다."));
 
-        return event;
-    }
+        eventInfo.put("Event", event);
 
-    public List<EventAttendeeDTO> selectEventAttendeeAndEventAlertByEventCode(Long eventCode, Long userEmployeeCode) {
         List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventCode);
-
         List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
                 .collect(Collectors.toList());
 
-        return eventAttendeeDTOList;
+        eventInfo.put("EventAttendeeList", eventAttendeeDTOList);
+
+        return eventInfo;
     }
 
     public List<EmployeeDTO> selectEmployeeList() {

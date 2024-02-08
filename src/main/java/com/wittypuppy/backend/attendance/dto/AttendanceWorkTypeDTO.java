@@ -18,7 +18,7 @@ public class AttendanceWorkTypeDTO {
 
     private String attendanceWorkTypeStatus;
 
-    private List<ApprovalDocumentDTO> workTypeApprovalDocumentCode;
+    private ApprovalDocumentDTO workTypeApprovalDocumentCode;
 
     private AttendanceManagementDTO attendanceManagementCode;
 

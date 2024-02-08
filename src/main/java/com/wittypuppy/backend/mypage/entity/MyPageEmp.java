@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.mypage.entity;
 
-import com.wittypuppy.backend.demo.entity.Demo;
 import com.wittypuppy.backend.group.entity.GroupDept;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

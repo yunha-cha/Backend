@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.calendar.controller;
 
+import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.calendar.dto.CalendarDTO;
 import com.wittypuppy.backend.calendar.dto.EventAlertDTO;
 import com.wittypuppy.backend.calendar.dto.EventAttendeeDTO;
@@ -16,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/calendar")
@@ -23,9 +25,10 @@ import java.util.List;
 public class CalendarController {
     private final CalendarService calendarService;
 
-    @GetMapping("/")
-    public ResponseEntity<ResponseDTO> selectCalendar(@AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+    @GetMapping("")
+    public ResponseEntity<ResponseDTO> selectCalendar(
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
 
         CalendarDTO calendarDTO = calendarService.selectCalendar(userEmployeeCode);
 
@@ -33,8 +36,10 @@ public class CalendarController {
     }
 
     @GetMapping("/events")
-    public ResponseEntity<ResponseDTO> selectEvents(@AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+    public ResponseEntity<ResponseDTO> selectEvents(
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+
         List<EventDTO> eventDTOList = calendarService.selectEvents(userEmployeeCode);
 
         return res("이벤트 리스트 가져오기 성공", eventDTOList);
@@ -42,10 +47,10 @@ public class CalendarController {
 
     @GetMapping("/events/search")
     public ResponseEntity<ResponseDTO> selectEventBySearchValueWithPaging(
-            @RequestParam String searchValue,
+            @RequestParam(name = "search") String searchValue,
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         Criteria cri = new Criteria(Integer.valueOf(offset), 10);
 
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
@@ -57,23 +62,14 @@ public class CalendarController {
     }
 
     @GetMapping("/events/{eventCode}")
-    public ResponseEntity<ResponseDTO> selectEventByEventCode(
+    public ResponseEntity<ResponseDTO> selectEventInfoByEventCode(
             @PathVariable Long eventCode,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
 
-        EventDTO eventDTO = calendarService.selectEventByEventCode(eventCode, userEmployeeCode);
+        Map<String, Object> resultMap = calendarService.selectEventByEventCode(eventCode, userEmployeeCode);
 
-        return res("이벤트 정보 가져오기 성공", eventDTO);
-    }
-
-    @GetMapping("/events/{eventCode}/attendee-and-alert")
-    public ResponseEntity<ResponseDTO> selectEventAttendeeAndEventAlertByEventCode(
-            @PathVariable Long eventCode,
-            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        List<EventAttendeeDTO> eventAttendeeDTOList = calendarService.selectEventAttendeeAndEventAlertByEventCode(eventCode, userEmployeeCode);
-        return res("해당 이벤트의 참여자 목록과 이벤트 알람 가져오기 성공");
+        return res("이벤트 정보 가져오기 성공", resultMap);
     }
 
     @GetMapping("/employees")

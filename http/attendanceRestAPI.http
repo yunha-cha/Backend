@@ -1,39 +1,43 @@
 
 ### 내 출퇴근 내역(목록)
-GET http://localhost:1208/api/v1/attendances/lists
-
-
+GET http://localhost:1208/api/v1/attendances/lists?offset=1
+Content-Type: application/json
+Accept: */*
+Authorization:Bear eyJkYXRlIjoxNzA3Mjk1NTQzNTY2LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyOTkxNDMsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.FLEE7DL28AsnvOtdumHzlv4B69Rm7kdjHBF3wSRj7zc
 ### 내가 신청한 문서-기안
-GET http://localhost:1208/api/v1/attendances/my/documents-waiting
+GET http://localhost:1208/api/v1/attendances/my/documents-waiting?offset=1
 
 
 ### 내가 신청한 문서-승인
-GET http://localhost:1208/api/v1/attendances/my/documents-payment
+GET http://localhost:1208/api/v1/attendances/my/documents-payment?offset=1
 Content-Type: application/json
 Accept: */*
 Authorization:Bear eyJkYXRlIjoxNzA3MDE2NjA2MzMyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwMjAyMDYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.sQ8gky1FcdD4mPHtAHo3cjBYBG9tsxAcwVE8MT5A0Yo
 
 ### 내가 신청한 문서-반려
-GET http://localhost:1208/api/v1/attendances/my/documents-companion
+GET http://localhost:1208/api/v1/attendances/my/documents-companion?offset=1
 
 
 ### 내가 결재한 문서-승인
-GET http://localhost:1208/api/v1/attendances/payment/completed
+GET http://localhost:1208/api/v1/attendances/payment/completed?offset=1
 
 
 ### 내가 결재한 문서-반려
-GET http://localhost:1208/api/v1/attendances/payment/rejection
+GET http://localhost:1208/api/v1/attendances/payment/rejection?offset=1
+Content-Type: application/json
+Accept: */*
+Authorization:Bear eyJkYXRlIjoxNzA3Mjg2MTgzMDQ5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI4OTc4MywiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.R-D89H01TrPQcrPFGEqqVTJNh6DTakH1sGpqUI8uPIg
 
 
 ### 내가 결재할 문서-대기
-GET http://localhost:1208/api/v1/attendances/payment/waiting
+GET http://localhost:1208/api/v1/attendances/payment/waiting?offset=1
 
 
 ### 근태관리 메인 화면 출퇴근 화면
 GET http://localhost:1208/api/v1/attendances/main
 Content-Type: application/json
 Accept: */*
-Authorization:Bear eyJkYXRlIjoxNzA3MDE2NjA2MzMyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBsb3llZUVtYWlsIjoia2FuZ2hhZXJpbkBnbWFpbC5jb20iLCJleHAiOjE3MDcwMjAyMDYsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.sQ8gky1FcdD4mPHtAHo3cjBYBG9tsxAcwVE8MT5A0Yo
+Authorization:Bear eyJkYXRlIjoxNzA3MjY5OTkwNDg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI3MzU5MCwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.-dKi1ffqCgAqXy8QW15Y4j2-oUB7JXTKHxXGUe_-fLw
 
 
 
@@ -41,11 +45,11 @@ Authorization:Bear eyJkYXRlIjoxNzA3MDE2NjA2MzMyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyN
 POST http://localhost:1208/api/v1/attendances/main
 Content-Type: application/json
 Accept: */*
-Authorization:Bear eyJkYXRlIjoxNzA3MTgxNDQ0ODg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzE4NTA0NCwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.f8253ueRTzq8DlVpkNHUGpxGIBgLBy1i0hFsG-rEHAQ
+Authorization:Bear eyJkYXRlIjoxNzA3MjY5OTkwNDg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI3MzU5MCwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.-dKi1ffqCgAqXy8QW15Y4j2-oUB7JXTKHxXGUe_-fLw
 
 {
-  "attendanceManagementArrivalTime": "2024-02-05T08:57:02",
-  "attendanceManagementDepartureTime": "2024-02-05T00:00:00",
+  "attendanceManagementArrivalTime": "2024-02-07T08:57:02",
+  "attendanceManagementDepartureTime": "2024-02-07T00:00:00",
   "attendanceManagementState" : "정상",
   "attendanceManagementWorkDay" : "2024-02-05"
 }
@@ -55,10 +59,10 @@ Authorization:Bear eyJkYXRlIjoxNzA3MTgxNDQ0ODg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyN
 PUT http://localhost:1208/api/v1/attendances/main
 Content-Type: application/json
 Accept: */*
-Authorization: Bearer eyJkYXRlIjoxNzA3MjEwODYwMzg1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyMTQ0NjAsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.kEsUARCE45fZyupcvaB0pL-2A-jhM8Rfm0jZW1tytSU
+Authorization:Bear eyJkYXRlIjoxNzA3MjY5OTkwNDg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBDb2RlIjoxNCwiZW1wbG95ZWVFbWFpbCI6Imtra3JycjU1QGdtYWlsLmNvbSIsImV4cCI6MTcwNzI3MzU5MCwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZU5vIjowLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4iLCJhdXRob3JpdHlEZXNjIjoi6rSA66as7J6QIn19XX0.-dKi1ffqCgAqXy8QW15Y4j2-oUB7JXTKHxXGUe_-fLw
 
 
 {
-  "attendanceManagementDepartureTime" : "2024-02-05T16:01:02",
+  "attendanceManagementDepartureTime" : "2024-02-07T17:01:02",
   "attendanceManagementState" : "정상"
 }
