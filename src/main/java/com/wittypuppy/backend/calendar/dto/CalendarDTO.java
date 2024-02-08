@@ -12,8 +12,6 @@ import lombok.ToString;
 public class CalendarDTO {
     private Long calendarCode;
 
-    private EmployeeDTO employee;
-
     private String calendarName;
 
     private String calendarColor;
@@ -30,10 +28,6 @@ public class CalendarDTO {
         return this;
     }
 
-    public CalendarDTO setEmployee(EmployeeDTO employee) {
-        this.employee = employee;
-        return this;
-    }
 
     public CalendarDTO setCalendarName(String calendarName) {
         this.calendarName = calendarName;
@@ -61,6 +55,6 @@ public class CalendarDTO {
     }
 
     public CalendarDTO builder() {
-        return new CalendarDTO(calendarCode, employee, calendarName, calendarColor, calendarBackgroundColor, calendarDragBackgroundColor, calendarBorderColor);
+        return new CalendarDTO(calendarCode, calendarName, calendarColor, calendarBackgroundColor, calendarDragBackgroundColor, calendarBorderColor);
     }
 }

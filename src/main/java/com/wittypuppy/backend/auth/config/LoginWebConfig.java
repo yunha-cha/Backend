@@ -5,6 +5,7 @@ import com.wittypuppy.backend.auth.interceptor.JwtTokenInterceptor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,6 +25,15 @@ public class LoginWebConfig implements WebMvcConfigurer {
 //    public void addResourceHandlers(ResourceHandlerRegistry registry){
 //        registry.addResourceHandler(ADD_RESOURCE_HANDLER)
 //                .addResourceLocations(ADD_RESOURCE_LOCATION);
+//    }
+
+//    //cors 적용하기
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**") // 모든 엔드포인트에 대해 CORS를 허용
+//                .allowedOrigins("*") // 모든 출처 허용
+//                .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드 지정
+//                .allowedHeaders("*"); // 모든 헤더 허용
 //    }
 
     @Bean(name = "filterRegistrationBean")

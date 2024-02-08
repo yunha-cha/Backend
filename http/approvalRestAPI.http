@@ -1,4 +1,4 @@
-### 결재 문서 조회
+## 결재 대기 문서 조회
 GET http://localhost:1208/approval/2
 Accept: */*
 Content-Type: application/json

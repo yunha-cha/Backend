@@ -31,7 +31,7 @@ public class EmployeeController {
 
     // 조회 , /members/{memberId}
 //    @ApiOperation(value = "회원 조회 요청", notes = "회원 한명이 조회됩니다.", tags = { "MemberController" })
-    @GetMapping("/employee/{employeeId}")
+    @GetMapping("/employeeinfo/{employeeId}")
     public ResponseEntity<ResponseDTO> selectMyEmployeeInfo(@PathVariable String employeeId){
 
         log.info("[EmployeeController]  selectMyEmployeeInfo   Start =============== ");
