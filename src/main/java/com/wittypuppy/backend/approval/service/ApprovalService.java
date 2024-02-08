@@ -14,6 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -69,7 +71,7 @@ public class ApprovalService {
         log.info("[ApprovalService] saving doc info started =====");
 
         ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-        approvalDoc.setApprovalForm("휴가신청서");
+        approvalDoc.setApprovalForm("SW사용신청서");
 
         LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
         approvalDoc.setEmployeeCode(loginEmployee);
@@ -102,12 +104,24 @@ public class ApprovalService {
         log.info("[ApprovalService] saving line info started =====");
         AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
         additionalApprovalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-        additionalApprovalLine.setEmployeeCode(12L);
+        additionalApprovalLine.setEmployeeCode(17L);
         additionalApprovalLine.setApprovalProcessOrder(2L);
         additionalApprovalLine.setApprovalProcessStatus("대기");
         additionalApprovalLine.setApprovalRejectedReason(null);
         additionalApprovalLineRepository.save(additionalApprovalLine);
     }
 
+    // 상신한 문서 조회
+    public List<ApprovalDoc> findApprovalDocsByEmployeeCode(EmployeeDTO employeeDTO) {
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        return outboxDocList;
+    }
+
+    // 결재 수신 문서 조회
 
 }
