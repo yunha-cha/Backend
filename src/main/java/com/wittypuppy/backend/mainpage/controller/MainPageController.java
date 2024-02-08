@@ -2,10 +2,12 @@ package com.wittypuppy.backend.mainpage.controller;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.mainpage.dto.MainPageBoardDTO;
+import com.wittypuppy.backend.mainpage.dto.MainPageProjectListDTO;
 import com.wittypuppy.backend.mainpage.service.MainPageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,12 +50,19 @@ public class MainPageController {
 //    }
 
 
-    @GetMapping("/postlist")
+    @GetMapping("/boardlist")
     public ResponseEntity<ResponseDTO> selectPostList(){
         System.out.println("메인페이지 게시판 출력 컨트롤러 시작");
         List<MainPageBoardDTO> mainPageBoardDTOList = mainPageService.selectPostList();
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK,"게시판 조회 성공", mainPageBoardDTOList));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK,"메인페이지 게시판 조회 성공", mainPageBoardDTOList));
 //        return res("성공", mainPageBoardDTOList);
+    }
+
+    @GetMapping("/projectlist")
+    public ResponseEntity<ResponseDTO> selectProjectList(){
+        System.out.println("메인페이지 프로젝트 출력 컨트롤러 시작");
+        List<MainPageProjectListDTO> mainPageProjectListDTOList = mainPageService.selectProjectList();
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "메인페이지 프로젝트 조회 성공", mainPageProjectListDTOList));
     }
 
 }
