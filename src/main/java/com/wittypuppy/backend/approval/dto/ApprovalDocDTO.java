@@ -14,7 +14,7 @@ public class ApprovalDocDTO {
 
     private Long approvalDocCode;
     private String approvalForm;
-    private EmployeeDTO employeeDTO;
+    private EmployeeDTO employeeCode;
     private LocalDateTime approvalRequestDate;
     private String whetherSavingApproval;
 }

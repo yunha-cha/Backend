@@ -9,6 +9,7 @@ import com.wittypuppy.backend.approval.entity.ApprovalLine;
 import com.wittypuppy.backend.approval.repository.AdditionalApprovalLineRepository;
 import com.wittypuppy.backend.approval.repository.ApprovalDocRepository;
 import com.wittypuppy.backend.approval.repository.ApprovalLineRepository;
+import com.wittypuppy.backend.attendance.entity.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,7 @@ public class ApprovalService {
 //    }
 
 
-    // 기안 문서 정보 저장 및 기안자 결재선 저장
+    // 기안 문서 정보 저장
     public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
         log.info("[ApprovalService] saving doc info started =====");
 
@@ -78,7 +79,6 @@ public class ApprovalService {
 
         approvalDoc.setApprovalRequestDate(LocalDateTime.now());
         approvalDoc.setWhetherSavingApproval("N");
-        saveFirstApprovalLine(approvalDoc, employeeDTO);
 
         return approvalDocRepository.save(approvalDoc);
     }
@@ -123,5 +123,14 @@ public class ApprovalService {
     }
 
     // 결재 수신 문서 조회
+    public List<ApprovalDoc> findReceivedApprovalDocsByEmployeeCode(EmployeeDTO employeeDTO){
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+
+
+        List<ApprovalDoc> inboxDocList = approvalDocRepository.findByReceiverEmployeeCode(loginEmployee);
+
+        return inboxDocList;
+    }
 
 }
