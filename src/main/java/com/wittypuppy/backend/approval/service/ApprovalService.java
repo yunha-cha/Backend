@@ -104,7 +104,7 @@ public class ApprovalService {
         log.info("[ApprovalService] saving line info started =====");
         AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
         additionalApprovalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-        additionalApprovalLine.setEmployeeCode(17L);
+        additionalApprovalLine.setEmployeeCode(31L);
         additionalApprovalLine.setApprovalProcessOrder(2L);
         additionalApprovalLine.setApprovalProcessStatus("대기");
         additionalApprovalLine.setApprovalRejectedReason(null);
@@ -122,15 +122,24 @@ public class ApprovalService {
         return outboxDocList;
     }
 
-    // 결재 수신 문서 조회
-    public List<ApprovalDoc> findReceivedApprovalDocsByEmployeeCode(EmployeeDTO employeeDTO){
+    // 결재 대기 문서 조회
+    public List<ApprovalDoc> inboxDocListByEmployeeCode(EmployeeDTO employeeDTO){
         // 로그인한 사용자의 정보 가져오기
         LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
 
+        // 문서 코드 목록 가져오기
+        List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
 
-        List<ApprovalDoc> inboxDocList = approvalDocRepository.findByReceiverEmployeeCode(loginEmployee);
+        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
+        List<ApprovalDoc> inboxDocs = new ArrayList<>();
+        for (Long approvalDocCode : inboxDocCodeList) {
+            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
+            if(approvalDoc != null) {
+                inboxDocs.add(approvalDoc);
+            }
+        }
 
-        return inboxDocList;
+        return inboxDocs;
     }
 
 }

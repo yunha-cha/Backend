@@ -47,5 +47,9 @@ public class ApprovalController {
     }
 
     // 결재 대기 문서 조회
-
+    @GetMapping("/inbox-approval")
+    public ResponseEntity<ResponseDTO> inboxApproval(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
+        List<ApprovalDoc> approvalDocs = approvalService.inboxDocListByEmployeeCode(employeeDTO);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
 }
