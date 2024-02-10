@@ -82,6 +82,20 @@ public class ApprovalController {
         System.out.println("result ========== " + result);
         return ResponseEntity.ok(result);
     }
+
+    // 결재 진행 중인 문서 조회
+    @GetMapping("/outbox-on-process")
+    public ResponseEntity<ResponseDTO> onProcessInOutbox(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
+        List<ApprovalDoc> approvalDocs = approvalService.onProcessInOutbox(employeeDTO);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
+
+    // 결재 완료 문서 조회
+
+    // 반려 문서 조회
+
+    // 회수 문서 조회
+
     // 임시 저장
 
     // 결재 문서 내용 추가

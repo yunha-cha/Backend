@@ -257,4 +257,37 @@ public class ApprovalService {
 
         return "회수 성공";
     }
+
+    // 결재 진행 중인 문서 조회
+    public List<ApprovalDoc> onProcessInOutbox(EmployeeDTO employeeDTO) {
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        // 결재 상태 중에 대기가 존재하는 문서 리스트 조회
+        List<ApprovalDoc> onProcessDocList = new ArrayList<>();
+        for(ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDoc.getApprovalDocCode());
+            if(!pendingApprovalLines.isEmpty()) {
+                onProcessDocList.add(approvalDoc);
+            }
+        }
+
+        return onProcessDocList;
+    }
+
+    // 결재 완료 문서 조회
+
+    // 반려 문서 조회
+
+    // 회수 문서 조회
+
+    // 임시 저장
+
+    // 결재 문서 내용 추가
+
+    // 휴가 일수 차감
 }
