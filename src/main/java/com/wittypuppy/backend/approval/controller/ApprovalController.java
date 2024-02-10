@@ -91,6 +91,11 @@ public class ApprovalController {
     }
 
     // 결재 완료 문서 조회
+    @GetMapping("/outbox-finished")
+    public ResponseEntity<ResponseDTO> finishedInOutbox(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
+        List<ApprovalDoc> approvalDocs = approvalService.finishedInOutbox(employeeDTO);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
 
     // 반려 문서 조회
 

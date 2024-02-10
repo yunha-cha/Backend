@@ -275,11 +275,31 @@ public class ApprovalService {
                 onProcessDocList.add(approvalDoc);
             }
         }
-
         return onProcessDocList;
     }
 
     // 결재 완료 문서 조회
+    public List<ApprovalDoc> finishedInOutbox(EmployeeDTO employeeDTO) {
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        // 결재 순서가 가장 큰 결재선의 상태가 '결재'인 문서 리스트 조회
+        List<ApprovalDoc> finishedDocListInOutbox = new ArrayList<>();
+
+        // 해당 사용자의 결재 상신 문서 리스트를 순회하며 쿼리를 통해 검색한 결과와 비교하여 결과 리스트에 추가
+        for (ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> finishedDocCodes = additionalApprovalLineRepository.finishedInOutboxDocCode((long) loginEmployee.getEmployeeCode());
+            if (finishedDocCodes.contains(approvalDoc.getApprovalDocCode())) {
+                finishedDocListInOutbox.add(approvalDoc);
+            }
+        }
+
+        return finishedDocListInOutbox;
+    }
 
     // 반려 문서 조회
 

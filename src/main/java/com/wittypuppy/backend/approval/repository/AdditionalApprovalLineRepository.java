@@ -34,4 +34,17 @@ public interface AdditionalApprovalLineRepository extends JpaRepository<Addition
     List<Long> findPendingApprovalLines(Long approvalDocCode);
 
     List<AdditionalApprovalLine> findByApprovalDocCode(Long approvalDocCode);
+
+    @Query(value =
+            "SELECT a.approval_document_code " +
+                    "FROM tbl_approval_document a " +
+                    "INNER JOIN tbl_approval_line b ON a.approval_document_code = b.approval_document_code " +
+                    "WHERE a.employee_code = :employeeCode " +
+                    "AND b.approval_process_order = (" +
+                    "SELECT MAX(approval_process_order) " +
+                    "FROM tbl_approval_line " +
+                    "WHERE approval_document_code = a.approval_document_code) " +
+                    "AND b.approval_process_status = '결재'",
+            nativeQuery = true)
+    List<Long> finishedInOutboxDocCode(@Param("employeeCode") Long employeeCode); // 매개변수 추가
 }
