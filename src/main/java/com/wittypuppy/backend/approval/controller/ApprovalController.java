@@ -65,7 +65,22 @@ public class ApprovalController {
     }
 
     // 반려하기
+    @PutMapping("/rejection/{approvalDocCode}")
+    public ResponseEntity<String> rejection(@PathVariable Long approvalDocCode, @AuthenticationPrincipal EmployeeDTO employeeDTO){
+        System.out.println("approvalDocCode = " + approvalDocCode);
+        System.out.println("em = " + employeeDTO.getEmployeeCode());
+
+        String result = approvalService.rejection(approvalDocCode, employeeDTO);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok(result);
+    }
 
     // 상신 문서 회수
+
+    // 임시 저장
+
+    // 결재 문서 내용 추가
+
+    // 휴가 일수 차감
 
 }

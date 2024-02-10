@@ -178,4 +178,43 @@ public class ApprovalService {
 
         return "결재 성공";
     }
+
+    // 반려하기
+    public String rejection(Long approvalDocCode, EmployeeDTO employeeDTO) {
+
+        // 반려 대상 조회
+        Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
+
+        System.out.println("approvalSubject ========== " + approvalSubject);
+        System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        Long employeeCode = (long) loginEmployee.getEmployeeCode();
+
+        System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
+        System.out.println("loginEmployee.getClass() = " + loginEmployee.getClass());
+
+        System.out.println("employeeCode ======== " + employeeCode);
+
+        // 반려 대상과 로그인한 사용자 employeeCode 비교
+        if (!approvalSubject.equals(employeeCode)) {
+            return "반려 대상이 아닙니다.";
+        }
+
+        // 대기 상태인 모든 approvalLine 조회
+        List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDocCode);
+
+        // 각 approvalLine의 상태를 반려로 변경
+        for (Long approvalLineCode : pendingApprovalLines) {
+            Optional<AdditionalApprovalLine> optionalApprovalLine = additionalApprovalLineRepository.findById(approvalLineCode);
+            optionalApprovalLine.ifPresent(approvalLine -> {
+                approvalLine.setApprovalProcessDate(LocalDateTime.now());
+                approvalLine.setApprovalProcessStatus("반려");
+                additionalApprovalLineRepository.save(approvalLine);
+            });
+        }
+
+        return "반려 성공";
+    }
 }
