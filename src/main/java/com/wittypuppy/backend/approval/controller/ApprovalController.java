@@ -52,4 +52,20 @@ public class ApprovalController {
         List<ApprovalDoc> approvalDocs = approvalService.inboxDocListByEmployeeCode(employeeDTO);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
     }
+
+    // 결재하기
+    @PutMapping("/approvement/{approvalDocCode}")
+    public ResponseEntity<String> approvement(@PathVariable Long approvalDocCode, @AuthenticationPrincipal EmployeeDTO employeeDTO){
+        System.out.println("approvalDocCode = " + approvalDocCode);
+        System.out.println("em = " + employeeDTO.getEmployeeCode());
+
+        String result = approvalService.approvement(approvalDocCode, employeeDTO);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok(result);
+    }
+
+    // 반려하기
+
+    // 상신 문서 회수
+
 }

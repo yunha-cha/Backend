@@ -13,10 +13,12 @@ import com.wittypuppy.backend.attendance.entity.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -138,8 +140,42 @@ public class ApprovalService {
                 inboxDocs.add(approvalDoc);
             }
         }
-
         return inboxDocs;
     }
 
+    // 결재하기
+    @Transactional
+    public String approvement(Long approvalDocCode, EmployeeDTO employeeDTO) {
+
+        // 결재 대상 조회
+        Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
+
+        System.out.println("approvalSubject ========== " + approvalSubject);
+        System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        Long employeeCode = (long) loginEmployee.getEmployeeCode();
+
+        System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
+        System.out.println("loginEmployee.getClass() = " + loginEmployee.getClass());
+
+        System.out.println("employeeCode ======== " + employeeCode);
+
+        // 결재 대상과 로그인한 사용자 employeeCode 비교
+        if (!approvalSubject.equals(employeeCode)) {
+            return "결재 대상이 아닙니다.";
+        }
+
+        AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCode(approvalDocCode, employeeCode);
+
+        System.out.println("additionalApprovalLine ======= " + additionalApprovalLine);
+
+        // 결재 상태 업데이트
+        additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+        additionalApprovalLine.setApprovalProcessStatus("결재");
+        additionalApprovalLineRepository.save(additionalApprovalLine);
+
+        return "결재 성공";
+    }
 }

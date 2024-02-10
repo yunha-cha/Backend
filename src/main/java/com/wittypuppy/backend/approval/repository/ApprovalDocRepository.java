@@ -27,4 +27,5 @@ public interface ApprovalDocRepository extends JpaRepository<ApprovalDoc, Long> 
     List<Long> inboxDocListByEmployeeCode(Long employeeCode);
 
     ApprovalDoc findByApprovalDocCode(Long approvalDocCode);
+
 }
