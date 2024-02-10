@@ -105,7 +105,11 @@ public class ApprovalController {
     }
 
     // 회수 문서 조회
-
+    @GetMapping("/outbox-retrieved")
+    public ResponseEntity<ResponseDTO> retrievedInOutbox(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
+        List<ApprovalDoc> approvalDocs = approvalService.retrievedInOutbox(employeeDTO);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
     // 임시 저장
 
     // 결재 문서 내용 추가
