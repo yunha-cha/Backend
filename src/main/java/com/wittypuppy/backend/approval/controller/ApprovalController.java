@@ -76,7 +76,12 @@ public class ApprovalController {
     }
 
     // 상신 문서 회수
-
+    @PutMapping("/retrieval/{approvalDocCode}")
+    public ResponseEntity<String> retrieval(@PathVariable Long approvalDocCode, @AuthenticationPrincipal EmployeeDTO employeeDTO){
+        String result = approvalService.retrieval(approvalDocCode, employeeDTO);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok(result);
+    }
     // 임시 저장
 
     // 결재 문서 내용 추가

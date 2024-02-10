@@ -32,4 +32,6 @@ public interface AdditionalApprovalLineRepository extends JpaRepository<Addition
                     "AND approval_process_status = '대기'",
             nativeQuery = true)
     List<Long> findPendingApprovalLines(Long approvalDocCode);
+
+    List<AdditionalApprovalLine> findByApprovalDocCode(Long approvalDocCode);
 }

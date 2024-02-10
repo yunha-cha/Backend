@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -216,5 +217,44 @@ public class ApprovalService {
         }
 
         return "반려 성공";
+    }
+
+    // 상신 문서 회수
+    public String retrieval(Long approvalDocCode, EmployeeDTO employeeDTO) {
+        // 문서 정보 가져오기
+        ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).get();
+        System.out.println("approvalDoc.getEmployeeCode().getEmployeeCode() = " + approvalDoc.getEmployeeCode().getEmployeeCode());
+        Long employeeCode = (long) approvalDoc.getEmployeeCode().getEmployeeCode();
+        System.out.println("employeeCode = " + employeeCode);
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        Long loginemployeeCode = (long) loginEmployee.getEmployeeCode();
+        System.out.println("loginemployeeCode = " + loginemployeeCode);
+
+        // 해당 문서 employeeCode가 로그인한 사용자와 일치하는지 확인
+        if (!employeeCode.equals(loginemployeeCode)) {
+            return "회수 대상이 아닙니다.";
+        }
+
+        // 해당 문서의 모든 approvalLine 가져오기
+        List<AdditionalApprovalLine> approvalLines = additionalApprovalLineRepository.findByApprovalDocCode(approvalDocCode);
+
+        // 모든 approvalLine의 상태가 "기안" 또는 "대기"인지 확인
+        for (AdditionalApprovalLine approvalLine : approvalLines) {
+            String status = approvalLine.getApprovalProcessStatus();
+            if (!status.equals("기안") && !status.equals("대기")) {
+                return "미결 문서가 아닙니다.";
+            }
+        }
+
+        // approvalLine의 상태를 회수로 변경
+        for (AdditionalApprovalLine approvalLine : approvalLines) {
+            approvalLine.setApprovalProcessStatus("회수");
+            approvalLine.setApprovalProcessDate(LocalDateTime.now());
+            additionalApprovalLineRepository.save(approvalLine);
+        }
+
+        return "회수 성공";
     }
 }
