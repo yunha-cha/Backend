@@ -342,6 +342,28 @@ public class ApprovalService {
     }
 
     // 임시 저장
+    public ApprovalDoc temporarySaveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
+
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("임시저장문서");
+
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+        approvalDoc.setWhetherSavingApproval("Y");
+
+        return approvalDocRepository.save(approvalDoc);
+    }
+
+    // 임시 저장 리스트 조회
+    public List<ApprovalDoc> findSavedDocsByEmployeeCode(EmployeeDTO employeeDTO) {
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+
+        // 해당 사용자의 결재 문서 중 임시 저장이 'Y'인 문서 조회
+        return approvalDocRepository.findByEmployeeCodeAndWhetherSavingApproval(loginEmployee, "Y");
+    }
 
     // 결재 문서 내용 추가
 

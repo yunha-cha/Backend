@@ -110,7 +110,21 @@ public class ApprovalController {
         List<ApprovalDoc> approvalDocs = approvalService.retrievedInOutbox(employeeDTO);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
     }
+
     // 임시 저장
+    @PostMapping("/save-approval")
+    public ResponseEntity<ResponseDTO> saveApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal EmployeeDTO employeeDTO){
+        approvalService.temporarySaveApprovalDoc(approvalDocDTO, employeeDTO);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "저장 성공"));
+    }
+
+    // 임시 저장 문서 조회
+    @GetMapping("/outbox-saved")
+    public ResponseEntity<ResponseDTO> savedOutbox(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
+        List<ApprovalDoc> approvalDocs = approvalService.findSavedDocsByEmployeeCode(employeeDTO);
+        System.out.println("approvalDocs = " + approvalDocs);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
 
     // 결재 문서 내용 추가
 

@@ -28,4 +28,6 @@ public interface ApprovalDocRepository extends JpaRepository<ApprovalDoc, Long> 
 
     ApprovalDoc findByApprovalDocCode(Long approvalDocCode);
 
+    List<ApprovalDoc> findByEmployeeCodeAndWhetherSavingApproval(LoginEmployee loginEmployee, String whetherSavingApproval);
+
 }
