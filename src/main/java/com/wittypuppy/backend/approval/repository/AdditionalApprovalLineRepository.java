@@ -47,4 +47,13 @@ public interface AdditionalApprovalLineRepository extends JpaRepository<Addition
                     "AND b.approval_process_status = '결재'",
             nativeQuery = true)
     List<Long> finishedInOutboxDocCode(@Param("employeeCode") Long employeeCode); // 매개변수 추가
+
+    @Query(value =
+            "SELECT " +
+                    "approval_line_code " +
+                    "FROM tbl_approval_line " +
+                    "WHERE approval_document_code = :approvalDocCode " +
+                    "AND approval_process_status = '반려'",
+            nativeQuery = true)
+    List<Long> findRejectedApprovalLines(Long approvalDocCode);
 }

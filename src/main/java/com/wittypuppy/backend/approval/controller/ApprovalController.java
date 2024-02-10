@@ -98,6 +98,11 @@ public class ApprovalController {
     }
 
     // 반려 문서 조회
+    @GetMapping("/outbox-rejected")
+    public ResponseEntity<ResponseDTO> rejectedInOutbox(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
+        List<ApprovalDoc> approvalDocs = approvalService.rejectedInOutbox(employeeDTO);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
 
     // 회수 문서 조회
 

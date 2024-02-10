@@ -302,6 +302,24 @@ public class ApprovalService {
     }
 
     // 반려 문서 조회
+    public List<ApprovalDoc> rejectedInOutbox(EmployeeDTO employeeDTO) {
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        // 결재 상태 중에 반려가 존재하는 문서 리스트 조회
+        List<ApprovalDoc> rejectedDocList = new ArrayList<>();
+        for(ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> rejectedApprovalLines = additionalApprovalLineRepository.findRejectedApprovalLines(approvalDoc.getApprovalDocCode());
+            if(!rejectedApprovalLines.isEmpty()) {
+                rejectedDocList.add(approvalDoc);
+            }
+        }
+        return rejectedDocList;
+    }
 
     // 회수 문서 조회
 
