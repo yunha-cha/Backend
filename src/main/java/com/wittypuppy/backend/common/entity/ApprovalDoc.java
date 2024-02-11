@@ -25,7 +25,7 @@ public class ApprovalDoc {
     @Column(name="employee_code",columnDefinition = "BIGINT")
     private Long employeeCode;
 
-    @Column(name = "apprvoal_request_date",columnDefinition = "DATETIME")
+    @Column(name = "approval_request_date",columnDefinition = "DATETIME")
     private LocalDateTime apprvoalRequestDate;
 
     @Column(name = "whether_saving_approval",columnDefinition = "VARCHAR(1) DEFAULT 'N'")
