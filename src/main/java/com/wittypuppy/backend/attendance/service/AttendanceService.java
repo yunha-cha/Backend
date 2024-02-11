@@ -60,16 +60,7 @@ public class AttendanceService {
 
         Page<AttendanceWorkType> result = commuteWorkTypeRepository.attendanceList(yearMonth, employeeCode, paging);
 
-//        Page<AttendanceWorkTypeDTO> workTypeList = result.map(myDocumentWaiting -> modelMapper.map(myDocumentWaiting, AttendanceWorkTypeDTO.class));
-
-        Page<AttendanceWorkTypeDTO> workTypeList = result.map(attendanceWorkType -> {
-            AttendanceWorkTypeDTO dto = modelMapper.map(attendanceWorkType, AttendanceWorkTypeDTO.class);
-            if (attendanceWorkType.getAttendanceManagementCode() != null) {
-                AttendanceManagement attendanceManagement = attendanceWorkType.getAttendanceManagementCode();
-                dto.getAttendanceManagementCode().setAttendanceManagementArrivalTime(attendanceManagement.getAttendanceManagementArrivalTime());
-            }
-            return dto;
-        });
+        Page<AttendanceWorkTypeDTO> workTypeList = result.map(myDocumentWaiting -> modelMapper.map(myDocumentWaiting, AttendanceWorkTypeDTO.class));
 
         System.out.println("WorkTypeList = " + workTypeList);
         System.out.println("========== WorkTypeList End ===========");
