@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class WorkTypeDTO {
     private Long workTypeCode;
-    private ApprovalDocDTO approvalDocDTO;
+    private Long approvalDocCode;
     private String workTypeForm;
     private String workTypeTitle;
     private LocalDateTime workTypeStartDate;

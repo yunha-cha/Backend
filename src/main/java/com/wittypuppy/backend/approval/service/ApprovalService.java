@@ -3,23 +3,15 @@ package com.wittypuppy.backend.approval.service;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
-import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
-import com.wittypuppy.backend.approval.entity.ApprovalDoc;
-import com.wittypuppy.backend.approval.entity.ApprovalLine;
-import com.wittypuppy.backend.approval.repository.AdditionalApprovalLineRepository;
-import com.wittypuppy.backend.approval.repository.ApprovalDocRepository;
-import com.wittypuppy.backend.approval.repository.ApprovalLineRepository;
-import com.wittypuppy.backend.attendance.entity.Employee;
+import com.wittypuppy.backend.approval.entity.*;
+import com.wittypuppy.backend.approval.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -28,13 +20,21 @@ public class ApprovalService {
     private final ApprovalDocRepository approvalDocRepository;
     private final ApprovalLineRepository approvalLineRepository;
     private final AdditionalApprovalLineRepository additionalApprovalLineRepository;
+    private final OnLeaveRepository onLeaveRepository;
+    private final OverworkRepository overworkRepository;
+    private final SoftwareUseRepository softwareUseRepository;
+    private final WorkTypeRepository workTypeRepository;
 
 
-    public ApprovalService(ModelMapper modelMapper, ApprovalDocRepository approvalDocRepository, ApprovalLineRepository approvalLineRepository, AdditionalApprovalLineRepository additionalApprovalLineRepository) {
+    public ApprovalService(ModelMapper modelMapper, ApprovalDocRepository approvalDocRepository, ApprovalLineRepository approvalLineRepository, AdditionalApprovalLineRepository additionalApprovalLineRepository, OnLeaveRepository onLeaveRepository, OverworkRepository overworkRepository, SoftwareUseRepository softwareUseRepository, WorkTypeRepository workTypeRepository) {
         this.modelMapper = modelMapper;
         this.approvalDocRepository = approvalDocRepository;
         this.approvalLineRepository = approvalLineRepository;
         this.additionalApprovalLineRepository = additionalApprovalLineRepository;
+        this.onLeaveRepository = onLeaveRepository;
+        this.overworkRepository = overworkRepository;
+        this.softwareUseRepository = softwareUseRepository;
+        this.workTypeRepository = workTypeRepository;
     }
 
 //    public ApprovalDocDTO selectInboxDoc(Long approvalDocCode) {
@@ -75,7 +75,7 @@ public class ApprovalService {
         log.info("[ApprovalService] saving doc info started =====");
 
         ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-        approvalDoc.setApprovalForm("SW사용신청서");
+        approvalDoc.setApprovalForm("휴가신청서");
 
         LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
         approvalDoc.setEmployeeCode(loginEmployee);
@@ -85,6 +85,32 @@ public class ApprovalService {
 
         return approvalDocRepository.save(approvalDoc);
     }
+
+    // 결재 문서 내용 추가 - 휴가 신청서
+    public void saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
+        OnLeave onLeave = new OnLeave();
+        onLeave.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        onLeave.setKindOfOnLeave("연차");
+        onLeave.setOnLeaveTitle("[개발1팀] 휴가 신청서");
+        onLeave.setOnLeaveReason("개인 사유");
+        onLeave.setOnLeaveStartDate(new Date(124,1,19));
+        onLeave.setOnLeaveEndDate(new Date(124,1,21));
+
+        onLeaveRepository.save(onLeave);
+    }
+
+    // 결재 문서 내용 추가 - 연장근로 신청서
+    public void saveOverworkDoc(ApprovalDoc savedApprovalDoc){
+        Overwork overwork = new Overwork();
+        overwork.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        overwork.setKindOfOverwork("연장 근로");
+        overwork.setOverworkTitle("[개발1팀] 연장 근로 신청서");
+
+
+    }
+
+    // 결재 문서 내용 추가 - SW 사용 신청서
+    // 결재 문서 내용 추가 - 외근/출장/재택근무 신청서
 
     // 기안자 결재선 저장
     public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, EmployeeDTO employeeDTO) {
@@ -365,7 +391,7 @@ public class ApprovalService {
         return approvalDocRepository.findByEmployeeCodeAndWhetherSavingApproval(loginEmployee, "Y");
     }
 
-    // 결재 문서 내용 추가
+    // 결재 문서 내용 추가 - 휴가 신청서
 
     // 휴가 일수 차감
 }

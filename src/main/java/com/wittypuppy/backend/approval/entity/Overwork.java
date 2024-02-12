@@ -18,9 +18,8 @@ public class Overwork {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long overworkCode;
 
-    @JoinColumn(name = "approval_document_code")
-    @ManyToOne
-    private ApprovalDoc approvalDoc;
+    @Column(name = "approval_document_code")
+    private Long approvalDocCode;
 
     @Column(name = "overwork_title")
     private String overworkTitle;

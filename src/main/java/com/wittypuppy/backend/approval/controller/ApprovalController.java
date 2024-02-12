@@ -34,6 +34,7 @@ public class ApprovalController {
     @PostMapping("/submit-approval")
     public ResponseEntity<ResponseDTO> submitApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal EmployeeDTO employeeDTO){
         ApprovalDoc savedApprovalDoc = approvalService.saveApprovalDoc(approvalDocDTO, employeeDTO);
+        approvalService.saveOnLeaveDoc(savedApprovalDoc);
         approvalService.saveFirstApprovalLine(savedApprovalDoc, employeeDTO);
         approvalService.saveApprovalLines(savedApprovalDoc);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
@@ -118,7 +119,7 @@ public class ApprovalController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "저장 성공"));
     }
 
-    // 임시 저장 문서 조회
+    // 임시 저장 문서 리스트 조회
     @GetMapping("/outbox-saved")
     public ResponseEntity<ResponseDTO> savedOutbox(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
         List<ApprovalDoc> approvalDocs = approvalService.findSavedDocsByEmployeeCode(employeeDTO);
@@ -126,8 +127,23 @@ public class ApprovalController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
     }
 
+    // 수신함 - 결재 완료함
+
+    // 열람자 지정하기
+
+    // 열람함 문서 조회
+
+    // 대리결재자 지정하기
+
+    // 수신함 - 대리결재
+
     // 결재 문서 내용 추가
 
     // 휴가 일수 차감
 
+    // 결재선 삭제
+
+    // 결재선 순서 변경
+
+    // 재기안
 }
