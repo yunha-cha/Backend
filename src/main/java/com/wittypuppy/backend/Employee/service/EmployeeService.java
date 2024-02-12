@@ -5,6 +5,7 @@ import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.Employee.repository.EmployeeRepository;
 import com.wittypuppy.backend.util.TokenUtils;
+import jakarta.mail.internet.InternetAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +56,13 @@ public class EmployeeService {
         System.out.println("사용자의 이메일 정보 =====================================");
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("kimsungmin3313@gmail.com");
+        String from = "WittyFlow <kimsungmin3313@gmail.com>";
+
+        message.setFrom(from);
         message.setTo(to);
-        message.setSubject("mlzb ywni imuh unpg");
-        message.setText("Your temporary password is: " + temporaryPassword);
+        message.setSubject("임시 비밀번호 발급");
+
+        message.setText("임시 비밀번호 : " + temporaryPassword);
 
         javaMailSender.send(message);
     }

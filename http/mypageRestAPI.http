@@ -22,11 +22,11 @@ Authorization: Bearer eyJkYXRlIjoxNzA3MTUwMDkyNDI1LCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 ###비밀 번호 변경하기
 PUT http://localhost:1208/api/v1/mypage/modifypwd/12
 Content-Type: application/json
-Authorization: Bearer eyJkYXRlIjoxNzA3MTgzMjUyODgyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcxODY4NTIsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.zcGVsdeI9QGSUTRGsj3SO7oS9dA5LCO1phcLyQFufVg
+
 Accept: */*
 
 {
-  "empPwd": "pass112",
+  "empPwd": "4usfF1kSN_M",
   "newEmpPwd": "pass07"
 }
 
