@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class OverworkDTO {
     private Long overworkCode;
-    private ApprovalDocDTO approvalDocDTO;
+    private Long approvalDocCode;
     private String overworkTitle;
     private String kindOfOverwork;
     private LocalDateTime overworkDate;

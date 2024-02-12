@@ -1,10 +1,11 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.approval.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,27 +17,27 @@ import java.time.LocalDateTime;
 public class OnLeave {
     @Id
     @Column(name = "on_leave_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long onLeaveCode;
 
-    @JoinColumn(name = "approval_document_code")
-    @ManyToOne
-    private ApprovalDoc approvalDoc;
+    @Column(name = "approval_document_code")
+    private Long approvalDocCode;
 
     @Column(name = "on_leave_title")
     private String onLeaveTitle;
 
     @JoinColumn(name = "remaining_on_leave")
     @ManyToOne
-    private Employee onLeaveCount;
+    private LoginEmployee onLeaveCount;
 
     @Column(name = "kind_of_on_leave")
     private String kindOfOnLeave;
 
     @Column(name = "on_leave_start_date")
-    private LocalDateTime onLeaveStartDate;
+    private Date onLeaveStartDate;
 
     @Column(name = "on_leave_end_date")
-    private LocalDateTime onLeaveEndDate;
+    private Date onLeaveEndDate;
 
     @Column(name = "on_leave_reason")
     private String onLeaveReason;

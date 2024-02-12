@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class WorkType {
     @Id
     @Column(name = "work_type_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long workTypeCode;
 
-    @JoinColumn(name = "approval_document_code")
-    @ManyToOne
-    private ApprovalDoc approvalDoc;
+    @Column(name = "approval_document_code")
+    private Long approvalDocCode;
 
     @Column(name = "work_type_form")
     private String workTypeForm;

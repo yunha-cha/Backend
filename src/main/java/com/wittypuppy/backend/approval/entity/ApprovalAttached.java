@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class ApprovalAttached {
     @Id
     @Column(name = "approval_attached_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalAttachedCode;
 
     @JoinColumn(name = "approval_document_code")

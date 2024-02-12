@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.approval.dto;
 
+import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
