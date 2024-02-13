@@ -3,6 +3,9 @@ package com.wittypuppy.backend.approval.dto;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -13,4 +16,7 @@ public class ApprovalRepresentDTO {
     private ApprovalDocDTO approvalDocDTO;
     private EmployeeDTO representativeCode;
     private EmployeeDTO assigneeCode;
+    private Date startDate;
+    private Date endDate;
+    private String representStatus;
 }
