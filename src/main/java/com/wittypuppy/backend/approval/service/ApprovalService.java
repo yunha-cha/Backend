@@ -66,19 +66,18 @@ public class ApprovalService {
 //    }
 
 
-    // 기안 문서 정보 저장 및 기안자 결재선 저장
+    // 기안 문서 정보 저장
     public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
         log.info("[ApprovalService] saving doc info started =====");
 
-        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-        approvalDoc.setApprovalForm("SW사용신청서");
+        ApprovalDoc savedApprovalDoc = new ApprovalDoc();
+        savedApprovalDoc.setApprovalForm("SW사용신청서");
 
         LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
-        approvalDoc.setEmployeeCode(loginEmployee);
+        savedApprovalDoc.setEmployeeCode(loginEmployee.getEmployeeCode());
 
         approvalDoc.setApprovalRequestDate(LocalDateTime.now());
         approvalDoc.setWhetherSavingApproval("N");
-        saveFirstApprovalLine(approvalDoc, employeeDTO);
 
         return approvalDocRepository.save(approvalDoc);
     }
