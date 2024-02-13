@@ -67,4 +67,5 @@ public interface AdditionalApprovalLineRepository extends JpaRepository<Addition
     List<Long> findRetrievedApprovalLines(Long approvalDocCode);
 
 
+    AdditionalApprovalLine findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(Long approvalDocCode, Long employeeCode, String approvalProcessStatus);
 }

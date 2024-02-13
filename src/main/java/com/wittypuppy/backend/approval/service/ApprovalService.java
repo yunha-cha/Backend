@@ -157,7 +157,7 @@ public class ApprovalService {
         // 결재자 지정
         ApprovalRepresent approvalRepresent = new ApprovalRepresent();
         approvalRepresent.setAssignee(loginEmployee);
-        approvalRepresent.setRepresentative(2L);
+        approvalRepresent.setRepresentative(32L);
         approvalRepresent.setStartDate(new Date(124,1,14));
         approvalRepresent.setEndDate(new Date(124,1,17));
         approvalRepresent.setRepresentStatus("N");
@@ -241,21 +241,42 @@ public class ApprovalService {
 
         System.out.println("employeeCode ======== " + employeeCode);
 
-        // 결재 대상과 로그인한 사용자 employeeCode 비교
+        // 대리 결재 여부 확인
+        ApprovalRepresent approvalRepresent = approvalRepresentRepository.findByRepresentative(employeeCode);
+
+        System.out.println("approvalRepresent = " + approvalRepresent);
+        System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
+        System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
+
+        if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
+            AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
+
+            if (representApprovalLine != null) {
+                // 결재 상태 업데이트
+                representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+                representApprovalLine.setApprovalProcessStatus("결재");
+                representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
+                additionalApprovalLineRepository.save(representApprovalLine);
+                return "결재 성공";
+            }
+        }
+
         if (!approvalSubject.equals(employeeCode)) {
             return "결재 대상이 아닙니다.";
         }
 
-        AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCode(approvalDocCode, employeeCode);
+        AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, employeeCode, "대기");
 
-        System.out.println("additionalApprovalLine ======= " + additionalApprovalLine);
+        if (additionalApprovalLine != null) {
+            // 결재 상태 업데이트
+            additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+            additionalApprovalLine.setApprovalProcessStatus("결재");
+            additionalApprovalLineRepository.save(additionalApprovalLine);
+            return "결재 성공";
+        }
 
-        // 결재 상태 업데이트
-        additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
-        additionalApprovalLine.setApprovalProcessStatus("결재");
-        additionalApprovalLineRepository.save(additionalApprovalLine);
+        return "결재 대상이 아닙니다.";
 
-        return "결재 성공";
     }
 
     // 반려하기
