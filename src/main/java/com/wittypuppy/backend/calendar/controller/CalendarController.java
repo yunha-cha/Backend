@@ -2,6 +2,7 @@ package com.wittypuppy.backend.calendar.controller;
 
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.calendar.dto.CalendarDTO;
+import com.wittypuppy.backend.calendar.dto.EventInterfaceAndEventAttendeesDTO;
 import com.wittypuppy.backend.calendar.dto.EventDTO;
 import com.wittypuppy.backend.calendar.dto.EventOptionsDTO;
 import com.wittypuppy.backend.calendar.service.CalendarService;
@@ -39,9 +40,9 @@ public class CalendarController {
             @AuthenticationPrincipal EmployeeDTO principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
 
-        List<EventDTO> eventDTOList = calendarService.selectEvents(userEmployeeCode);
+        List<EventInterfaceAndEventAttendeesDTO> eventInterfaceAndEventAttendeesDTOList = calendarService.selectEvents(userEmployeeCode);
 
-        return res("이벤트 리스트 가져오기 성공", eventDTOList);
+        return res("이벤트 리스트 가져오기 성공", eventInterfaceAndEventAttendeesDTOList);
     }
 
     @GetMapping("/events/search")

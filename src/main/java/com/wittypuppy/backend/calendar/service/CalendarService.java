@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.calendar.service;
 
 import com.wittypuppy.backend.calendar.dto.*;
+import com.wittypuppy.backend.calendar.entity.Calendar;
 import com.wittypuppy.backend.calendar.entity.*;
 import com.wittypuppy.backend.calendar.exception.RollbackEventException;
 import com.wittypuppy.backend.calendar.repository.*;
@@ -15,10 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,13 +70,26 @@ public class CalendarService {
         return calendarDTO;
     }
 
-    public List<EventDTO> selectEvents(Long userEmployeeCode) {
+    public List<EventInterfaceAndEventAttendeesDTO> selectEvents(Long userEmployeeCode) {
         Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 사원의 캘린더가 존재하지 않습니다."));
 
-        List<EventDTO> eventList = eventRepository.findAllEventByCalendarCodeAndIsNotDelete(calendar.getCalendarCode());
+        System.out.println("calendar: " + calendar.getCalendarCode());
 
-        return eventList;
+        List<EventInterface> eventList = eventRepository.findAllEventByCalendarCode(calendar.getCalendarCode());
+        log.info("eventList>>>" + eventList.toString());
+        log.info("eventList>>>" + eventList.toString());
+        List<EventInterfaceAndEventAttendeesDTO> eventInterfaceAndEventAttendeesDTO = eventList.stream().map(
+                eventDTO -> {
+                    List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventDTO.getEventCode());
+                    List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
+                            .collect(Collectors.toList());
+                    EventInterfaceAndEventAttendeesDTO dto = new EventInterfaceAndEventAttendeesDTO(eventDTO, eventAttendeeDTOList);
+                    return dto;
+                }
+        ).collect(Collectors.toList());
+
+        return eventInterfaceAndEventAttendeesDTO;
     }
 
     public Map<String, Object> selectEventByEventCode(Long eventCode, Long userEmployeeCode) {
@@ -227,7 +239,7 @@ public class CalendarService {
 
             if (eventOptions.getEventDeleteStatus().equals("N")) {
                 eventOptions.setEventDeleteStatus("T");
-                eventOptions.setEventDeleteTime(now);
+                eventOptions.setEventDeleteTime(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
                 eventOptionsRepository.save(eventOptions);
                 return "일정 임시 삭제 성공";
             } else if (eventOptions.getEventDeleteStatus().equals("T")) {
