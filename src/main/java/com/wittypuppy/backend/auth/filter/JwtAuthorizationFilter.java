@@ -43,7 +43,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         List<String> roleLeessList = Arrays.asList(
                 "/auth/signup",
                 "/auth/login",
-                "/websocket"
+                "/websocket",
+                "/api/v1/employee/searchpwd"
 
         );
 
@@ -68,13 +69,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authentication.setEmployeeName(claims.get("employeeName").toString());
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
-                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
+//                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
                     // List<EmployeeRoleDTO> 설정 dto타입이라서 한 번 더 설정해줘야됨
-                    List<EmployeeRoleDTO> employeeRoles = mapToEmployeeRolelist(claims.get("employeeRoles"));
+                    List<EmployeeRoleDTO> employeeRoles = mapToEmployeeRolelist(claims.get("employeeRole"));
                     System.out.println("userRoles =-======================>>>> " + employeeRoles);
                     authentication.setEmployeeRole(employeeRoles);
+                    System.out.println("userRoles =-======================>>>>22222222222 " + employeeRoles);
 
                     AbstractAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(authentication, token, authentication.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetails(request));
@@ -104,13 +106,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             for (Map<String, Object> roleMap : (List<Map<String, Object>>) employeeRoleObject){
                 EmployeeRoleDTO employeeRole = new EmployeeRoleDTO();
                 employeeRole.setEmployeeCode((Integer) roleMap.get("employeeCode"));
-                employeeRole.setAuthorityCode((Integer) roleMap.get("authCode"));
+                employeeRole.setAuthorityCode((Integer) roleMap.get("authorityCode"));
 
                 Object authorityObject = roleMap.get("authority");
                 employeeRole.setAuthority(AuthorityDTO.fromLinkedHashMap((LinkedHashMap<String, Object>) authorityObject));
                 employeeRoles.add(employeeRole);
             }
-            System.out.println("employeeRoles ================= " + employeeRoles);
+            System.out.println("employeeRoles 니오냐 ================= " + employeeRoles);
         }
         return employeeRoles;
     }

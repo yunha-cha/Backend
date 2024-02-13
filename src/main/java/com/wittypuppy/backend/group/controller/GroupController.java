@@ -33,7 +33,7 @@ public class GroupController {
 
 //    조직 들어가면 나오는 그룹리스트
     @GetMapping("/chartlist")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> selectEmpListWithGroupPaging(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
             @AuthenticationPrincipal EmployeeDTO principal
@@ -57,7 +57,7 @@ public class GroupController {
     }
 
     @GetMapping("chartlist/search")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> selectSearchGroupList(
             @RequestParam(name = "s", defaultValue = "") String search, @AuthenticationPrincipal EmployeeDTO principal){
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "그룹 조회 성공 테스트", groupEmpService.selectGroupList(search, search)));
