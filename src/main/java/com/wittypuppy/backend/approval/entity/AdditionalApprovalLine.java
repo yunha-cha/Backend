@@ -29,7 +29,7 @@ public class AdditionalApprovalLine {
     private Long approvalProcessOrder;
 
     @Column(name = "approval_process_status")
-    private String ApprovalProcessStatus;
+    private String approvalProcessStatus;
 
     @Column(name = "approval_process_date")
     private LocalDateTime approvalProcessDate;

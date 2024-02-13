@@ -15,7 +15,7 @@ public class AdditionalApprovalLineDTO {
     private Long approvalDocCode;
     private Long employeeCode;
     private Long approvalProcessOrder;
-    private String ApprovalProcessStatus;
+    private String approvalProcessStatus;
     private LocalDateTime approvalProcessDate;
     private String approvalRejectedReason;
 }

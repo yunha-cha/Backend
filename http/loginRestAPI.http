@@ -4,10 +4,10 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07",
-  "employeeName": "강해린",
-  "employeeEmail": "kkkrrr12@gmail.com",
+  "employeeId": "ap_third",
+  "employeePassword": "ap_third",
+  "employeeName": "결재자2",
+  "employeeEmail": "ap_third@gmail.com",
   "employeeRetirementDate": "",
   "employeeBirthDate": "2003-03-03",
   "empAddress": "동대문구 종로구 하이미디어",
@@ -22,8 +22,8 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "inji",
-  "employeePassword": "0202"
+  "employeeId": "ap_second",
+  "employeePassword": "ap_second"
 }
 
 ###비밀번호 찾기

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class SoftwareUseDTO {
     private Long softwareUseCode;
-    private ApprovalDocDTO approvalDocDTO;
+    private Long approvalDocCode;
     private String softwareTitle;
     private String kindOfSoftware;
     private String softwareReason;

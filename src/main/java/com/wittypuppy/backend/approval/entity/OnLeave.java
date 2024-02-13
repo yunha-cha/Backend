@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,9 +20,8 @@ public class OnLeave {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long onLeaveCode;
 
-    @JoinColumn(name = "approval_document_code")
-    @ManyToOne
-    private ApprovalDoc approvalDoc;
+    @Column(name = "approval_document_code")
+    private Long approvalDocCode;
 
     @Column(name = "on_leave_title")
     private String onLeaveTitle;
@@ -34,10 +34,10 @@ public class OnLeave {
     private String kindOfOnLeave;
 
     @Column(name = "on_leave_start_date")
-    private LocalDateTime onLeaveStartDate;
+    private Date onLeaveStartDate;
 
     @Column(name = "on_leave_end_date")
-    private LocalDateTime onLeaveEndDate;
+    private Date onLeaveEndDate;
 
     @Column(name = "on_leave_reason")
     private String onLeaveReason;

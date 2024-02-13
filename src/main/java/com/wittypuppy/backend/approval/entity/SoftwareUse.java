@@ -18,9 +18,8 @@ public class SoftwareUse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long softwareUseCode;
 
-    @JoinColumn(name = "approval_document_code")
-    @ManyToOne
-    private ApprovalDoc approvalDoc;
+    @Column(name = "approval_document_code")
+    private Long approvalDocCode;
 
     @Column(name = "software_title")
     private String softwareTitle;
