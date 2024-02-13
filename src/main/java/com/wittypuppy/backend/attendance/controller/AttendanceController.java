@@ -9,6 +9,7 @@ import com.wittypuppy.backend.attendance.service.AttendanceService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,20 +39,22 @@ public class AttendanceController {
         /*
         * 남은 연차 보여주기 (연차 tbl_vacation (연차 타입 연차, 반차 인지/ 사용여부가 N / 만료 일자전 까지))
         *
-        * 결재 대기건 보여주기 수량 ->
+        * 결재 대기건 보여주기 수량 -->
         * 오늘 출근한 시간 보여주기 )
         * 오늘 퇴근한 시간 보여주기
         *
         * */
 
-        // 오늘 출퇴근 보여 주기
-        AttendanceManagementDTO commute = attendanceService.attendanceMain(employeeCode);
 
         //남은 연차 수량
         VacationDTO vacation = attendanceService.attendanceVacation(employeeCode);
 
         //결재 대기 수량 보여 주기
         ApprovalLineDTO approvalWaiting = attendanceService.attendanceWaiting(employeeCode);
+
+        // 오늘 출퇴근 보여 주기
+        AttendanceManagementDTO commute = attendanceService.attendanceMain(employeeCode);
+
 
         return ResponseEntity.ok().body(new AttendanceResponseDTO(HttpStatus.OK, "근태 메인 화면 조회 성공", commute, vacation, approvalWaiting));
 
@@ -93,6 +96,7 @@ public class AttendanceController {
         System.out.println("========== employeeCode ==========> " + employeeCode);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
+        System.out.println(attendanceManagementDTO.getAttendanceManagementDepartureTime());
 
         // 퇴근 업데이트
         String login = attendanceService.updateDeparture(employeeCode, attendanceManagementDTO);
@@ -106,7 +110,8 @@ public class AttendanceController {
     @GetMapping("/attendances/lists")
     public ResponseEntity<ResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "2023-12") String yearMonth  //리액트 값 받기
+            @RequestParam(name = "now", defaultValue = "2024-01") String yearMonth  //리액트 값 받기
+
 
     ) {
         System.out.println("==============selectCommuteList==================");
@@ -122,6 +127,8 @@ public class AttendanceController {
 
         Page<AttendanceWorkTypeDTO> attendanceList = attendanceService.selectCommuteList(cri, yearMonth, employeeCode);
         pagingResponse.setData(attendanceList);
+
+        System.out.println("==================attendanceList = " + attendanceList);
         pagingResponse.setPageInfo(new PageDTO(cri, (int) attendanceList.getTotalElements()));
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "출퇴근 목록 조회 성공", pagingResponse));

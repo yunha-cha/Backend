@@ -1,6 +1,8 @@
 package com.wittypuppy.backend.auth.filter;
 
 
+import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
+import com.wittypuppy.backend.Employee.dto.AuthorityDTO;
 import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.util.TokenUtils;
@@ -22,9 +24,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -41,16 +41,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         * */
 
         List<String> roleLeessList = Arrays.asList(
-                "/api/v1/products/\\d+",
-                "/api/v1/products/\\w+",
-                "/api/v1/products",
-                "/api/v1/reviews/product/\\d+",
-                "/api/v1/products/search?s=\\w+",
-                "/auth/signup","/auth/login",
-                "/api/v1/reviews",
-                "/api/v1/reviews/\\d++",
-                "/api/v1/reviews/(\\d+)?offset=\\d+",
-                "/websocket"
+                "/auth/signup",
+                "/auth/login",
+                "/websocket",
+                "/api/v1/employee/searchpwd"
+
         );
 
 
@@ -74,7 +69,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authentication.setEmployeeName(claims.get("employeeName").toString());
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
+//                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
+
+                    // List<EmployeeRoleDTO> 설정 dto타입이라서 한 번 더 설정해줘야됨
+                    List<EmployeeRoleDTO> employeeRoles = mapToEmployeeRolelist(claims.get("employeeRole"));
+                    System.out.println("userRoles =-======================>>>> " + employeeRoles);
+                    authentication.setEmployeeRole(employeeRoles);
+                    System.out.println("userRoles =-======================>>>>22222222222 " + employeeRoles);
 
                     AbstractAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(authentication, token, authentication.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetails(request));
@@ -96,6 +98,23 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             printWriter.flush();
             printWriter.close();
         }
+    }
+
+    private List<EmployeeRoleDTO> mapToEmployeeRolelist(Object employeeRoleObject){
+        List<EmployeeRoleDTO> employeeRoles = new ArrayList<>();
+        if(employeeRoleObject instanceof List<?>){
+            for (Map<String, Object> roleMap : (List<Map<String, Object>>) employeeRoleObject){
+                EmployeeRoleDTO employeeRole = new EmployeeRoleDTO();
+                employeeRole.setEmployeeCode((Integer) roleMap.get("employeeCode"));
+                employeeRole.setAuthorityCode((Integer) roleMap.get("authorityCode"));
+
+                Object authorityObject = roleMap.get("authority");
+                employeeRole.setAuthority(AuthorityDTO.fromLinkedHashMap((LinkedHashMap<String, Object>) authorityObject));
+                employeeRoles.add(employeeRole);
+            }
+            System.out.println("employeeRoles 니오냐 ================= " + employeeRoles);
+        }
+        return employeeRoles;
     }
 
     /**

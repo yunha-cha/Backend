@@ -39,3 +39,4 @@ public class LoginEmailConfig {
         return mailSender;
     }
 }
+

@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.Employee.service;
 
 
+import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
 import com.wittypuppy.backend.common.exception.DuplicatedMemberEmailException;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
@@ -55,7 +56,7 @@ public class AuthService {
         *  하지만 jpql에 의해 앞선 save와 jpql이 flush()로 쿼리와 함께 날아가고 회원이 이미 sequence객체 값 증가와 함께
         *  insert가 되어 버린다. -> 고로, maxMemberCode가 현재 가입하는 회원의 번호를 의미한다.
         * */
-        LoginEmployeeRole registMemberRole = new LoginEmployeeRole(Math.toIntExact(result1.getEmployeeCode()), 2);
+        LoginEmployeeRole registMemberRole = new LoginEmployeeRole(Math.toIntExact(result1.getEmployeeCode()), 1);
         LoginEmployeeRole result2 = employeeRoleRepository.save(registMemberRole);
         log.info("[AuthService] EmployeeInsert Result {}",
                         (result1 != null && result2 != null)? "회원 가입 성공" : "회원 가입 실패");

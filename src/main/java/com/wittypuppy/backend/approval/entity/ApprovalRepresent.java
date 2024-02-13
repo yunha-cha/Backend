@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +14,7 @@ import lombok.*;
 public class ApprovalRepresent {
     @Id
     @Column(name = "approval_represent_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalRepresentCode;
 
     @JoinColumn(name = "approval_document_code")
@@ -22,9 +23,9 @@ public class ApprovalRepresent {
 
     @JoinColumn(name = "assignee_code")
     @ManyToOne
-    private Employee representativeCode;
+    private LoginEmployee assignee;
 
     @JoinColumn(name = "representative_code")
     @ManyToOne
-    private Employee assigneeCode;
+    private LoginEmployee representative;
 }

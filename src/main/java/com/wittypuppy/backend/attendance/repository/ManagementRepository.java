@@ -27,16 +27,39 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
     AttendanceManagement attendanceCommute(Long employeeCode);
 
 
+
+    //전체 연차 수량
     @Query(value = "SELECT COUNT(*) " +
             "FROM tbl_vacation " +
             "WHERE employee_code = :employeeCode " +
-            "AND vacation_used_status = 'N' " +
             "AND vacation_expiration_date > NOW()",
             nativeQuery = true)
-    Long attendanceVacation(Long employeeCode);
+    Long attendanceTotalVacation(Long employeeCode);
+
+
+    //사용한 연차 수량
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM tbl_vacation " +
+            "WHERE employee_code = :employeeCode " +
+            "AND vacation_used_status = 'Y' " +
+            "AND vacation_type = '연차' " +
+            "AND vacation_expiration_date > NOW()",
+            nativeQuery = true)
+    Long attendanceUseVacation(Long employeeCode);
+
+
+    //사용한 반차 수량
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM tbl_vacation " +
+            "WHERE employee_code = :employeeCode " +
+            "AND vacation_used_status = 'Y' " +
+            "AND vacation_type = '반차' " +
+            "AND vacation_expiration_date > NOW()",
+            nativeQuery = true)
+    Long attendanceUseHalfVacation(Long employeeCode);
+
 
     AttendanceManagement findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(Long employeeCode);
-
 
 
 

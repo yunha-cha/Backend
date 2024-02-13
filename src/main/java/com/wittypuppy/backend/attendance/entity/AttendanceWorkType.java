@@ -32,8 +32,8 @@ public class AttendanceWorkType {
     private AttendanceManagement attendanceManagementCode;
 
     @JoinColumn(name = "approval_document_code")
-    @OneToMany
-    private List<ApprovalDocument> attendanceWorkTypeApprovalDocumentCode;
+    @OneToOne
+    private ApprovalDocument attendanceWorkTypeApprovalDocumentCode;
 
 
 }
