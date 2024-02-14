@@ -1,5 +1,5 @@
 package com.wittypuppy.backend.util;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -100,7 +100,7 @@ public class TokenUtils {
      * @return String - token
      * */
 
-    public static String generateJwtToken(EmployeeDTO employee) {
+    public static String generateJwtToken(User employee) {
         Date expireTime = new Date(System.currentTimeMillis() + tokenValidateTime);
 
 
@@ -136,13 +136,14 @@ public class TokenUtils {
      * @param employee - 사용자 정보
      * @return Map<String, Object> - cliams 정보
      * */
-    private static Map<String, Object> createClaims(EmployeeDTO employee){
+    private static Map<String, Object> createClaims(User employee){
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("employeeName", employee.getEmployeeName());
         claims.put("employeeRole", employee.getEmployeeRole());
         claims.put("employeeEmail", employee.getEmployeeEmail());
         claims.put("empCode", employee.getEmployeeCode());
+        claims.put("employeeId", employee.getEmployeeId());
         //클래임은 문자열 키와 그에 해당하는 값으로 이루어진 맵 형태이다.
 
         return claims;

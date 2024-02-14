@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.messenger.controller;
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.messenger.dto.*;
 import com.wittypuppy.backend.messenger.service.MessengerService;
@@ -110,7 +110,7 @@ public class MessengerController {
     @PostMapping("/chatrooms")
     public ResponseEntity<ResponseDTO> createChatroom(
             @RequestBody ChatroomOptionsDTO chatroomOptionsDTO,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.createChatroom(chatroomOptionsDTO, userEmployeeCode));
     }
@@ -125,7 +125,7 @@ public class MessengerController {
     @GetMapping("/chatrooms/{chatroomCode}")
     public ResponseEntity<ResponseDTO> openChatroom(
             @PathVariable Long chatroomCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         ChatroomMainDTO chatroomMainDTO = messengerService.openChatroom(chatroomCode, userEmployeeCode);
         return res("채팅방 접속 성공", chatroomMainDTO);
@@ -136,7 +136,7 @@ public class MessengerController {
             @PathVariable Long chatroomCode,
             @RequestParam Long requestChatCode,
             @RequestParam String direction,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         List<ChatDTO> chatDTOList = messengerService.selectChatListWithScrollPaging(chatroomCode, requestChatCode, direction);
         return res("채팅방 목록 반환", chatDTOList);
@@ -145,7 +145,7 @@ public class MessengerController {
     @GetMapping("/chatrooms/{chatroomCode}/options")
     public ResponseEntity<ResponseDTO> openChatroomOptions(
             @PathVariable Long chatroomCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         ChatroomOptionsDTO chatroomOptionsDTO = messengerService.openChatroomOptions(chatroomCode, userEmployeeCode);
         return res("채팅방 옵션 반환", chatroomOptionsDTO);
@@ -155,14 +155,14 @@ public class MessengerController {
     public ResponseEntity<ResponseDTO> modifyChatroomOptions(
             @PathVariable Long chatroomCode,
             @RequestBody ChatroomOptionsDTO chatroomOptionsDTO,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.modifyChatroomOptions(chatroomCode, chatroomOptionsDTO, userEmployeeCode));
     }
 
     @GetMapping("/employees")
     public ResponseEntity<ResponseDTO> selectEmployees(
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res("사원 목록 가져오기 성공", messengerService.selectEmployees());
     }
@@ -171,7 +171,7 @@ public class MessengerController {
     public ResponseEntity<ResponseDTO> inviteEmployees(
             @PathVariable Long chatroomCode,
             @RequestBody List<Long> inviteEmployeeCodeList,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.inviteEmployees(chatroomCode, inviteEmployeeCodeList, userEmployeeCode));
     }
@@ -179,7 +179,7 @@ public class MessengerController {
     @GetMapping("/chatrooms/{chatroomCode}/members")
     public ResponseEntity<ResponseDTO> inviteEmployees(
             @PathVariable Long chatroomCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res("현재 채팅방에 있는 멤버 조회 성공", messengerService.selectChatroomMember(chatroomCode, userEmployeeCode));
     }
@@ -188,7 +188,7 @@ public class MessengerController {
     public ResponseEntity<ResponseDTO> delegateChatroomAdmin(
             @PathVariable Long chatroomCode,
             @RequestParam Long delegateChatroomMemberCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.delegateChatroomAdmin(delegateChatroomMemberCode, chatroomCode, userEmployeeCode));
     }
@@ -196,7 +196,7 @@ public class MessengerController {
     @GetMapping("/chatrooms/{chatroomCode}/profile")
     public ResponseEntity<ResponseDTO> findProfileImage(
             @PathVariable Long chatroomCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res("프로필사진 이미지 url 가져오기 성공", messengerService.findProfileImage(chatroomCode, userEmployeeCode));
     }
@@ -206,7 +206,7 @@ public class MessengerController {
     public ResponseEntity<ResponseDTO> updateProfileImage(
             @PathVariable Long chatroomCode,
             MultipartFile chatroomProfileImage,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         if (chatroomProfileImage.isEmpty()) {
             return res("해당 파일이 존재하지 않습니다.");
         }
@@ -218,7 +218,7 @@ public class MessengerController {
     public ResponseEntity<ResponseDTO> kickChatroomMember(
             @PathVariable Long chatroomCode,
             @RequestParam Long kickChatroomMemberCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.kickChatroomMember(kickChatroomMemberCode, chatroomCode, userEmployeeCode));
     }
@@ -226,7 +226,7 @@ public class MessengerController {
     @PutMapping("/chatrooms/{chatroomCode}/exit")
     public ResponseEntity<ResponseDTO> exitChatroomMember(
             @PathVariable Long chatroomCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.exitChatroomMember(chatroomCode, userEmployeeCode));
     }
@@ -235,7 +235,7 @@ public class MessengerController {
     public ResponseEntity<ResponseDTO> updateChatReadStatus(
             @PathVariable Long chatroomCode,
             @RequestParam Long chatCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = 12L;
         return res(messengerService.updateChatReadStatus(chatCode, chatroomCode, userEmployeeCode));
     }

@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.approval.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 @NoArgsConstructor
@@ -10,6 +11,6 @@ import lombok.*;
 public class ApprovalRepresentDTO {
     private Long approvalRepresentCode;
     private ApprovalDocDTO approvalDocDTO;
-    private EmployeeDTO representativeCode;
-    private EmployeeDTO assigneeCode;
+    private User representativeCode;
+    private User assigneeCode;
 }

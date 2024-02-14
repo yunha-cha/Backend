@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,15 +16,14 @@ import java.time.LocalDateTime;
 public class ApprovalLine {
     @Id
     @Column(name = "approval_line_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalLineCode;
 
-    @JoinColumn(name = "approval_document_code")
-    @ManyToOne
-    private ApprovalDoc approvalDoc;
+    @Column(name = "approval_document_code")
+    private Long approvalDocCode;
 
-    @JoinColumn(name = "employee_code")
-    @ManyToOne
-    private Employee employee;
+    @Column(name = "employee_code")
+    private Long employeeCode;
 
     @Column(name = "approval_process_order")
     private Long approvalProcessOrder;

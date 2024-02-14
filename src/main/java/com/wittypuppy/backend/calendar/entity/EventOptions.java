@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,10 +30,10 @@ public class EventOptions {
     private String eventContent;
 
     @Column(name = "event_start_date", columnDefinition = "DATETIME")
-    private LocalDateTime eventStartDate;
+    private Date eventStartDate;
 
     @Column(name = "event_end_date", columnDefinition = "DATETIME")
-    private LocalDateTime eventEndDate;
+    private Date eventEndDate;
 
     @Column(name = "event_location", columnDefinition = "VARCHAR(500)")
     private String eventLocation;
@@ -42,7 +42,7 @@ public class EventOptions {
     private String eventRecurrenceRule;
 
     @Column(name = "event_delete_time", columnDefinition = "DATETIME")
-    private LocalDateTime eventDeleteTime;
+    private Date eventDeleteTime;
 
     @Column(name = "event_delete_status", columnDefinition = "VARCHAR(20) DEFAULT 'N'")
     private String eventDeleteStatus;
@@ -82,12 +82,12 @@ public class EventOptions {
         return this;
     }
 
-    public EventOptions setEventStartDate(LocalDateTime eventStartDate) {
+    public EventOptions setEventStartDate(Date eventStartDate) {
         this.eventStartDate = eventStartDate;
         return this;
     }
 
-    public EventOptions setEventEndDate(LocalDateTime eventEndDate) {
+    public EventOptions setEventEndDate(Date eventEndDate) {
         this.eventEndDate = eventEndDate;
         return this;
     }
@@ -102,7 +102,7 @@ public class EventOptions {
         return this;
     }
 
-    public EventOptions setEventDeleteTime(LocalDateTime eventDeleteTime) {
+    public EventOptions setEventDeleteTime(Date eventDeleteTime) {
         this.eventDeleteTime = eventDeleteTime;
         return this;
     }

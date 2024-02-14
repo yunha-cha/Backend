@@ -3,7 +3,7 @@ package com.wittypuppy.backend.calendar.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -23,15 +23,15 @@ public class Employee {
     @ManyToOne
     private Department department;
 
-    @JoinColumn(name="job_code")
+    @JoinColumn(name = "job_code")
     @ManyToOne
     private Job job;
 
-    @Column(name="employee_name")
+    @Column(name = "employee_name")
     private String employeeName;
 
-    @Column(name="employee_retirement_date")
-    private LocalDateTime employeeRetirementDate;
+    @Column(name = "employee_retirement_date")
+    private Date employeeRetirementDate;
 
     @JoinColumn(name = "employee_code")
     @OneToMany
