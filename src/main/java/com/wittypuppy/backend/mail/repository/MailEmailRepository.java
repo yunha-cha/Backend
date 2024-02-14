@@ -31,12 +31,16 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
     List<Email> findAllByEmailSender(Employee employee);
     List<Email> findAllByEmailSendTime(LocalDateTime word);
     List<Email> findAllByEmailContentLike(String word);
-    List<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatus(String n, Employee user,String send);
 
     List<Email> findAllByEmailTitleContainingAndEmailReceiver(String word,Employee me);
     @Query(nativeQuery = true,
-            value = "SELECT * FROM tbl_email WHERE email_sender_employee_code LIKE concat('%',:sender,'%') AND email_receiver_employee_code IN :receiver")
-    List<Email> findAllByEmailReceiverMail(@Param("sender") Long sender,@Param("receiver") List<Long> receiver);
+            value = "SELECT * FROM tbl_email WHERE email_receiver_employee_code = :receiver AND email_sender_employee_code IN :sender")
+    List<Email> findAllByEmailReceiverMail(@Param("receiver") Long receiver, @Param("sender") List<Long> sender);
 
     List<Email> findByEmailReceiverAndEmailStatusIn(Employee employee, List<String> strings);
+
+
+    Long countByEmailReadStatusAndEmailReceiver(String readStatus, Employee employee);
+
+    List<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatusIn(String n, Employee map, List<String> send);
 }

@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.mail.service;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.mail.dto.EmployeeDTO;
 import com.wittypuppy.backend.mail.entity.Email;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,14 +31,14 @@ public class EmailService {
         this.employeeRepository = employeeRepository;
     }
 
-    public List<EmailDTO> findReceiveMail(String emailStatus) {
-        if(emailStatus.equals("send")){
+    public List<EmailDTO> findReceiveMail(String emailStatus, User user) {
+        if(emailStatus.equals("send")){ //클라이언트에서 send를 가져왔으면
             Employee employee = new Employee();
-            employee.setEmployeeCode(1L);
-            List<Email> emailList = emailRepository.findByEmailReceiverAndEmailStatusIn(employee,List.of("send","important"));
+            employee.setEmployeeCode((long) user.getEmployeeCode());    //유저의 코드 삽입
+            List<Email> emailList = emailRepository.findByEmailReceiverAndEmailStatusIn(employee,List.of("send","important"));  //send,important인 메일을 찾아라
             return convert(emailList,EmailDTO.class);
-        } else {
-            List<Email> emailList = emailRepository.findReceiveMail(1L, emailStatus);
+        } else {    //클라에서 send말고 다른걸 가져왔으면
+            List<Email> emailList = emailRepository.findReceiveMail((long)user.getEmployeeCode(), emailStatus);   //가져온 상태로 찾아라
             System.out.println("요청한 emailStatus는 : " + emailStatus + "입니다.");
             return emailList.stream().map(email -> modelMapper.map(email, EmailDTO.class)).toList();
         }
@@ -64,11 +66,12 @@ public class EmailService {
     @Transactional
     public EmailDTO sendMail(EmailDTO email, String status){
         //여기에 상태에 맞춰서 처리하자.
-        if (status.equals("temporary")) {   //임시저장
-            email.setEmailStatus("temporary");//별도 처리 필요 없음
-        }
-        Email emailEntity = modelMapper.map(email,Email.class);    //엔티티로 변환 됨
-        return modelMapper.map(emailRepository.save(emailEntity),EmailDTO.class);
+//        if (status.equals("temporary")) {   //임시저장
+//            email.setEmailStatus("temporary");//별도 처리 필요 없음
+//        }
+//        Email emailEntity = modelMapper.map(email,Email.class);    //엔티티로 변환 됨
+//        return modelMapper.map(emailRepository.save(emailEntity),EmailDTO.class);
+        return null;
 
     }
 
@@ -132,12 +135,11 @@ public class EmailService {
     public List<EmailDTO> findByEmailTitle(String word,EmployeeDTO me) {
         System.out.println("들오엄?");
         List<Email> emails = emailRepository.findAllByEmailTitleContainingAndEmailReceiver(word,modelMapper.map(me,Employee.class));
+        System.out.println("아오 뭐하냐고");
         return convert(emails,EmailDTO.class);
     }
     public List<EmailDTO> findAllByEmailSender(String word, Long me) {
-        System.out.println("서비스로 들어옴.");
-        System.out.println("나는누구? : "+me);
-        System.out.println("누구한테 보낼지 검색어는? : "+word);
+        //얘가 찾아오는 것은 Employee테이블에서 word변수의 아이디를 갖고 있는 사람을 가져온다.
             List<Employee> employee = employeeRepository.findAllByEmployeeIdLike("%" + word + "%");
             if(employee.isEmpty()){
                 System.out.println("유저를 못 찾음");
@@ -147,16 +149,17 @@ public class EmailService {
             for(Employee emp : employee){
                 emailSenderId.add(emp.getEmployeeCode());
             }
-            System.out.println("이메일 보낸 사람의 코드는? : "+emailSenderId);
-
+            System.out.println("이메일 보낸 사람의 코드는? : "+emailSenderId); //이게 확인 용이다.
+            //me는 나인 15이고, 두 번째 인자는 2,9,16이다.
             List<Email> emails = emailRepository.findAllByEmailReceiverMail(me,emailSenderId);
-            if(!emails.isEmpty()){
+            if(!emails.isEmpty()) {
                 System.out.println("DB에서 가져온 값은?");
-                for(Email email : emails){
+                for (Email email : emails) {
                     System.out.println(email);
                 }
-                return convert(emails,EmailDTO.class);
+                return convert(emails, EmailDTO.class);
             }
+            System.out.println(emails);
             return null;
     }
     //예약상태의 메일을 추가하는 메서드
@@ -190,15 +193,20 @@ public class EmailService {
 
 
     public EmailDTO findById(Long emailCode) {
+        System.out.println("여기도 옴?");
         return modelMapper.map(emailRepository.findById(emailCode),EmailDTO.class);
     }
 
     public EmailDTO updateEmailReadStatus(EmailDTO emailDTO) {
-        return modelMapper.map(emailRepository.save(modelMapper.map(emailDTO,Email.class)),EmailDTO.class);
+        Email email = modelMapper.map(emailDTO,Email.class);
+        email.setEmailSendTime(LocalDateTime.parse(emailDTO.getEmailSendTime()));
+        System.out.println("======================================="+email.getEmailSendTime());
+        emailRepository.save(email);
+        return modelMapper.map(email,EmailDTO.class);
     }
 
     public List<EmailDTO> findByEmailReadStatus(EmployeeDTO user) {
-        List<Email> email = emailRepository.findAllByEmailReadStatusAndEmailReceiverAndEmailStatus("N",modelMapper.map(user,Employee.class),"send");
+        List<Email> email = emailRepository.findAllByEmailReadStatusAndEmailReceiverAndEmailStatusIn("N",modelMapper.map(user,Employee.class),List.of("send","important"));
         return convert(email,EmailDTO.class);
     }
 
@@ -210,5 +218,27 @@ public class EmailService {
         Email result = emailRepository.save(email);
         modelMapper.map(result,EmailDTO.class);
         return modelMapper.map(result, EmailDTO.class);
+    }
+
+
+    public Long findByEmailReadStatusCount(User user) {
+        Employee userCode = new Employee();
+        userCode.setEmployeeCode((long) user.getEmployeeCode());
+        return emailRepository.countByEmailReadStatusAndEmailReceiver("N",userCode);
+
+
+    }
+
+    public boolean updateEmailStatus(Long emailCode, String status) {
+        Optional<Email> emailOptional = emailRepository.findById(emailCode);
+        if(emailOptional.isPresent()){
+            Email email = emailOptional.get();
+            email.setEmailStatus(status);
+            emailRepository.save(email);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }
