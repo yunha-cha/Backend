@@ -70,8 +70,28 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
     Page<ApprovalLine> findByApplyDocument(Long employeeCode, Pageable paging);
 
 
+
+
+    @Query(value = "SELECT " +
+            "A.approval_document_code, " +
+            "A.approval_line_code, " +
+            "A.approval_process_date, " +
+            "A.approval_process_order, " +
+            "A.employee_code, " +
+            "A.approval_process_status, " +
+            "A.approval_rejected_reason, " +
+            "C.employee_name, " +
+            "D.department_name " +
+            "FROM tbl_approval_line A " +
+            "LEFT JOIN tbl_approval_document B ON A.approval_document_code = B.approval_document_code " +
+            "LEFT JOIN tbl_employee C ON B.employee_code = C.employee_code " +
+            "LEFT JOIN tbl_department D ON C.department_code = D.department_code " +
+            "WHERE A.employee_code = :employeeCode " +
+            "AND A.approval_process_status = '결재'"
+            , nativeQuery = true)
+
     // 내가 결재한 문서
-    Page<ApprovalLine> findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(Pageable paging, Long employeeCode, String 결재);
+    Page<ApprovalLine> approvalPayment(Pageable paging, Long employeeCode);
 
 
 
@@ -84,9 +104,13 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "A.approval_process_order, " +
             "A.employee_code, " +
             "A.approval_process_status, " +
-            "A.approval_rejected_reason " +
+            "A.approval_rejected_reason, " +
+            "C.employee_name, " +
+            "D.department_name " +
             "FROM tbl_approval_line A " +
-            "LEFT JOIN tbl_approval_document B ON A.employee_code = B.employee_code " +
+            "LEFT JOIN tbl_approval_document B ON A.approval_document_code = B.approval_document_code " +
+            "LEFT JOIN tbl_employee C ON B.employee_code = C.employee_code " +
+            "LEFT JOIN tbl_department D ON C.department_code = D.department_code " +
             "WHERE A.approval_process_status = '대기' " +
             "AND A.employee_code = :employeeCode " +
             "AND A.approval_process_order IN (SELECT approval_process_order - 1 FROM tbl_approval_line) " +
