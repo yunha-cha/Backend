@@ -22,8 +22,8 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass77"
+  "employeeId": "root",
+  "employeePassword": "root"
 }
 
 ###비밀번호 찾기
