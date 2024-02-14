@@ -1,11 +1,10 @@
 package com.wittypuppy.backend.Employee.service;
 
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.Employee.repository.EmployeeRepository;
 import com.wittypuppy.backend.util.TokenUtils;
-import jakarta.mail.internet.InternetAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
-import java.util.Base64;
 import java.util.Optional;
 @Service
 @Slf4j
@@ -41,13 +39,13 @@ public class EmployeeService {
         this.tokenUtils = tokenUtils;
     }
 
-    public EmployeeDTO selectMyInfo(String employeeId) {
+    public User selectMyInfo(String employeeId) {
         log.info("[MemberService]  selectMyInfo   Start =============== ");
 
         LoginEmployee employee = employeeRepository.findByEmployeeId(employeeId);
         log.info("[employeeService]  {} =============== ", employee);
         log.info("[employeeService]  selectMyInfo   End =============== ");
-        return modelMapper.map(employee, EmployeeDTO.class);
+        return modelMapper.map(employee, User.class);
     }
 
 
@@ -69,7 +67,7 @@ public class EmployeeService {
 
 
     @Transactional
-    public EmployeeDTO sendSearchPwd(String employeeId, String employeeEmail) throws UserPrincipalNotFoundException {
+    public User sendSearchPwd(String employeeId, String employeeEmail) throws UserPrincipalNotFoundException {
         Optional<LoginEmployee> employee = employeeRepository.findByEmployeeIdAndEmployeeEmail(employeeId, employeeEmail);
         System.out.println("비번 변경 서비스 시작=====================================");
         System.out.println("employee값이 들어있는지 확인용 = " + employee);
@@ -96,7 +94,7 @@ public class EmployeeService {
 
             System.out.println(" 비번 변경 서비스 끝=====================================");
 
-        return modelMapper.map(employee.get(), EmployeeDTO.class);//일단 오류는 안뜨게함
+        return modelMapper.map(employee.get(), User.class);//일단 오류는 안뜨게함
         } else {
             throw new UserPrincipalNotFoundException("사용자 정보를 찾을 수 없습니다.");
         }

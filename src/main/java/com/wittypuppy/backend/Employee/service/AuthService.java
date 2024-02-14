@@ -1,9 +1,8 @@
 package com.wittypuppy.backend.Employee.service;
 
 
-import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
 import com.wittypuppy.backend.common.exception.DuplicatedMemberEmailException;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.Employee.entity.LoginEmployeeRole;
 import com.wittypuppy.backend.Employee.repository.EmployeeRepository;
@@ -31,18 +30,18 @@ public class AuthService {
     }
 
     @Transactional   // DML작업은 Transactional 어노테이션 추가
-    public Object signup(EmployeeDTO employeeDTO) {
+    public Object signup(User user) {
 
         log.info("[AuthService] signup Start ==================================");
-        log.info("[AuthService] memberDTO {} =======> ", employeeDTO);
+        log.info("[AuthService] memberDTO {} =======> ", user);
 
         /* 이메일 중복 유효성 검사(선택적) */
-        if(employeeRepository.findByEmployeeEmail(employeeDTO.getEmployeeEmail()) != null){ // 중복된 내용이 있으니 값을 가지고 온 것 (없으면 null)
+        if(employeeRepository.findByEmployeeEmail(user.getEmployeeEmail()) != null){ // 중복된 내용이 있으니 값을 가지고 온 것 (없으면 null)
             log.info("[AuthService] 이메일이 종복됩니다.");
             throw new DuplicatedMemberEmailException("이메일이 중복됩니다.");
         }
 
-        LoginEmployee registEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee registEmployee = modelMapper.map(user, LoginEmployee.class);
 
         /* 1. TBL_EPLOYEE 테이블에 회원 insert */
         registEmployee = registEmployee.employeePassword(passwordEncoder.encode(registEmployee.getEmployeePassword())).build(); // 평문의 암호문자열을 암호화시켜서 전달
@@ -63,7 +62,7 @@ public class AuthService {
 
         log.info("[AuthService] signup End ==================================");
 
-        return employeeDTO;
+        return user;
     }
 
 

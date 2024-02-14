@@ -1,7 +1,7 @@
 package com.wittypuppy.backend.auth.handler;
 
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,7 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String memberId = loginToken.getName();
         String password = (String) loginToken.getCredentials();
 
-        EmployeeDTO member = (EmployeeDTO) detailsService.loadUserByUsername(memberId);
+        User member = (User) detailsService.loadUserByUsername(memberId);
 
         if(!passwordEncoder.matches(password, member.getPassword())){
             throw new BadCredentialsException(password + "는 비밀번호가 아닙니다.");

@@ -2,7 +2,7 @@ package com.wittypuppy.backend.auth.filter;
 
 
 import com.wittypuppy.backend.Employee.dto.AuthorityDTO;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
 import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.util.TokenUtils;
@@ -70,7 +70,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (TokenUtils.isValidToken(token)) {
                     Claims claims = TokenUtils.getClaimsFromToken(token);
                     System.out.println("claims ===================== " + claims);
-                    EmployeeDTO authentication = new EmployeeDTO();
+                    User authentication = new User();
                     authentication.setEmployeeName(claims.get("employeeName").toString());
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));

@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.calendar.controller;
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.calendar.dto.CalendarDTO;
 import com.wittypuppy.backend.calendar.dto.EventDTO;
 import com.wittypuppy.backend.calendar.dto.EventInterfaceAndEventAttendeesDTO;
@@ -30,7 +30,7 @@ public class CalendarController {
     @Tag(name="캘린더 조회", description = "해당 계정(사원)의 캘린더 정보 조회")
     @GetMapping("")
     public ResponseEntity<ResponseDTO> selectCalendar(
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
 
         CalendarDTO calendarDTO = calendarService.selectCalendar(userEmployeeCode);
@@ -41,7 +41,7 @@ public class CalendarController {
     @Tag(name="일정 조회", description = "해당 계정(사원)의 일정 정보 전체 조회")
     @GetMapping("/events")
     public ResponseEntity<ResponseDTO> selectEvents(
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
 
         List<EventInterfaceAndEventAttendeesDTO> eventInterfaceAndEventAttendeesDTOList = calendarService.selectEvents(userEmployeeCode);
@@ -53,7 +53,7 @@ public class CalendarController {
     public ResponseEntity<ResponseDTO> selectEventBySearchValueWithPaging(
             @RequestParam(name = "search") String searchValue,
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         Criteria cri = new Criteria(Integer.valueOf(offset), 10);
 
@@ -68,7 +68,7 @@ public class CalendarController {
     @GetMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> selectEventInfoByEventCode(
             @PathVariable Long eventCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
 
         Map<String, Object> resultMap = calendarService.selectEventByEventCode(eventCode, userEmployeeCode);
@@ -79,7 +79,7 @@ public class CalendarController {
     @Tag(name="사원 조회", description = "해당 회사의 현재 퇴사하지 않은 전체 사원 목록 조회(사원 초대를 위함)")
     @GetMapping("/employees")
     public ResponseEntity<ResponseDTO> selectEmployeeList(
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res("이벤트 참여자 초대를 위한 사원 목록 가져오기 성공", calendarService.selectEmployeeList());
     }
@@ -88,7 +88,7 @@ public class CalendarController {
     @PostMapping("/events")
     public ResponseEntity<ResponseDTO> createEvent(
             @RequestBody EventOptionsDTO eventOptions,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res(calendarService.createEvent(eventOptions, userEmployeeCode));
     }
@@ -98,7 +98,7 @@ public class CalendarController {
     public ResponseEntity<ResponseDTO> modifyEvent(
             @PathVariable Long eventCode,
             @RequestBody EventOptionsDTO eventOptions,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res(calendarService.modifyEventOptions(eventCode, eventOptions, userEmployeeCode));
     }
@@ -107,7 +107,7 @@ public class CalendarController {
     @DeleteMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> deleteEvent(
             @PathVariable Long eventCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res(calendarService.deleteEvent(eventCode, userEmployeeCode));
     }
@@ -115,7 +115,7 @@ public class CalendarController {
     @Tag(name="일정 삭제", description = "해당 일정을 삭제(기존상태에서 임시삭제, 임시삭제상태에서 영구삭제)")
     @GetMapping("/events/deleted-temporary")
     public ResponseEntity<ResponseDTO> selectTemporarilyDeleteEventList(
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         List<EventDTO> eventDTOList = calendarService.selectTemporarilyDeleteEventList(userEmployeeCode);
         return res("임시 삭제 일정 목록 가져오기 성공", eventDTOList);
@@ -125,7 +125,7 @@ public class CalendarController {
     @PutMapping("/events/{eventCode}/deleted-rollback")
     public ResponseEntity<ResponseDTO> rollbackEvent(
             @PathVariable Long eventCode,
-            @AuthenticationPrincipal EmployeeDTO principal) {
+            @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res(calendarService.rollbackEvent(eventCode, userEmployeeCode));
     }

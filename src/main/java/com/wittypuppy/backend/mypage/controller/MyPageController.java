@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.mypage.controller;
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/mypage")
@@ -64,7 +63,7 @@ public class MyPageController {
             @PathVariable Long empCode,
                                                      @RequestBody MyPageUpdateDTO myPageUpdateDTO,
                                                      @RequestHeader("Authorization") String authToken,
-                                                     @AuthenticationPrincipal EmployeeDTO principal) {
+                                                     @AuthenticationPrincipal User principal) {
 
         // principal 여기서 토큰에서 사용자 정보를 추출하여 empCode를 얻어올 수 있음
         log.info("마이페이지 바밀번호변경 컨트롤러 시작");

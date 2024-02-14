@@ -1,5 +1,5 @@
 package com.wittypuppy.backend.util;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -100,7 +100,7 @@ public class TokenUtils {
      * @return String - token
      * */
 
-    public static String generateJwtToken(EmployeeDTO employee) {
+    public static String generateJwtToken(User employee) {
         Date expireTime = new Date(System.currentTimeMillis() + tokenValidateTime);
 
 
@@ -136,7 +136,7 @@ public class TokenUtils {
      * @param employee - 사용자 정보
      * @return Map<String, Object> - cliams 정보
      * */
-    private static Map<String, Object> createClaims(EmployeeDTO employee){
+    private static Map<String, Object> createClaims(User employee){
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("employeeName", employee.getEmployeeName());
