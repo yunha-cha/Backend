@@ -20,5 +20,7 @@ public class EmployeeDTO {
 
     private Date employeeRetirementDate;
 
+    private Long employeeAssignedCode;
+
     private String profileImageURL;
 }

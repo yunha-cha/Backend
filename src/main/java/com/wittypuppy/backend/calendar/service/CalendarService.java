@@ -78,7 +78,6 @@ public class CalendarService {
 
         List<EventInterface> eventList = eventRepository.findAllEventByCalendarCode(calendar.getCalendarCode());
         log.info("eventList>>>" + eventList.toString());
-        log.info("eventList>>>" + eventList.toString());
         List<EventInterfaceAndEventAttendeesDTO> eventInterfaceAndEventAttendeesDTO = eventList.stream().map(
                 eventDTO -> {
                     List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventDTO.getEventCode());
@@ -173,7 +172,8 @@ public class CalendarService {
     }
 
     @Transactional
-    public String modifyEventOptions(Long eventCode, EventOptionsDTO eventOptions, Long userEmployeeCode) {
+    public EventInterfaceAndEventAttendeesDTO modifyEventOptions(Long eventCode, EventOptionsDTO eventOptions, Long userEmployeeCode) {
+        EventInterfaceAndEventAttendeesDTO returnDTO;
         try {
             EventDTO eventDTO = eventOptions.getEvent();
             EventAlertDTO eventAlertDTO = eventOptions.getEventAlert();
@@ -181,6 +181,7 @@ public class CalendarService {
 
             Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 캘린더가 존재하지 않습니다."));
+
             Event event = eventRepository.findByCalendarCodeAndEventCode(calendar.getCalendarCode(), eventCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 이벤트가 존재하지 않습니다."));
             EventOptions eventOptionsEntity = eventOptionsRepository.findByEventCode(event.getEventCode())
@@ -192,9 +193,6 @@ public class CalendarService {
                     .setEventEndDate(eventDTO.getEventEndDate())
                     .setEventLocation(eventDTO.getEventLocation())
                     .setEventRecurrenceRule(eventDTO.getEventRecurrenceRule())
-                    .setEventDeleteTime(eventDTO.getEventDeleteTime())
-                    .setEventDeleteStatus(eventDTO.getEventDeleteStatus())
-                    .setEventEditable(eventDTO.getEventEditable())
                     .setEventColor(eventDTO.getEventColor())
                     .setEventBackgroundColor(eventDTO.getEventBackgroundColor())
                     .setEventDragBackgroundColor(eventDTO.getEventDragBackgroundColor())
@@ -211,16 +209,24 @@ public class CalendarService {
             List<Employee> newAttendeeEmployeeList = employeeRepository.findAllById(newAttendeeEmployeeCodeList);
             List<EventAttendee> newAttendeeList = newAttendeeEmployeeList.stream().map(newAttendeeEmployee -> {
                 EventAttendee eventAttendee = new EventAttendee(null, eventCode, newAttendeeEmployee,
-                        new EventAlert(null, null, eventAlertDTO.getEventAlertNotificationTime(), eventAlertDTO.getEventAlertCheckStatus()));
+                        // new EventAlert(null, null, eventAlertDTO.getEventAlertNotificationTime(), eventAlertDTO.getEventAlertCheckStatus())
+                        null
+                );
                 return eventAttendee;
             }).collect(Collectors.toList());
-
             eventAttendeeRepository.saveAll(newAttendeeList);
 
+            EventInterface returnEvent = eventRepository.findAllEventByCalendarCodeAndEventCode(calendar.getCalendarCode(), eventCode)
+                    .orElseThrow(()->new DataNotFoundException("해당 일정이 존재하지 않습니다."));
+            List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventDTO.getEventCode());
+            List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
+                    .collect(Collectors.toList());
+            returnDTO = new EventInterfaceAndEventAttendeesDTO(returnEvent, eventAttendeeDTOList);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new DataUpdateException("일정 수정 실패");
         }
-        return "일정 수정 성공";
+        return returnDTO;
     }
 
 
