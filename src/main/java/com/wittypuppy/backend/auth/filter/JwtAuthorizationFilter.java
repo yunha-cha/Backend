@@ -1,10 +1,10 @@
 package com.wittypuppy.backend.auth.filter;
 
 
-import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
 import com.wittypuppy.backend.Employee.dto.AuthorityDTO;
-import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
+import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.util.TokenUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,20 +37,25 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         /*
-        * 권한이 필요없는 리소스
-        * */
+         * 권한이 필요없는 리소스
+         * */
 
         List<String> roleLeessList = Arrays.asList(
                 "/auth/signup",
                 "/auth/login",
                 "/websocket",
-                "/api/v1/employee/searchpwd"
-
+                "/api/v1/employee/searchpwd",
+                "/swagger-ui/(.*)",        //swagger 설정
+                "/swagger-ui/index.html",  //swagger 설정
+                "/v3/api-docs",              //swagger 설정
+                "/v3/api-docs/(.*)",         //swagger 설정
+                "/swagger-resources",        //swagger 설정
+                "/swagger-resources/(.*)"    //swagger 설정
         );
 
 
-        if(roleLeessList.stream().anyMatch(uri -> roleLeessList.stream().anyMatch(pattern -> Pattern.matches(pattern, request.getRequestURI())))){
-            chain.doFilter(request,response);
+        if (roleLeessList.stream().anyMatch(uri -> roleLeessList.stream().anyMatch(pattern -> Pattern.matches(pattern, request.getRequestURI())))) {
+            chain.doFilter(request, response);
             return;
             //어떤 패턴과 일치하는지 확인하고, 일치하는 경우에는 권한 검사를 건너뛰고 다음 필터로 요펑을 전달하는 역할을 함
         }
@@ -58,11 +63,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader(AuthConstants.AUTH_HEADER);
 
         try {
-            if(header != null && !header.equalsIgnoreCase("")){
+            if (header != null && !header.equalsIgnoreCase("")) {
                 String token = TokenUtils.splitHeader(header);
                 System.out.println("token ====================== " + token);
 
-                if(TokenUtils.isValidToken(token)){
+                if (TokenUtils.isValidToken(token)) {
                     Claims claims = TokenUtils.getClaimsFromToken(token);
                     System.out.println("claims ===================== " + claims);
                     EmployeeDTO authentication = new EmployeeDTO();
@@ -82,14 +87,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authenticationToken.setDetails(new WebAuthenticationDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    chain.doFilter(request,response);
-                }else{
+                    chain.doFilter(request, response);
+                } else {
                     throw new RuntimeException("토큰이 유효하지 않습니다.");
                 }
-            }else{
+            } else {
                 throw new RuntimeException("토큰이 존재하지 않습니다.");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json");
             PrintWriter printWriter = response.getWriter();
@@ -100,10 +105,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
     }
 
-    private List<EmployeeRoleDTO> mapToEmployeeRolelist(Object employeeRoleObject){
+    private List<EmployeeRoleDTO> mapToEmployeeRolelist(Object employeeRoleObject) {
         List<EmployeeRoleDTO> employeeRoles = new ArrayList<>();
-        if(employeeRoleObject instanceof List<?>){
-            for (Map<String, Object> roleMap : (List<Map<String, Object>>) employeeRoleObject){
+        if (employeeRoleObject instanceof List<?>) {
+            for (Map<String, Object> roleMap : (List<Map<String, Object>>) employeeRoleObject) {
                 EmployeeRoleDTO employeeRole = new EmployeeRoleDTO();
                 employeeRole.setEmployeeCode((Integer) roleMap.get("employeeCode"));
                 employeeRole.setAuthorityCode((Integer) roleMap.get("authorityCode"));
@@ -119,7 +124,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     /**
      * 토큰 관련된 Exception 발생 시 예외 응답
-     * */
+     */
     private JSONObject jsonresponseWrapper(Exception e) {
         String resultMsg = "";
         if (e instanceof ExpiredJwtException) {
