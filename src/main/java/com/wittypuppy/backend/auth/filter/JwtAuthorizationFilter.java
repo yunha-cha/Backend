@@ -74,6 +74,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authentication.setEmployeeName(claims.get("employeeName").toString());
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
+                    authentication.setEmployeeId((String) claims.get("employeeId"));
 //                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 

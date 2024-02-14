@@ -143,6 +143,7 @@ public class TokenUtils {
         claims.put("employeeRole", employee.getEmployeeRole());
         claims.put("employeeEmail", employee.getEmployeeEmail());
         claims.put("empCode", employee.getEmployeeCode());
+        claims.put("employeeId", employee.getEmployeeId());
         //클래임은 문자열 키와 그에 해당하는 값으로 이루어진 맵 형태이다.
 
         return claims;
