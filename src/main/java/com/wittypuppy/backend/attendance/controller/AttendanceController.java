@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.attendance.controller;
 
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
@@ -71,16 +73,17 @@ public class AttendanceController {
     public ResponseEntity<ResponseDTO> commuteInput(
             @RequestParam(name = "arrivalTime", defaultValue = "") String arrivalTime,
             @RequestParam(name = "departureTime", defaultValue = "00:00:00") String departureTime,
-            @RequestParam(name = "late", defaultValue = "false") boolean late
+            @RequestParam(name = "status", defaultValue = "") String status,
+            @AuthenticationPrincipal User employeeInFo
             ){
 
-        Long employeeCode = 2L; // 로그인한 코드 넣기
+//        int employeeCode = (long) employeeInFo.getEmployeeCode();
 
-        System.out.println("========== employeeCode =========> " + employeeCode);
+        System.out.println("========== employeeInFo =========> " + employeeInFo);
         System.out.println("=========== commuteInput ControllerStart ============");
         System.out.println("==== arrivalTime ======= " + arrivalTime);
         System.out.println("====== departureTime ====== " + departureTime);
-        System.out.println("====== late ====== " + late);
+        System.out.println("====== status ====== " + status);
 
         /*
         * 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
@@ -92,7 +95,7 @@ public class AttendanceController {
 * */
 
         // 로그인 해서 출근 인서트
-        String login = attendanceService.insertArrival(employeeCode, arrivalTime, departureTime, late);
+        String login = attendanceService.insertArrival(employeeInFo, arrivalTime, departureTime, status);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }

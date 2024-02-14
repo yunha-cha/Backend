@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.service;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
@@ -324,26 +325,27 @@ public class AttendanceService {
 
 
 @Transactional
-    public String insertArrival(Long employeeCode, String arrivalTime, String departureTime, boolean late) {
+    public String insertArrival(User employeeCode, String workTime, String departureTime, String status) {
 
         System.out.println("============== insertArrival ======> serviceStart ");
         System.out.println(" ======employeeCode ========== " + employeeCode);
-        System.out.println("==== arrivalTime ======= " + arrivalTime);
+        System.out.println("==== arrivalTime ======= " + workTime);
         System.out.println("====== departureTime ====== " + departureTime);
-        System.out.println("====== late ====== " + late);
+        System.out.println("====== status ====== " + status);
 
     try {
         // 현재 날짜 가져오기
         LocalDate today = LocalDate.now();
 
         // 출근 시간 문자열을 LocalDateTime으로 변환
-        LocalDateTime arrival = LocalDateTime.parse(arrivalTime);
+        LocalDateTime arrival = LocalDateTime.parse(workTime);
 
         // 출근 정보를 담은 DTO 객체 생성
         AttendanceManagementDTO attendanceManagementDTO = new AttendanceManagementDTO();
+        attendanceManagementDTO.setAttendanceEmployeeCode(employeeCode); // 로그인한 employeeCode 정보 설정
         attendanceManagementDTO.setAttendanceManagementArrivalTime(arrival);
         attendanceManagementDTO.setAttendanceManagementDepartureTime(LocalDateTime.parse(departureTime));
-        attendanceManagementDTO.setAttendanceManagementState(late ? "지각" : "정상");
+        attendanceManagementDTO.setAttendanceManagementState(status);
         attendanceManagementDTO.setAttendanceManagementWorkDay(today);
 
         // DTO 객체를 Entity로 변환
