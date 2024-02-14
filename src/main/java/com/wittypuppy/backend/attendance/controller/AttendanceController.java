@@ -69,14 +69,18 @@ public class AttendanceController {
     @Operation(summary = "근태 메인 화면 출근 인서트", description = "출퇴근 시간을 인서트 합니다")
     @PostMapping("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteInput(
-            @RequestBody AttendanceManagementDTO attendanceManagementDTO
+            @RequestParam(name = "arrivalTime", defaultValue = "") String arrivalTime,
+            @RequestParam(name = "departureTime", defaultValue = "00:00:00") String departureTime,
+            @RequestParam(name = "late", defaultValue = "false") boolean late
             ){
 
         Long employeeCode = 2L; // 로그인한 코드 넣기
 
         System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== commuteInput ControllerStart ============");
-
+        System.out.println("==== arrivalTime ======= " + arrivalTime);
+        System.out.println("====== departureTime ====== " + departureTime);
+        System.out.println("====== late ====== " + late);
 
         /*
         * 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
@@ -88,7 +92,7 @@ public class AttendanceController {
 * */
 
         // 로그인 해서 출근 인서트
-        String login = attendanceService.insertArrival(employeeCode,attendanceManagementDTO );
+        String login = attendanceService.insertArrival(employeeCode, arrivalTime, departureTime, late);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }

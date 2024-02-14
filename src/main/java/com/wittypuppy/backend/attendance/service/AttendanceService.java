@@ -1,9 +1,6 @@
 package com.wittypuppy.backend.attendance.service;
 
-import com.wittypuppy.backend.attendance.dto.ApprovalLineDTO;
-import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
-import com.wittypuppy.backend.attendance.dto.AttendanceWorkTypeDTO;
-import com.wittypuppy.backend.attendance.dto.VacationDTO;
+import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
@@ -327,31 +324,40 @@ public class AttendanceService {
 
 
 @Transactional
-    public String insertArrival(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
+    public String insertArrival(Long employeeCode, String arrivalTime, String departureTime, boolean late) {
 
         System.out.println("============== insertArrival ======> serviceStart ");
         System.out.println(" ======employeeCode ========== " + employeeCode);
-        System.out.println("========= attendanceManagementDTO ========== " + attendanceManagementDTO);
+        System.out.println("==== arrivalTime ======= " + arrivalTime);
+        System.out.println("====== departureTime ====== " + departureTime);
+        System.out.println("====== late ====== " + late);
 
-        int result = 0;
+    try {
+        // 현재 날짜 가져오기
+        LocalDate today = LocalDate.now();
 
-        LocalDateTime arrival = attendanceManagementDTO.getAttendanceManagementArrivalTime();
+        // 출근 시간 문자열을 LocalDateTime으로 변환
+        LocalDateTime arrival = LocalDateTime.parse(arrivalTime);
 
-        System.out.println("==== arrival = " + arrival);
+        // 출근 정보를 담은 DTO 객체 생성
+        AttendanceManagementDTO attendanceManagementDTO = new AttendanceManagementDTO();
+        attendanceManagementDTO.setAttendanceManagementArrivalTime(arrival);
+        attendanceManagementDTO.setAttendanceManagementDepartureTime(LocalDateTime.parse(departureTime));
+        attendanceManagementDTO.setAttendanceManagementState(late ? "지각" : "정상");
+        attendanceManagementDTO.setAttendanceManagementWorkDay(today);
 
-        try {
+        // DTO 객체를 Entity로 변환
+        AttendanceManagement insertAttendance = modelMapper.map(attendanceManagementDTO, AttendanceManagement.class);
 
-            AttendanceManagement insertAttendance = modelMapper.map(attendanceManagementDTO, AttendanceManagement.class);
+        // 저장소에 저장
+        managementRepository.save(insertAttendance);
 
-            managementRepository.save(insertAttendance);
-
-            result = 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result > 0 ? "출근 등록 성공" : "출근 등록 실패";
+        return "출근 등록 성공";
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "출근 등록 실패";
     }
+}
 
 
     @Transactional
