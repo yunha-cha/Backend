@@ -165,11 +165,11 @@ public class AttendanceService {
         System.out.println("=====service=====paymentCompletedListStart========");
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by("approvalLineCode").descending());
+        Pageable paging = PageRequest.of(index, count, Sort.by("approval_process_date").descending());
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = attendanceApprovalRepository.findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(paging, employeeCode, "결재");
+        Page<ApprovalLine> result = attendanceApprovalRepository.approvalPayment(paging, employeeCode);
 
         Page<ApprovalLineDTO> resultList = result.map(paymentCompleted -> modelMapper.map(paymentCompleted, ApprovalLineDTO.class));
 
@@ -191,11 +191,11 @@ public class AttendanceService {
         System.out.println("=====service=====paymentRejectionListStart========");
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by("approvalLineCode").descending());
+        Pageable paging = PageRequest.of(index, count, Sort.by("approval_process_date").descending());
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = attendanceLineRepository.findByLineEmployeeCode_employeeCodeAndApprovalProcessStatus(paging, employeeCode, "반려");
+        Page<ApprovalLine> result = attendanceLineRepository.rejectionDocument(paging, employeeCode);
 
         Page<ApprovalLineDTO> resultList = result.map(paymentRejection -> modelMapper.map(paymentRejection, ApprovalLineDTO.class));
 
