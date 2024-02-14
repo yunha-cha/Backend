@@ -5,6 +5,7 @@ import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
 import com.wittypuppy.backend.Employee.dto.PasswordResetRequest;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.Employee.service.EmployeeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
-
+@Tag(name = "로그인 사원관련 스웨거 연동")
 @RestController
 @RequestMapping("/api/v1/employee")
 @Slf4j
