@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
+
 @Tag(name = "근태 스웨거 연동")
 @RestController
 @Slf4j
@@ -68,12 +70,13 @@ public class AttendanceController {
     @PostMapping("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteInput(
             @RequestBody AttendanceManagementDTO attendanceManagementDTO
-    ){
+            ){
 
-        Long employeeCode = 1L; // 로그인한 코드 넣기
+        Long employeeCode = 2L; // 로그인한 코드 넣기
 
         System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== commuteInput ControllerStart ============");
+
 
         /*
         * 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
@@ -85,7 +88,7 @@ public class AttendanceController {
 * */
 
         // 로그인 해서 출근 인서트
-        String login = attendanceService.insertArrival(employeeCode, attendanceManagementDTO);
+        String login = attendanceService.insertArrival(employeeCode,attendanceManagementDTO );
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
@@ -95,12 +98,15 @@ public class AttendanceController {
     @Operation(summary = "근태 메인 화면 퇴근 수정", description = "퇴근 시간을 업데이트 합니다")
     @PutMapping ("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteUpdate(
-            @RequestBody AttendanceManagementDTO attendanceManagementDTO
+            @RequestBody AttendanceManagementDTO attendanceManagementDTO,
+            @RequestParam(name = "departure", defaultValue = "") DateTimeFormat departure
+
     ){
 
         Long employeeCode = 1L; // 로그인한 코드 넣기
 
         System.out.println("========== employeeCode ==========> " + employeeCode);
+        System.out.println("========== departure =========== " + departure);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
         System.out.println(attendanceManagementDTO.getAttendanceManagementDepartureTime());

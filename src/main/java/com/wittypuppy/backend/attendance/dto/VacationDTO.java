@@ -28,4 +28,12 @@ public class VacationDTO {
     private String vacationUsedStatus;
 
     private String vacationType;
+
+    private int total;  //연차 담는 객체
+
+    private int useVacation; //사용한 연차 갯수 담는 객체
+
+    private int useHalfVacation; //사용한 반차 갯수 담는 객체
+
+    private double resultVacation; //연차 남은 갯수 담는 객체
 }

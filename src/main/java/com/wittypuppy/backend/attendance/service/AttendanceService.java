@@ -267,20 +267,27 @@ public class AttendanceService {
         Long total = managementRepository.attendanceTotalVacation(employeeCode);
         Long useVacation = managementRepository.attendanceUseVacation(employeeCode);
         Long useHalfVacation = managementRepository.attendanceUseHalfVacation(employeeCode);
-
         System.out.println("========== total ===========> " + total);
         System.out.println("=========== useVacation =========> " + useVacation);
         System.out.println("============== useHalfVacation ==========> " + useHalfVacation);
 
-        double result = total - useVacation - (useHalfVacation * 0.5);
+        int totalDays = total.intValue();
+        int usedVacationDays = useVacation.intValue();
+        int usedHalfVacationDays = useHalfVacation.intValue();
 
-        VacationDTO results = modelMapper.map(result, VacationDTO.class);
+        double vacationDay = totalDays - usedVacationDays - (usedHalfVacationDays * 0.5);
 
-        System.out.println("========= 남은 연차 result ======== " + result);
+        VacationDTO vacation = new VacationDTO();
+        vacation.setTotal(totalDays);
+        vacation.setUseVacation(usedVacationDays);
+        vacation.setUseHalfVacation(usedHalfVacationDays);
+        vacation.setResultVacation(vacationDay);
+
+        System.out.println("========= 남은 연차 result ======== " + vacationDay);
 
         System.out.println("========attendanceVacation end ======");
 
-        return results;
+        return vacation;
 
     }
 
@@ -291,17 +298,31 @@ public class AttendanceService {
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceWaiting ServiceStart======");
 
-//        ApprovalLine result = attendanceApprovalRepository.attendanceWaiting(employeeCode);
-//
-//        ApprovalLineDTO results = modelMapper.map(result, ApprovalLineDTO.class);
-//
-//        System.out.println("========== result ========> " + result);
-//        System.out.println("========attendanceWaiting end ======");
-//
-//        return results;
+        ApprovalLine result = attendanceApprovalRepository.attendanceWaiting(employeeCode);
 
-        return null;
+        // '대기' 상태인 행의 갯수 계산
+        int waitingCount = countWaiting(result);
+
+        ApprovalLineDTO results = new ApprovalLineDTO();
+        results.setCountWaiting(waitingCount);
+
+        System.out.println("========== result ========> " + result);
+        System.out.println("========attendanceWaiting end ======");
+
+        return results;
+
+//        return null;
     }
+
+    private int countWaiting(ApprovalLine result) {
+        // '대기' 상태인 행의 갯수를 계산
+        int waitingCount = 0;
+        if (result != null && "대기".equals(result.getApprovalProcessStatus())) {
+            waitingCount++;
+        }
+        return waitingCount;
+    }
+
 
 
 

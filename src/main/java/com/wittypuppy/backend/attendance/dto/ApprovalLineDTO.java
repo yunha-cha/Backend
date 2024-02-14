@@ -27,4 +27,6 @@ public class ApprovalLineDTO {
     private LocalDateTime approvalProcessDate;
 
     private String approvalRejectedReason;
+
+    private int countWaiting; // 대기 상태인 행의 갯수
 }
