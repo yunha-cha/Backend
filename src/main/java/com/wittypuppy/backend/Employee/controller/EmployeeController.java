@@ -27,6 +27,7 @@ public class EmployeeController {
 
     // 조회 , /members/{memberId}
 //    @ApiOperation(value = "회원 조회 요청", notes = "회원 한명이 조회됩니다.", tags = { "MemberController" })
+    @Tag(name = "사원 조회" , description = "아이디를 통한 조회")
     @GetMapping("/employeeinfo/{employeeId}")
     public ResponseEntity<ResponseDTO> selectMyEmployeeInfo(@PathVariable String employeeId){
 
@@ -39,13 +40,11 @@ public class EmployeeController {
                     .body(new ResponseDTO(HttpStatus.OK, "조회 성공", employeeService.selectMyInfo(employeeId)));
     }
 
-
+    @Tag(name = "비밀번호 찾기" , description = "아이디와 이메일을 통한 비밀번호 찾기")
     @PostMapping("/searchpwd")
-    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody PasswordResetRequest request,@AuthenticationPrincipal User principal) {
+    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody PasswordResetRequest request) {
 
         System.out.println("비번 찾기 컨트롤러 시작=====================================");
-//        request.setEmployeeId(principal.getEmployeeId());
-//        request.setEmployeeEmail(principal.getEmployeeEmail());
 
         try {
             employeeService.sendSearchPwd((request.getEmployeeId()), request.getEmployeeEmail());
@@ -58,36 +57,6 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류 발생", "Internal server error."));
         }
     }
-
-
-
-
-//    @PostMapping("/logout")
-//    public ResponseEntity<ResponseDTO> logout(HttpServletRequest request, HttpServletResponse response) {
-//        // 로그아웃 처리 로직
-//        // 여기에서는 세션 무효화 및 토큰 무효화 등을 수행할 수 있습니다.
-//
-//        // 세션 무효화 예제 (Spring Security를 사용하는 경우)
-//        SecurityContextHolder.clearContext();
-//
-//        // 세션 무효화 및 쿠키 삭제 예제
-//        HttpSession session = request.getSession(false);
-//        if (session != null) {
-//            session.invalidate();
-//        }
-//
-//        // 클라이언트에게 쿠키 삭제 요청
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                cookie.setMaxAge(0);
-//                cookie.setPath("/");
-//                response.addCookie(cookie);
-//            }
-//        }
-//
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "로그아웃 성공", "로그아웃 완료"));
-//    }
 
 
 }

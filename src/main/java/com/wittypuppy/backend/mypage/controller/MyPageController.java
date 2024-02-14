@@ -6,13 +6,14 @@ import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
 import com.wittypuppy.backend.mypage.service.MyPageService;
 import com.wittypuppy.backend.util.TokenUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+@Tag(name = "마이페이지 스웨거 연동")
 @RestController
 @RequestMapping("/api/v1/mypage")
 @Slf4j
@@ -27,6 +28,7 @@ public class MyPageController {
         this.tokenUtils = tokenUtils;
     }
 
+    @Tag(name = "내정보 조회" , description = "마이페이지에서 사원번호로 조회")
     @GetMapping("/emplist")
     public ResponseEntity<ResponseDTO> selectSearchMyPageEmp( @RequestParam(name = "c", defaultValue = "") Long search ){
         MyPageEmpDTO myPageEmpDTO = myPageService.selectEmpByEmpCode(search);
@@ -35,18 +37,7 @@ public class MyPageController {
 
     }
 
-//    @PutMapping("/demos/{demoCode}")
-//    public ResponseEntity<ResponseDTO> updateDemo(@RequestBody @Valid DemoDTO newDemo, @PathVariable Long demoCode) {
-//        log.info("DemoController >>> updateDemo >>> start");
-//
-//        String data = demoService.updateDemo(newDemo, demoCode);
-//
-//        log.info("DemoController >>> updateDemo >>> end");
-//        return ResponseEntity
-//                .ok()
-//                .body(new ResponseDTO(HttpStatus.OK, "상품 입력 성공", data));
-//    }
-
+    @Tag(name = "내 정보 수정" , description = "마이페이지에서 내 정보 수정")
     @PutMapping("/modifyinfo/{empCode}")
     public ResponseEntity<ResponseDTO> modifyMyPageInfo(@RequestBody @Valid MyPageUpdateDTO myPageUpdateDTO, @PathVariable Long empCode){
         log.info("마이페이지 컨트롤러 시작");
@@ -57,7 +48,7 @@ public class MyPageController {
 
     }
 
-
+    @Tag(name = "비밀번호 변경" , description = "마이페이지에서 비밀번호 변경")
     @PutMapping("/modifypwd/{empCode}")
     public ResponseEntity<ResponseDTO> resetPassword(
             @PathVariable Long empCode,

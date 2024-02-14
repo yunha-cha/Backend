@@ -4,7 +4,7 @@ Content-Type: application/json
 Accept: */*
 Authorization: Bearer eyJkYXRlIjoxNzA3Mzc2MTQyMzM2LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDczNzk3NDIsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVDb2RlIjoxMiwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIn19XX0.1bHYd0exUTZ-omYMiinnyKheVjjMUdk6Eiz7vdTHnYs
 
-### 부서명이랑 사원이름으로 조회하기
+### 부서명이랑 사원이름으로 검색하기
 GET http://localhost:1208/api/v1/group/chartlist/search?s=개발팀
 Content-Type: application/json
 Accept: */*

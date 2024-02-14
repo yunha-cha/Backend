@@ -7,13 +7,14 @@ import com.wittypuppy.backend.common.dto.PagingResponseDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.group.dto.GroupEmpDTO;
 import com.wittypuppy.backend.group.service.GroupEmpService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+@Tag(name = "조직 페이지 스웨거 연동")
 @RestController
 @RequestMapping("/api/v1/group")
 @Slf4j
@@ -28,6 +29,7 @@ public class GroupController {
     }
 
 //    조직 들어가면 나오는 그룹리스트
+@Tag(name = "사원 리스트 조회" , description = "조직에서 사원 전체 리스트 조회")
     @GetMapping("/chartlist")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> selectEmpListWithGroupPaging(
@@ -52,6 +54,7 @@ public class GroupController {
 
     }
 
+    @Tag(name = "사원 검색" , description = "부서와 사원이름을 통한 검색")
     @GetMapping("chartlist/search")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> selectSearchGroupList(
