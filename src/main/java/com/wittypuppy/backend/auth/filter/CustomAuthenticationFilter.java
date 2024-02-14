@@ -2,7 +2,7 @@ package com.wittypuppy.backend.auth.filter;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,9 +50,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         ObjectMapper objectMapper = new ObjectMapper();
 
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE,true);
-        EmployeeDTO employeeDTO = objectMapper.readValue(request.getInputStream(), EmployeeDTO.class);
+        User user = objectMapper.readValue(request.getInputStream(), User.class);
 
-        return new UsernamePasswordAuthenticationToken(employeeDTO.getEmployeeId(), employeeDTO.getPassword());
+        return new UsernamePasswordAuthenticationToken(user.getEmployeeId(), user.getPassword());
     }
 
 }
