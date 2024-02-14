@@ -101,7 +101,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
      * 토큰 관련된 Exception 발생 시 예외 응답
      * */
     private JSONObject jsonresponseWrapper(Exception e) {
-        String resultMsg = "";
+        String resultMsg;
         if (e instanceof ExpiredJwtException) {
             resultMsg = "Token Expired";
         } else if (e instanceof SignatureException) {
@@ -113,6 +113,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         // 이외 JTW 토큰내에서 오류 발생
         else {
+            e.printStackTrace();
             resultMsg = "OTHER TOKEN ERROR";
         }
 

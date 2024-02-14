@@ -81,15 +81,14 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07",
-  "employeeName": "강해린",
-  "employeeEmail": "kkkrrr12@gmail.com",
+  "employeeId": "root",
+  "employeePassword": "root",
+  "employeeName": "정지섭",
+  "employeeEmail": "wjdwltjq8482@gmail.com",
   "employeeRetirementDate": "",
   "employeeBirthDate": "2003-03-03",
-  "empAddress": "동대문구 종로구 하이미디어",
-  "empPhone": "010-3444-4132"
-
+  "empAddress": "사우로 51",
+  "empPhone": "010-5790-8482"
 }
 
 ### 로그인
@@ -99,7 +98,7 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07"
+  "employeeId": "root",
+  "employeePassword": "root"
 }
 
