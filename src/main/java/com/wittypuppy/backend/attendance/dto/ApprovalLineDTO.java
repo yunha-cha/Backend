@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,7 @@ public class ApprovalLineDTO {
 
     private ApprovalDocumentDTO approvalLineDocumentCode;
 
-    private EmployeeDTO lineEmployeeCode;
+    private User lineEmployeeCode;
 
     private Long approvalProcessOrder;
 

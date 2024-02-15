@@ -19,8 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.List;
 
 
 @Service
@@ -234,7 +233,7 @@ public class AttendanceService {
 
 
     //근태 메인 출퇴근 정보 조회
-    public AttendanceManagementDTO attendanceMain(Long employeeCode) {
+    public AttendanceManagementDTO attendanceMain(int employeeCode) {
 
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceMainServiceStart======");
@@ -257,7 +256,7 @@ public class AttendanceService {
 
 
     //근태 메인 연차 남은 수량 조회
-    public VacationDTO attendanceVacation(Long employeeCode) {
+    public VacationDTO attendanceVacation(int employeeCode) {
 
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceVacation ServiceStart======");
@@ -291,35 +290,31 @@ public class AttendanceService {
 
 
     //근태 결재(대기) 할 수량 조회
-    public ApprovalLineDTO attendanceWaiting(Long employeeCode) {
+    public ApprovalLineDTO attendanceWaiting(int employeeCode) {
 
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceWaiting ServiceStart======");
 
-        ApprovalLine result = attendanceApprovalRepository.attendanceWaiting(employeeCode);
+        List<ApprovalLine> results = attendanceApprovalRepository.attendanceWaiting(employeeCode);
 
-        // '대기' 상태인 행의 갯수 계산
-        int waitingCount = countWaiting(result);
-
-        ApprovalLineDTO results = new ApprovalLineDTO();
-        results.setCountWaiting(waitingCount);
-
-        System.out.println("========== result ========> " + result);
-        System.out.println("========attendanceWaiting end ======");
-
-        return results;
-
-//        return null;
-    }
-
-    private int countWaiting(ApprovalLine result) {
-        // '대기' 상태인 행의 갯수를 계산
+        // '대기' 상태인지 확인하고 갯수를 계산
         int waitingCount = 0;
-        if (result != null && "대기".equals(result.getApprovalProcessStatus())) {
-            waitingCount++;
+
+        for (ApprovalLine approvalLine : results) {
+            if (approvalLine != null && "대기".equals(approvalLine.getApprovalProcessStatus())) {
+                waitingCount++;
+            }
         }
-        return waitingCount;
+
+        ApprovalLineDTO dto = new ApprovalLineDTO();
+        dto.setCountWaiting(waitingCount);
+
+        System.out.println("========== result ========> " + results);
+        System.out.println("========attendanceWaiting end ======");
+        return dto;
+
     }
+
 
 
 
@@ -364,23 +359,25 @@ public class AttendanceService {
 
 
     @Transactional
-    public String updateDeparture(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
+    public String updateDeparture(User employeeCode, LocalDateTime departureTime, String status) {
+
         System.out.println("===== employeeCode =====> " + employeeCode);
-        System.out.println("======= attendanceManagementDTO ========= " + attendanceManagementDTO);
+        System.out.println("========== departureTime ============ " + departureTime);
+        System.out.println("============ status ============== " + status);
+
+        int employeeNum = employeeCode.getEmployeeCode();
+        System.out.println("========== employeeNum ==========> " + employeeNum);
 
         int result = 0;
 
         try {
             //가장 최근에 인처트 된 출근 시간 조회
-            AttendanceManagement updateAttendance = managementRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeCode);
+            AttendanceManagement updateAttendance = managementRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
 
             System.out.println("======= updateAttendance = " + updateAttendance);
 
-            System.out.println("=========> " + attendanceManagementDTO.getAttendanceManagementDepartureTime());
-
-            updateAttendance.setAttendanceManagementDepartureTime(attendanceManagementDTO.getAttendanceManagementDepartureTime());
-            updateAttendance.setAttendanceManagementState(attendanceManagementDTO.getAttendanceManagementState());
-
+            updateAttendance.setAttendanceManagementDepartureTime(departureTime);
+            updateAttendance.setAttendanceManagementState(status);
 
             System.out.println("======= updateAttendance ======> " + updateAttendance);
             result = 1;

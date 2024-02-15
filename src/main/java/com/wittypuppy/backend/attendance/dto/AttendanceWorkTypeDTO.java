@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class AttendanceWorkTypeDTO {
 
     private Long attendanceWorkTypeCode;
 
-    private EmployeeDTO employeeCode;
+    private User employeeCode;
 
     private String attendanceWorkTypeStatus;
 

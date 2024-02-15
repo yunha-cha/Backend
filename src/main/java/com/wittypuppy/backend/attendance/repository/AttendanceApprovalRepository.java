@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -155,7 +156,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "                                           WHERE approval_process_status IN ('대기'or '반려'or '회수'))))",
             nativeQuery = true)
     //대기 수량으로 표현
-    ApprovalLine attendanceWaiting(Long employeeCode);
+    List<ApprovalLine> attendanceWaiting(int employeeCode);
 
 
 

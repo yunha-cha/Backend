@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.attendance.controller;
 
-
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.paging.Criteria;
@@ -18,10 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "근태 스웨거 연동")
@@ -40,9 +37,12 @@ public class AttendanceController {
     //근태 메인화면 출근 완료 화면 or 퇴근 완료 화면
     @Operation(summary = "근태 메인 화면 출퇴근 화면", description = "출퇴근 시간, 연차 수량을 확인할 수 있다")
     @GetMapping("/attendances/main")
-    public ResponseEntity<AttendanceResponseDTO> attendanceMain(){
+    public ResponseEntity<AttendanceResponseDTO> attendanceMain(
+            @AuthenticationPrincipal User employeeInFo
+    ){
 
-        Long employeeCode = 1L; // 로그인한 코드 넣기
+        int employeeCode = employeeInFo.getEmployeeCode();
+
 
         System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== attendanceMainControllerStart ============");
@@ -75,11 +75,11 @@ public class AttendanceController {
     @Operation(summary = "근태 메인 화면 출근 인서트", description = "출퇴근 시간을 인서트 합니다")
     @PostMapping("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteInput(
-            @AuthenticationPrincipal User employeeInFo,
+            @AuthenticationPrincipal User employeeCode,
             @RequestBody Map<String, Object> requestBody
             ){
 
-        System.out.println("========== employeeInFo =========> " + employeeInFo);
+        System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== commuteInput ControllerStart ============");
 
         LocalDateTime arrivalTime = LocalDateTime.parse((String) requestBody.get("arrivalTime")); // arrivalTime은 문자열로 전송되기 때문에 파싱 필요
@@ -98,7 +98,7 @@ public class AttendanceController {
 * */
 
         // 로그인 해서 출근 인서트
-        String login = attendanceService.insertArrival(employeeInFo, arrivalTime, departureTime, status);
+        String login = attendanceService.insertArrival(employeeCode, arrivalTime, departureTime, status);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
@@ -107,22 +107,23 @@ public class AttendanceController {
     @Operation(summary = "근태 메인 화면 퇴근 수정", description = "퇴근 시간을 업데이트 합니다")
     @PutMapping ("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteUpdate(
-            @RequestBody AttendanceManagementDTO attendanceManagementDTO,
-            @RequestParam(name = "departure", defaultValue = "") DateTimeFormat departure
-
+            @AuthenticationPrincipal User employeeCode,
+            @RequestBody Map<String, Object> requestBody
     ){
         //출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
 
-        Long employeeCode = 1L; // 로그인한 코드 넣기
+        LocalDateTime departureTime = LocalDateTime.parse((String) requestBody.get("departureTime"));
+        String status = (boolean) requestBody.get("early") ? "조퇴" : "정상";
 
         System.out.println("========== employeeCode ==========> " + employeeCode);
-        System.out.println("========== departure =========== " + departure);
+        System.out.println("========== departureTime =========== " + departureTime);
+        System.out.println("============= status ============== " + status);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
-        System.out.println(attendanceManagementDTO.getAttendanceManagementDepartureTime());
+
 
         // 퇴근 업데이트
-        String login = attendanceService.updateDeparture(employeeCode, attendanceManagementDTO);
+        String login = attendanceService.updateDeparture(employeeCode, departureTime , status);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 퇴근 수정 성공", login));
     }
