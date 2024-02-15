@@ -79,7 +79,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ON te.department_code = td.department_code " +
             "LEFT JOIN tbl_project_member tpm " +
             "ON tp.project_code = tpm.project_code " +
-            "WHERE te.department_code = :deptCode " +
+            "WHERE " +
+            "(SELECT subTD.department_code " +
+            "FROM tbl_employee subTE " +
+            "LEFT JOIN tbl_department subTD ON subTD.department_code = subTE.department_code " +
+            "WHERE subTE.employee_code = tpm.employee_code) = :deptCode " +
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
@@ -144,7 +148,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ON te.department_code = td.department_code " +
             "LEFT JOIN tbl_project_member tpm " +
             "ON tp.project_code = tpm.project_code " +
-            "WHERE te.department_code = :deptCode " +
+            "WHERE " +
+            "(SELECT subTD.department_code " +
+            "FROM tbl_employee subTE " +
+            "LEFT JOIN tbl_department subTD ON subTD.department_code = subTE.department_code " +
+            "WHERE subTE.employee_code = tpm.employee_code) = :deptCode " +
             "AND tp.project_title LIKE concat('%',:searchValue,'%') " +
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",

@@ -56,6 +56,7 @@ public class ProjectService {
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
+        System.out.println("<<>><<" + employee.getDepartment().getDepartmentCode());
         List<ProjectMainInterface> projectMainDTOList = projectRepository.findMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), index * count, count);
         return projectMainDTOList;
     }
