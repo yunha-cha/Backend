@@ -67,8 +67,8 @@ public class ApprovalController {
 
     // 대리 결재 지정
     @PostMapping("/set-represent")
-    public ResponseEntity<ResponseDTO> setRepresent(ApprovalRepresentDTO approvalRepresentDTO, @AuthenticationPrincipal EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "지정 성공", approvalService.setRepresent(approvalRepresentDTO, employeeDTO)));
+    public ResponseEntity<ResponseDTO> setRepresent(ApprovalRepresentDTO approvalRepresentDTO, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "지정 성공", approvalService.setRepresent(approvalRepresentDTO, user)));
     }
 
 
@@ -136,8 +136,8 @@ public class ApprovalController {
 
     // 수신함 - 결재 완료함
     @GetMapping("/inbox-finished")
-    public ResponseEntity<ResponseDTO> inboxFinished(@AuthenticationPrincipal EmployeeDTO employeeDTO) {
-        List<ApprovalDoc> finishedDocs = approvalService.inboxFinishedListByEmployeeCode(employeeDTO);
+    public ResponseEntity<ResponseDTO> inboxFinished(@AuthenticationPrincipal User user) {
+        List<ApprovalDoc> finishedDocs = approvalService.inboxFinishedListByEmployeeCode(user);
         System.out.println("finishedDocs = " + finishedDocs);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", finishedDocs));
     }
