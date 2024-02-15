@@ -1,10 +1,7 @@
 package com.wittypuppy.backend.calendar.controller;
 
 import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
-import com.wittypuppy.backend.calendar.dto.CalendarDTO;
-import com.wittypuppy.backend.calendar.dto.EventDTO;
-import com.wittypuppy.backend.calendar.dto.EventInterfaceAndEventAttendeesDTO;
-import com.wittypuppy.backend.calendar.dto.EventOptionsDTO;
+import com.wittypuppy.backend.calendar.dto.*;
 import com.wittypuppy.backend.calendar.service.CalendarService;
 import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.common.dto.PageDTO;
@@ -90,7 +87,7 @@ public class CalendarController {
             @RequestBody EventOptionsDTO eventOptions,
             @AuthenticationPrincipal EmployeeDTO principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.createEvent(eventOptions, userEmployeeCode));
+        return res("일정 생성 성공", calendarService.createEvent(eventOptions, userEmployeeCode));
     }
 
     @Tag(name = "일정 수정", description = "이미 존재하던 일정을 수정")
@@ -103,13 +100,23 @@ public class CalendarController {
         return res("일정 수정 성공", calendarService.modifyEventOptions(Long.parseLong(eventCode), eventOptions, userEmployeeCode));
     }
 
+    @Tag(name = "일정 수정", description = "단순히 시간만 바뀌는 경우")
+    @PutMapping("/events/{eventCode}/date")
+    public ResponseEntity<ResponseDTO> modifyEventAboutDate(
+            @PathVariable String eventCode,
+            @RequestBody EventOptionsAboutDateDTO eventOptionsAboutDate,
+            @AuthenticationPrincipal EmployeeDTO principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res(calendarService.modifyEventOptionsAboutDate(Long.parseLong(eventCode), eventOptionsAboutDate, userEmployeeCode));
+    }
+
     @Tag(name = "일정 삭제", description = "해당 일정을 삭제(기존상태에서 임시삭제, 임시삭제상태에서 영구삭제)")
     @DeleteMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> deleteEvent(
             @PathVariable Long eventCode,
             @AuthenticationPrincipal EmployeeDTO principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.deleteEvent(eventCode, userEmployeeCode));
+        return res("일정 삭제 성공", calendarService.deleteEvent(eventCode, userEmployeeCode));
     }
 
     @Tag(name = "임시삭제한 일정 가져오기", description = "임시삭제한 일정을 가져온다.")
@@ -127,7 +134,7 @@ public class CalendarController {
             @PathVariable Long eventCode,
             @AuthenticationPrincipal EmployeeDTO principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.rollbackEvent(eventCode, userEmployeeCode));
+        return res("일정 롤백 성공", calendarService.rollbackEvent(eventCode, userEmployeeCode));
     }
 
     /**

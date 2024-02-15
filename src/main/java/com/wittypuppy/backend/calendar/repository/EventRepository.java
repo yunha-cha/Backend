@@ -67,7 +67,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "WHERE tc.calendar_code = :calendarCode " +
                     "AND te.event_code = :eventCode "
             , nativeQuery = true)
-    Optional<EventInterface> findAllEventByCalendarCodeAndEventCode(Long calendarCode,Long eventCode);
+    Optional<EventInterface> findEventInterfaceByCalendarCodeAndEventCode(Long calendarCode,Long eventCode);
 
     @Query(value =
             "SELECT " +
