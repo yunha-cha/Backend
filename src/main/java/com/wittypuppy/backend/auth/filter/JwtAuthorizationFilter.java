@@ -2,7 +2,7 @@ package com.wittypuppy.backend.auth.filter;
 
 
 import com.wittypuppy.backend.Employee.dto.AuthorityDTO;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
 import com.wittypuppy.backend.common.dto.AuthConstants;
 import com.wittypuppy.backend.util.TokenUtils;
@@ -70,10 +70,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 if (TokenUtils.isValidToken(token)) {
                     Claims claims = TokenUtils.getClaimsFromToken(token);
                     System.out.println("claims ===================== " + claims);
-                    EmployeeDTO authentication = new EmployeeDTO();
+                    User authentication = new User();
                     authentication.setEmployeeName(claims.get("employeeName").toString());
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
+                    authentication.setEmployeeId((String) claims.get("employeeId"));
 //                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
@@ -126,7 +127,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
      * 토큰 관련된 Exception 발생 시 예외 응답
      */
     private JSONObject jsonresponseWrapper(Exception e) {
-        String resultMsg = "";
+        String resultMsg;
         if (e instanceof ExpiredJwtException) {
             resultMsg = "Token Expired";
         } else if (e instanceof SignatureException) {
@@ -138,6 +139,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         // 이외 JTW 토큰내에서 오류 발생
         else {
+            e.printStackTrace();
             resultMsg = "OTHER TOKEN ERROR";
         }
 

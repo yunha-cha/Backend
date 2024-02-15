@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.attendance.entity;
 
-import com.wittypuppy.backend.calendar.entity.Department;
 import jakarta.persistence.*;
 import lombok.*;
 

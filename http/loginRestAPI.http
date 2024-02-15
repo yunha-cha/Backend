@@ -22,8 +22,13 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "R6u_ppg_kcI"
+<<<<<<<<< Temporary merge branch 1
+  "employeeId": "user09",
+  "employeePassword": "pass09"
+=========
+  "employeeId": "root",
+  "employeePassword": "root"
+>>>>>>>>> Temporary merge branch 2
 }
 
 ###비밀번호 찾기

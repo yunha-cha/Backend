@@ -21,7 +21,7 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
             @Param("userCode")Long userCode,
             @Param("emailStatus") String emailStatus
     );
-    @Query("SELECT e FROM MAIL_EMAIL e JOIN e.emailSender ere WHERE e.emailStatus = :emailStatus AND ere.employeeCode = :userCode")
+    @Query("SELECT e FROM MAIL_EMAIL e JOIN e.emailSender ere WHERE e.emailStatus = :emailStatus AND ere.employeeCode = :userCode ORDER BY e.emailSendTime asc")
     List<Email> findSendMail(
             @Param("userCode")Long userCode,
             @Param("emailStatus") String emailStatus
@@ -31,5 +31,12 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
     List<Email> findAllByEmailSender(Employee employee);
     List<Email> findAllByEmailSendTime(LocalDateTime word);
     List<Email> findAllByEmailContentLike(String word);
-    List<Object> findAllByEmailTitleLike(String word);
+    List<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatus(String n, Employee user,String send);
+
+    List<Email> findAllByEmailTitleContainingAndEmailReceiver(String word,Employee me);
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM tbl_email WHERE email_sender_employee_code LIKE concat('%',:sender,'%') AND email_receiver_employee_code IN :receiver")
+    List<Email> findAllByEmailReceiverMail(@Param("sender") Long sender,@Param("receiver") List<Long> receiver);
+
+    List<Email> findByEmailReceiverAndEmailStatusIn(Employee employee, List<String> strings);
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class EmployeeDTO implements UserDetails {
+public class User implements UserDetails {
 
     private int employeeCode;
     private String employeeId;

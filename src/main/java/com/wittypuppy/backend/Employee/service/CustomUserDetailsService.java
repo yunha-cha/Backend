@@ -1,14 +1,13 @@
 package com.wittypuppy.backend.Employee.service;
 
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.Employee.entity.LoginEmployeeRole;
 import com.wittypuppy.backend.Employee.repository.EmployeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -44,7 +43,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         LoginEmployee employee = employeeRepository.findByEmployeeId(username);
         System.out.println("employeeId = " + employee);
         /* EmployeeDTO는 엔티티를 옮겨 담는 DTO이자 UserDetails이다. */
-        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        User user = modelMapper.map(employee, User.class);
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         for(LoginEmployeeRole employeeRole : employee.getEmployeeRole()){
@@ -52,8 +51,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(authorityName));
         }
 
-        employeeDTO.setAuthorities(authorities);
+        user.setAuthorities(authorities);
 
-        return employeeDTO;
+        return user;
     }
 }
