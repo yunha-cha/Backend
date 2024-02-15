@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -34,13 +35,13 @@ public class ProjectPost {
     private String projectPostTitle;
 
     @Column(name = "project_post_creation_date")
-    private LocalDateTime projectPostCreationDate;
+    private Date projectPostCreationDate;
 
     @Column(name = "project_post_modify_date")
-    private LocalDateTime projectPostModifyDate;
+    private Date projectPostModifyDate;
 
     @Column(name = "project_post_due_date")
-    private LocalDateTime projectPostDueDate;
+    private Date projectPostDueDate;
 
     @JoinColumn(name = "project_post_code")
     @OneToMany(cascade = CascadeType.PERSIST)
@@ -75,17 +76,17 @@ public class ProjectPost {
         return this;
     }
 
-    public ProjectPost setProjectPostCreationDate(LocalDateTime projectPostCreationDate) {
+    public ProjectPost setProjectPostCreationDate(Date projectPostCreationDate) {
         this.projectPostCreationDate = projectPostCreationDate;
         return this;
     }
 
-    public ProjectPost setProjectPostModifyDate(LocalDateTime projectPostModifyDate) {
+    public ProjectPost setProjectPostModifyDate(Date projectPostModifyDate) {
         this.projectPostModifyDate = projectPostModifyDate;
         return this;
     }
 
-    public ProjectPost setProjectPostDueDate(LocalDateTime projectPostDueDate) {
+    public ProjectPost setProjectPostDueDate(Date projectPostDueDate) {
         this.projectPostDueDate = projectPostDueDate;
         return this;
     }

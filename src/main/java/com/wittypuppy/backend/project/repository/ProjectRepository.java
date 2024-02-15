@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.project.repository;
 
 import com.wittypuppy.backend.project.dto.ProjectMainDTO;
+import com.wittypuppy.backend.project.dto.ProjectMainInterface;
 import com.wittypuppy.backend.project.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,7 +39,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainDTO> findAllProjectInfoWithPaging(Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> findAllProjectInfoWithPaging(Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +
@@ -60,7 +61,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainDTO> findMyProjectInfoWithPaging(Long employeeCode, Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> findMyProjectInfoWithPaging(Long employeeCode, Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +
@@ -82,7 +83,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainDTO> findMyDeptProjectInfoWithPaging(Long deptCode, Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> findMyDeptProjectInfoWithPaging(Long deptCode, Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +
@@ -102,7 +103,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainDTO> searchAllProjectInfoWithPaging(String searchValue, Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> searchAllProjectInfoWithPaging(String searchValue, Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +
@@ -125,7 +126,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainDTO> searchMyProjectInfoWithPaging(Long employeeCode, String searchValue, Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> searchMyProjectInfoWithPaging(Long employeeCode, String searchValue, Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +
@@ -148,5 +149,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainDTO> searchMyDeptProjectInfoWithPaging(Long deptCode, String searchValue, Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> searchMyDeptProjectInfoWithPaging(Long deptCode, String searchValue, Integer startCount, Integer searchCount);
 }

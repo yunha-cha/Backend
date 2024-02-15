@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,5 +29,5 @@ public class ProjectPostCommentFile {
     private String projectPostCommentFileChangedFile;
 
     @Column(name = "project_post_comment_file_creation_date")
-    private LocalDateTime projectPostCommentFileCreationDate;
+    private Date projectPostCommentFileCreationDate;
 }

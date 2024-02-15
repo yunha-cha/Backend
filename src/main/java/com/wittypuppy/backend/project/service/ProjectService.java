@@ -15,10 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,54 +35,54 @@ public class ProjectService {
     private final ModelMapper modelMapper;
 
     /* 전체 프로젝트 목록 확인 */
-    public List<ProjectMainDTO> selectProjectListWithPaging(Criteria cri) {
+    public List<ProjectMainInterface> selectProjectListWithPaging(Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainDTO> projectMainDTOList = projectRepository.findAllProjectInfoWithPaging(index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.findAllProjectInfoWithPaging(index * count, count);
         return projectMainDTOList;
     }
 
     /* 내 프로젝트 목록 확인 */
-    public List<ProjectMainDTO> selectMyProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
+    public List<ProjectMainInterface> selectMyProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainDTO> projectMainDTOList = projectRepository.findMyProjectInfoWithPaging(userEmployeeCode, index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.findMyProjectInfoWithPaging(userEmployeeCode, index * count, count);
         return projectMainDTOList;
     }
 
     /* 내 부서 프로젝트 목록 확인 */
-    public List<ProjectMainDTO> selectMyDeptProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
+    public List<ProjectMainInterface> selectMyDeptProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         Employee employee = employeeRepository.findById(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainDTO> projectMainDTOList = projectRepository.findMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.findMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), index * count, count);
         return projectMainDTOList;
     }
 
     /* 프로젝트 검색하기 */
-    public List<ProjectMainDTO> searchProjectListWithPaging(String searchValue, Criteria cri) {
+    public List<ProjectMainInterface> searchProjectListWithPaging(String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainDTO> projectMainDTOList = projectRepository.searchAllProjectInfoWithPaging(searchValue, index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchAllProjectInfoWithPaging(searchValue, index * count, count);
         return projectMainDTOList;
     }
 
     /* 내 프로젝트 검색하기 */
-    public List<ProjectMainDTO> searchMyProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
+    public List<ProjectMainInterface> searchMyProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainDTO> projectMainDTOList = projectRepository.searchMyProjectInfoWithPaging(userEmployeeCode, searchValue, index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchMyProjectInfoWithPaging(userEmployeeCode, searchValue, index * count, count);
         return projectMainDTOList;
     }
 
     /* 내 부서 프로젝트 검색하기 */
-    public List<ProjectMainDTO> searchMyDeptProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
+    public List<ProjectMainInterface> searchMyDeptProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         Employee employee = employeeRepository.findById(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainDTO> projectMainDTOList = projectRepository.searchMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), searchValue, index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), searchValue, index * count, count);
         return projectMainDTOList;
     }
 
@@ -281,7 +279,7 @@ public class ProjectService {
                     .setProjectPostStatus(projectPostDTO.getProjectPostStatus())
                     .setProjectPostPriority(projectPostDTO.getProjectPostPriority())
                     .setProjectPostTitle(projectPostDTO.getProjectPostTitle())
-                    .setProjectPostCreationDate(now)
+                    .setProjectPostCreationDate(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                     .setProjectPostDueDate(projectPostDTO.getProjectPostDueDate())
                     .setProjectPostMemberList(Collections.singletonList(projectPostMember))
                     .builder();
@@ -406,7 +404,7 @@ public class ProjectService {
         ProjectPostComment projectPostComment = new ProjectPostComment()
                 .setProjectPostCode(projectPostCommentDTO.getProjectPostCode())
                 .setProjectPostCommentContent(projectPostCommentDTO.getProjectPostCommentContent())
-                .setProjectPostCommentCreationDate(now)
+                .setProjectPostCommentCreationDate(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                 .setProjectPostMemberCode(projectPostMember.getProjectPostMemberCode())
                 .builder();
         projectPostCommentRepository.save(projectPostComment);
