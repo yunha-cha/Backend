@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.approval.repository;
 
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
+import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
 import com.wittypuppy.backend.approval.entity.ApprovalDoc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,11 @@ public interface ApprovalDocRepository extends JpaRepository<ApprovalDoc, Long> 
 
     List<ApprovalDoc> findByEmployeeCodeAndWhetherSavingApproval(LoginEmployee loginEmployee, String whetherSavingApproval);
 
+    @Query(value =
+            "SELECT approval_document_code " +
+                    "FROM tbl_approval_line " +
+            "WHERE employee_code = :employeeCode " +
+            "AND approval_process_status not in ('기안', '회수', '대기')",
+            nativeQuery = true)
+    List<Long> inboxFinishedListbyEmployeeCode(Long employeeCode);
 }

@@ -4,6 +4,8 @@ import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -25,7 +27,15 @@ public class ApprovalRepresent {
     @ManyToOne
     private LoginEmployee assignee;
 
-    @JoinColumn(name = "representative_code")
-    @ManyToOne
-    private LoginEmployee representative;
+    @Column(name = "representative_code")
+    private Long representative;
+
+    @Column(name = "start_date")
+    private Date startDate;
+
+    @Column(name = "end_date")
+    private Date endDate;
+
+    @Column(name = "represent_status")
+    private String representStatus;
 }
