@@ -34,7 +34,7 @@ public class MailController {
 
 
     @GetMapping("unread-email-count")
-    public ResponseEntity<ResponseDTO> countUnreadEmail(@AuthenticationPrincipal com.wittypuppy.backend.Employee.dto.EmployeeDTO principal){
+    public ResponseEntity<ResponseDTO> countUnreadEmail(@AuthenticationPrincipal com.wittypuppy.backend.Employee.dto.User principal){
         System.out.println("principal = " + principal);
         return null;
     }

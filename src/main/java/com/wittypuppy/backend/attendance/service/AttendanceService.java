@@ -1,9 +1,7 @@
 package com.wittypuppy.backend.attendance.service;
 
-import com.wittypuppy.backend.attendance.dto.ApprovalLineDTO;
-import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
-import com.wittypuppy.backend.attendance.dto.AttendanceWorkTypeDTO;
-import com.wittypuppy.backend.attendance.dto.VacationDTO;
+import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
 import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
@@ -267,20 +265,27 @@ public class AttendanceService {
         Long total = managementRepository.attendanceTotalVacation(employeeCode);
         Long useVacation = managementRepository.attendanceUseVacation(employeeCode);
         Long useHalfVacation = managementRepository.attendanceUseHalfVacation(employeeCode);
-
         System.out.println("========== total ===========> " + total);
         System.out.println("=========== useVacation =========> " + useVacation);
         System.out.println("============== useHalfVacation ==========> " + useHalfVacation);
 
-        double result = total - useVacation - (useHalfVacation * 0.5);
+        int totalDays = total.intValue();
+        int usedVacationDays = useVacation.intValue();
+        int usedHalfVacationDays = useHalfVacation.intValue();
 
-        VacationDTO results = modelMapper.map(result, VacationDTO.class);
+        double vacationDay = totalDays - usedVacationDays - (usedHalfVacationDays * 0.5);
 
-        System.out.println("========= 남은 연차 result ======== " + result);
+        VacationDTO vacation = new VacationDTO();
+        vacation.setTotal(totalDays);
+        vacation.setUseVacation(usedVacationDays);
+        vacation.setUseHalfVacation(usedHalfVacationDays);
+        vacation.setResultVacation(vacationDay);
+
+        System.out.println("========= 남은 연차 result ======== " + vacationDay);
 
         System.out.println("========attendanceVacation end ======");
 
-        return results;
+        return vacation;
 
     }
 
@@ -291,45 +296,70 @@ public class AttendanceService {
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceWaiting ServiceStart======");
 
-//        ApprovalLine result = attendanceApprovalRepository.attendanceWaiting(employeeCode);
-//
-//        ApprovalLineDTO results = modelMapper.map(result, ApprovalLineDTO.class);
-//
-//        System.out.println("========== result ========> " + result);
-//        System.out.println("========attendanceWaiting end ======");
-//
-//        return results;
+        ApprovalLine result = attendanceApprovalRepository.attendanceWaiting(employeeCode);
 
-        return null;
+        // '대기' 상태인 행의 갯수 계산
+        int waitingCount = countWaiting(result);
+
+        ApprovalLineDTO results = new ApprovalLineDTO();
+        results.setCountWaiting(waitingCount);
+
+        System.out.println("========== result ========> " + result);
+        System.out.println("========attendanceWaiting end ======");
+
+        return results;
+
+//        return null;
+    }
+
+    private int countWaiting(ApprovalLine result) {
+        // '대기' 상태인 행의 갯수를 계산
+        int waitingCount = 0;
+        if (result != null && "대기".equals(result.getApprovalProcessStatus())) {
+            waitingCount++;
+        }
+        return waitingCount;
     }
 
 
 
-@Transactional
-    public String insertArrival(Long employeeCode, AttendanceManagementDTO attendanceManagementDTO) {
 
-        System.out.println("============== insertArrival ======> serviceStart ");
-        System.out.println(" ======employeeCode ========== " + employeeCode);
-        System.out.println("========= attendanceManagementDTO ========== " + attendanceManagementDTO);
+    @Transactional
+    public String insertArrival(User employeeCode, LocalDateTime arrivalTime, LocalDateTime departureTime, String status) {
 
-        int result = 0;
+    System.out.println("============== insertArrival ======> serviceStart ");
+    System.out.println(" ======employeeCode ========== " + employeeCode);
+    System.out.println("==== arrivalTime ======= " + arrivalTime);
+    System.out.println("====== departureTime ====== " + departureTime);
+    System.out.println("====== status ====== " + status);
 
-        LocalDateTime arrival = attendanceManagementDTO.getAttendanceManagementArrivalTime();
+    int result = 0;
 
-        System.out.println("==== arrival = " + arrival);
+    try {
+        // 현재 날짜 가져오기
+        LocalDate today = LocalDate.now();
 
-        try {
+        // 출근 정보를 담은 DTO 객체 생성
+        AttendanceManagementDTO attendanceManagementDTO = new AttendanceManagementDTO();
+        attendanceManagementDTO.setAttendanceEmployeeCode(employeeCode); // 로그인한 employeeCode 정보 설정
+        attendanceManagementDTO.setAttendanceManagementArrivalTime(arrivalTime);
+        attendanceManagementDTO.setAttendanceManagementDepartureTime(departureTime);
+        attendanceManagementDTO.setAttendanceManagementState(status);
+        attendanceManagementDTO.setAttendanceManagementWorkDay(today);
+        attendanceManagementDTO.setAttendanceManagementCode(null);
 
-            AttendanceManagement insertAttendance = modelMapper.map(attendanceManagementDTO, AttendanceManagement.class);
+        // DTO 객체를 Entity로 변환
+        AttendanceManagement insertAttendance = modelMapper.map(attendanceManagementDTO, AttendanceManagement.class);
 
-            managementRepository.save(insertAttendance);
+        System.out.println("========= insertAttendance ======= " + insertAttendance);
+        // 저장소에 저장
+        managementRepository.save(insertAttendance);
+        result = 1;
 
-            result = 1;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return result > 0 ? "출근 등록 성공" : "출근 등록 실패";
+            return result > 0 ? "출근 인서트 성공" : "출근 인서트 실패";
     }
 
 

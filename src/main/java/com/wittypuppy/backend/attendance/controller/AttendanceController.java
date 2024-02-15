@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.attendance.controller;
 
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
@@ -14,7 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 @Tag(name = "근태 스웨거 연동")
 @RestController
@@ -67,40 +75,48 @@ public class AttendanceController {
     @Operation(summary = "근태 메인 화면 출근 인서트", description = "출퇴근 시간을 인서트 합니다")
     @PostMapping("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteInput(
-            @RequestBody AttendanceManagementDTO attendanceManagementDTO
-    ){
+            @AuthenticationPrincipal User employeeInFo,
+            @RequestBody Map<String, Object> requestBody
+            ){
 
-        Long employeeCode = 1L; // 로그인한 코드 넣기
-
-        System.out.println("========== employeeCode =========> " + employeeCode);
+        System.out.println("========== employeeInFo =========> " + employeeInFo);
         System.out.println("=========== commuteInput ControllerStart ============");
 
+        LocalDateTime arrivalTime = LocalDateTime.parse((String) requestBody.get("arrivalTime")); // arrivalTime은 문자열로 전송되기 때문에 파싱 필요
+        String status = (boolean) requestBody.get("late") ? "지각" : "정상";
+
+        System.out.println("====== arrivalTime ===== " + arrivalTime);
+        System.out.println("======== status ======== " + status);
+
+        LocalDateTime now = LocalDateTime.now(); // 현재 날짜와 시간 가져오기
+        LocalDateTime departureTime = now.toLocalDate().atStartOfDay(); // 현재 날짜의 자정 시간 구하기
+
         /*
-        * 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
         *
         *로그인 하면 출근을 찍고 -> 출근 정보를 인서트 (퇴근 00:00:00) 같이 인서트
         * -> 오늘 날짜 출근 9시 지나면 지각, 9까지 오면 정상:래액트 기능으로 조건 설정
-        *
-        * 퇴근 업데이트 -> 가장 최근 출근 목록에서 업데이트 (로그인 정보 동일) //
 * */
 
         // 로그인 해서 출근 인서트
-        String login = attendanceService.insertArrival(employeeCode, attendanceManagementDTO);
+        String login = attendanceService.insertArrival(employeeInFo, arrivalTime, departureTime, status);
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
 
     //퇴근 시간 업데이트
-
     @Operation(summary = "근태 메인 화면 퇴근 수정", description = "퇴근 시간을 업데이트 합니다")
     @PutMapping ("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteUpdate(
-            @RequestBody AttendanceManagementDTO attendanceManagementDTO
+            @RequestBody AttendanceManagementDTO attendanceManagementDTO,
+            @RequestParam(name = "departure", defaultValue = "") DateTimeFormat departure
+
     ){
+        //출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
 
         Long employeeCode = 1L; // 로그인한 코드 넣기
 
         System.out.println("========== employeeCode ==========> " + employeeCode);
+        System.out.println("========== departure =========== " + departure);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
         System.out.println(attendanceManagementDTO.getAttendanceManagementDepartureTime());
