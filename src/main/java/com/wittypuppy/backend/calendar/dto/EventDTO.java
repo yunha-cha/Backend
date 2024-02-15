@@ -2,7 +2,7 @@ package com.wittypuppy.backend.calendar.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @ToString
 @Setter
 public class EventDTO {
-    private Long calendarCode;
-
     private Long eventCode;
+
+    private Long calendarCode;
 
     private String departmentName;
 
@@ -22,15 +22,17 @@ public class EventDTO {
 
     private String eventContent;
 
-    private LocalDateTime eventStartDate;
+    private String eventIsAllDay;
 
-    private LocalDateTime eventEndDate;
+    private Date eventStartDate;
+
+    private Date eventEndDate;
 
     private String eventLocation;
 
     private String eventRecurrenceRule;
 
-    private LocalDateTime eventDeleteTime;
+    private Date eventDeleteTime;
 
     private String eventDeleteStatus;
 

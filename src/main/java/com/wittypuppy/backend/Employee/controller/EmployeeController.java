@@ -1,23 +1,19 @@
 package com.wittypuppy.backend.Employee.controller;
 
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.dto.PasswordResetRequest;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.Employee.service.EmployeeService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
-
+@Tag(name = "로그인 사원관련 스웨거 연동")
 @RestController
 @RequestMapping("/api/v1/employee")
 @Slf4j
@@ -45,9 +41,9 @@ public class EmployeeController {
 
 
     @PostMapping("/searchpwd")
-    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody PasswordResetRequest request,@AuthenticationPrincipal EmployeeDTO principal) {
+    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody PasswordResetRequest request,@AuthenticationPrincipal User principal) {
 
-        System.out.println("비번 변경 컨트롤러 시작=====================================");
+        System.out.println("비번 찾기 컨트롤러 시작=====================================");
 //        request.setEmployeeId(principal.getEmployeeId());
 //        request.setEmployeeEmail(principal.getEmployeeEmail());
 
@@ -55,7 +51,7 @@ public class EmployeeController {
             employeeService.sendSearchPwd((request.getEmployeeId()), request.getEmployeeEmail());
             System.out.println("비번 변경 컨트롤러에서 서비스부분 들어갔다 오기=====================================");
 
-            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "임시 비밀번호로 변경 성공", "변경 성공"));
+            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "임시 비밀번호로 변경 성공", "비밀번호 찾기 성공"));
         }  catch (UserPrincipalNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseDTO(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다.", "User not found."));
         } catch (Exception e) {

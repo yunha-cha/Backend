@@ -19,7 +19,7 @@ public interface CommuteWorkTypeRepository extends  JpaRepository<AttendanceWork
             "A.attendance_work_type_code, " +
             "A.approval_document_code, " +
             "A.employee_code, " +
-            "B.attendance_management_arrival_time, " +
+            "DATE_FORMAT(B.attendance_management_arrival_time, '%Y년%m월%d일 %H시%i분%s초') AS attendance_management_arrival_time, " +
             "B.attendance_management_departure_time, " +
             "B.attendance_management_state, " +
             "B.attendance_management_work_day " +

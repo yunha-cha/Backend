@@ -26,7 +26,7 @@ public class ApprovalDocument {
     @OneToOne
     private Employee documentEmployeeCode;
 
-    @Column(name = "apprvoal_request_date", columnDefinition = "DATETIME")
+    @Column(name = "approval_request_date", columnDefinition = "DATETIME")
     private LocalDateTime approvalRequestDate;
 
 }

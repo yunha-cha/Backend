@@ -4,14 +4,14 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "ap_third",
-  "employeePassword": "ap_third",
-  "employeeName": "결재자2",
-  "employeeEmail": "ap_third@gmail.com",
+  "employeeId": "user777",
+  "employeePassword": "pass777",
+  "employeeName": "강남",
+  "employeeEmail": "kang777@gmail.com",
   "employeeRetirementDate": "",
   "employeeBirthDate": "2003-03-03",
   "empAddress": "동대문구 종로구 하이미디어",
-  "empPhone": "010-3444-4132"
+  "empPhone": "010-1111-1111"
 
 }
 
@@ -22,18 +22,24 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "ap_third",
-  "employeePassword": "ap_third"
+<<<<<<<<< Temporary merge branch 1
+  "employeeId": "user09",
+  "employeePassword": "pass09"
+=========
+  "employeeId": "root",
+  "employeePassword": "root"
+>>>>>>>>> Temporary merge branch 2
 }
 
 ###비밀번호 찾기
 POST http://localhost:1208/api/v1/employee/searchpwd
 Content-Type: application/json
-Authorization: Bearer eyJkYXRlIjoxNzA3MjA1OTM5MTQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyMDk1MzksImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.EUEzO9EdasEVNAZKAqKRUApDP_jpRfrvuIVFtOURN0Q
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA3ODExMzg1MzIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDc4MTQ5ODUsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVDb2RlIjoxMiwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIn19XX0.cRE79iCiO-UN2jE0yqYUWmkN7UH6lJPQi7nPbV2ZXC8
 
 {
-  "employeeId": "user07",
-  "employeeEmail": "kimmin699@gmail.com"
+  "employeeId": "user08",
+  "employeeEmail": "kkkrrr12@gmail.com"
 }
 
 #### 로그아웃

@@ -3,7 +3,7 @@ package com.wittypuppy.backend.calendar.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class EventAlert {
     private Long eventAttendeeCode;
 
     @Column(name = "event_alert_notification_time")
-    private LocalDateTime eventAlertNotificationTime;
+    private Date eventAlertNotificationTime;
 
     @Column(name = "event_alert_check_status")
     private String eventAlertCheckStatus;

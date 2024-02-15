@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.service;
 
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
 import com.wittypuppy.backend.approval.dto.ApprovalRepresentDTO;
@@ -75,13 +75,13 @@ public class ApprovalService {
 
 
     // 기안 문서 정보 저장
-    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
+    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
         log.info("[ApprovalService] saving doc info started =====");
 
         ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
         approvalDoc.setApprovalForm("휴가신청서");
 
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         approvalDoc.setEmployeeCode(loginEmployee);
 
         approvalDoc.setApprovalRequestDate(LocalDateTime.now());
@@ -118,12 +118,12 @@ public class ApprovalService {
     // 결재 문서 내용 추가 - 외근/출장/재택근무 신청서
 
     // 기안자 결재선 저장
-    public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, EmployeeDTO employeeDTO) {
+    public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, User user) {
         log.info("[ApprovalService] saving first approval line started =====");
         ApprovalLine approvalLine = new ApprovalLine();
         approvalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
 
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         approvalLine.setEmployeeCode((long) loginEmployee.getEmployeeCode());
 
         approvalLine.setApprovalProcessOrder(1L);
@@ -170,9 +170,9 @@ public class ApprovalService {
     }
 
     // 상신한 문서 조회
-    public List<ApprovalDoc> findApprovalDocsByEmployeeCode(EmployeeDTO employeeDTO) {
+    public List<ApprovalDoc> findApprovalDocsByEmployeeCode(User user) {
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 해당 사용자의 결재 상신 문서 리스트 조회
         List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
@@ -181,9 +181,9 @@ public class ApprovalService {
     }
 
     // 결재 대기 문서 조회
-    public List<ApprovalDoc> inboxDocListByEmployeeCode(EmployeeDTO employeeDTO){
+    public List<ApprovalDoc> inboxDocListByEmployeeCode(User user){
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 문서 코드 목록 가져오기
         List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
@@ -224,7 +224,7 @@ public class ApprovalService {
 
     // 결재하기
     @Transactional
-    public String approvement(Long approvalDocCode, EmployeeDTO employeeDTO) {
+    public String approvement(Long approvalDocCode, User user) {
 
         // 결재 대상 조회
         Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
@@ -233,7 +233,7 @@ public class ApprovalService {
         System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         Long employeeCode = (long) loginEmployee.getEmployeeCode();
 
         System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
@@ -280,7 +280,7 @@ public class ApprovalService {
     }
 
     // 반려하기
-    public String rejection(Long approvalDocCode, EmployeeDTO employeeDTO) {
+    public String rejection(Long approvalDocCode, User user) {
 
         // 반려 대상 조회
         Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
@@ -289,7 +289,7 @@ public class ApprovalService {
         System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         Long employeeCode = (long) loginEmployee.getEmployeeCode();
 
         System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
@@ -319,7 +319,7 @@ public class ApprovalService {
     }
 
     // 상신 문서 회수
-    public String retrieval(Long approvalDocCode, EmployeeDTO employeeDTO) {
+    public String retrieval(Long approvalDocCode, User user) {
         // 문서 정보 가져오기
         ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).get();
         System.out.println("approvalDoc.getEmployeeCode().getEmployeeCode() = " + approvalDoc.getEmployeeCode().getEmployeeCode());
@@ -327,7 +327,7 @@ public class ApprovalService {
         System.out.println("employeeCode = " + employeeCode);
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         Long loginemployeeCode = (long) loginEmployee.getEmployeeCode();
         System.out.println("loginemployeeCode = " + loginemployeeCode);
 
@@ -358,10 +358,10 @@ public class ApprovalService {
     }
 
     // 결재 진행 중인 문서 조회
-    public List<ApprovalDoc> onProcessInOutbox(EmployeeDTO employeeDTO) {
+    public List<ApprovalDoc> onProcessInOutbox(User user) {
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 해당 사용자의 결재 상신 문서 리스트 조회
         List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
@@ -378,10 +378,10 @@ public class ApprovalService {
     }
 
     // 결재 완료 문서 조회
-    public List<ApprovalDoc> finishedInOutbox(EmployeeDTO employeeDTO) {
+    public List<ApprovalDoc> finishedInOutbox(User user) {
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 해당 사용자의 결재 상신 문서 리스트 조회
         List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
@@ -401,10 +401,10 @@ public class ApprovalService {
     }
 
     // 반려 문서 조회
-    public List<ApprovalDoc> rejectedInOutbox(EmployeeDTO employeeDTO) {
+    public List<ApprovalDoc> rejectedInOutbox(User user) {
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 해당 사용자의 결재 상신 문서 리스트 조회
         List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
@@ -421,10 +421,10 @@ public class ApprovalService {
     }
 
     // 회수 문서 조회
-    public List<ApprovalDoc> retrievedInOutbox(EmployeeDTO employeeDTO) {
+    public List<ApprovalDoc> retrievedInOutbox(User user) {
 
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 해당 사용자의 결재 상신 문서 리스트 조회
         List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
@@ -441,12 +441,12 @@ public class ApprovalService {
     }
 
     // 임시 저장
-    public ApprovalDoc temporarySaveApprovalDoc(ApprovalDocDTO approvalDocDTO, EmployeeDTO employeeDTO) {
+    public ApprovalDoc temporarySaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
 
         ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
         approvalDoc.setApprovalForm("임시저장문서");
 
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         approvalDoc.setEmployeeCode(loginEmployee);
 
         approvalDoc.setApprovalRequestDate(LocalDateTime.now());
@@ -456,9 +456,9 @@ public class ApprovalService {
     }
 
     // 임시 저장 리스트 조회
-    public List<ApprovalDoc> findSavedDocsByEmployeeCode(EmployeeDTO employeeDTO) {
+    public List<ApprovalDoc> findSavedDocsByEmployeeCode(User user) {
         // 로그인한 사용자의 정보 가져오기
-        LoginEmployee loginEmployee = modelMapper.map(employeeDTO, LoginEmployee.class);
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 해당 사용자의 결재 문서 중 임시 저장이 'Y'인 문서 조회
         return approvalDocRepository.findByEmployeeCodeAndWhetherSavingApproval(loginEmployee, "Y");

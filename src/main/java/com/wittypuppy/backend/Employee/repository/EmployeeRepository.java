@@ -14,11 +14,7 @@ public interface EmployeeRepository extends JpaRepository<LoginEmployee, Integer
 
     LoginEmployee findByEmployeeEmail(String employeeEmail);
 
-    Optional<LoginEmployee> findByEmployeeIdAndEmployeeEmail(String employeeId, String employeeEmail);
+    Optional<LoginEmployee> findByEmployeeIdAndEmployeeEmail(String employeeId, String employeeEmail); //비밀번호 찾기용
 
-
-    /* purchase 도메인 추가하면서 추가한 메소드 */
-//    @Query("SELECT a.memberCode FROM LoginEmployee a WHERE a.memberId = ?1")
-//    int findMemberCodeByMemberId(String orderMemberId);
 
 }

@@ -2,7 +2,7 @@ package com.wittypuppy.backend.calendar.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +18,9 @@ public class EmployeeDTO {
 
     private String employeeName;
 
-    private LocalDateTime employeeRetirementDate;
+    private Date employeeRetirementDate;
+
+    private Long employeeAssignedCode;
 
     private String profileImageURL;
 }

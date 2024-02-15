@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.attendance.dto;
 
-import jakarta.persistence.*;
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
