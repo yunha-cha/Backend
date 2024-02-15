@@ -324,42 +324,43 @@ public class AttendanceService {
 
 
 
-@Transactional
-    public String insertArrival(User employeeCode, String workTime, String departureTime, String status) {
+    @Transactional
+    public String insertArrival(User employeeCode, LocalDateTime arrivalTime, LocalDateTime departureTime, String status) {
 
-        System.out.println("============== insertArrival ======> serviceStart ");
-        System.out.println(" ======employeeCode ========== " + employeeCode);
-        System.out.println("==== arrivalTime ======= " + workTime);
-        System.out.println("====== departureTime ====== " + departureTime);
-        System.out.println("====== status ====== " + status);
+    System.out.println("============== insertArrival ======> serviceStart ");
+    System.out.println(" ======employeeCode ========== " + employeeCode);
+    System.out.println("==== arrivalTime ======= " + arrivalTime);
+    System.out.println("====== departureTime ====== " + departureTime);
+    System.out.println("====== status ====== " + status);
+
+    int result = 0;
 
     try {
         // 현재 날짜 가져오기
         LocalDate today = LocalDate.now();
 
-        // 출근 시간 문자열을 LocalDateTime으로 변환
-        LocalDateTime arrival = LocalDateTime.parse(workTime);
-
         // 출근 정보를 담은 DTO 객체 생성
         AttendanceManagementDTO attendanceManagementDTO = new AttendanceManagementDTO();
         attendanceManagementDTO.setAttendanceEmployeeCode(employeeCode); // 로그인한 employeeCode 정보 설정
-        attendanceManagementDTO.setAttendanceManagementArrivalTime(arrival);
-        attendanceManagementDTO.setAttendanceManagementDepartureTime(LocalDateTime.parse(departureTime));
+        attendanceManagementDTO.setAttendanceManagementArrivalTime(arrivalTime);
+        attendanceManagementDTO.setAttendanceManagementDepartureTime(departureTime);
         attendanceManagementDTO.setAttendanceManagementState(status);
         attendanceManagementDTO.setAttendanceManagementWorkDay(today);
+        attendanceManagementDTO.setAttendanceManagementCode(null);
 
         // DTO 객체를 Entity로 변환
         AttendanceManagement insertAttendance = modelMapper.map(attendanceManagementDTO, AttendanceManagement.class);
 
+        System.out.println("========= insertAttendance ======= " + insertAttendance);
         // 저장소에 저장
         managementRepository.save(insertAttendance);
+        result = 1;
 
-        return "출근 등록 성공";
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "출근 등록 실패";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return result > 0 ? "출근 인서트 성공" : "출근 인서트 실패";
     }
-}
 
 
     @Transactional
