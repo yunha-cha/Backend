@@ -2,6 +2,7 @@ package com.wittypuppy.backend.approval.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.approval.dto.ApprovalDocDTO;
+import com.wittypuppy.backend.approval.dto.ApprovalRepresentDTO;
 import com.wittypuppy.backend.approval.entity.ApprovalDoc;
 import com.wittypuppy.backend.approval.service.ApprovalService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
@@ -63,6 +64,13 @@ public class ApprovalController {
         System.out.println("result ========== " + result);
         return ResponseEntity.ok(result);
     }
+
+    // 대리 결재 지정
+    @PostMapping("/set-represent")
+    public ResponseEntity<ResponseDTO> setRepresent(ApprovalRepresentDTO approvalRepresentDTO, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "지정 성공", approvalService.setRepresent(approvalRepresentDTO, user)));
+    }
+
 
     // 반려하기
     @PutMapping("/rejection/{approvalDocCode}")
@@ -127,6 +135,12 @@ public class ApprovalController {
     }
 
     // 수신함 - 결재 완료함
+    @GetMapping("/inbox-finished")
+    public ResponseEntity<ResponseDTO> inboxFinished(@AuthenticationPrincipal User user) {
+        List<ApprovalDoc> finishedDocs = approvalService.inboxFinishedListByEmployeeCode(user);
+        System.out.println("finishedDocs = " + finishedDocs);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", finishedDocs));
+    }
 
     // 열람자 지정하기
 
