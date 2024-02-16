@@ -148,16 +148,54 @@ public class GroupEmpService {
         Map<Long, ChartData> nodeMap = new HashMap<>();
         List<ChartData> orgChartData = new ArrayList<>();
 
-        // 부서와 사원을 동일한 리스트에 추가
+//        // 본부를 최상위로 추가
+//        for (GroupDept department : departmentList) {
+//            if (department.getParentDeptCode() == null) {
+//                ChartData departmentNode = createDepartmentNode(department);
+//                nodeMap.put(department.getDeptCode(), departmentNode);
+//                orgChartData.add(departmentNode);
+//                break; // 최상위 본부를 추가했으므로 더 이상 반복할 필요가 없음
+//            }
+//        }
+//
+//        // 부서를 추가
+//        for (GroupDept department : departmentList) {
+//            if (department.getParentDeptCode() != null) {
+//                ChartData departmentNode = createDepartmentNode(department);
+//                nodeMap.put(department.getDeptCode(), departmentNode);
+//                // 부모 본부를 찾아서 설정
+//                ChartData parent = nodeMap.get(department.getParentDeptCode());
+//                if (parent != null) {
+//                    departmentNode.setParent(parent.getId());
+//                }
+//                orgChartData.add(departmentNode);
+//            }
+//        }
+
+        // 부서를 처리
         for (GroupDept department : departmentList) {
-            ChartData departmentNode = createDepartmentNode(department);
-            nodeMap.put(department.getDeptCode(), departmentNode);
-            orgChartData.add(departmentNode);
+            if (department.getParentDeptCode() == null) {
+                // 최상위 부서인 경우
+                ChartData departmentNode = createDepartmentNode(department);
+                nodeMap.put(department.getDeptCode(), departmentNode);
+                orgChartData.add(departmentNode);
+            } else {
+                // 최상위 부서가 아닌 경우, 부모 부서를 찾아서 추가
+                ChartData parent = nodeMap.get(department.getParentDeptCode());
+                if (parent != null) {
+                    ChartData departmentNode = createDepartmentNode(department);
+                    nodeMap.put(department.getDeptCode(), departmentNode);
+                    departmentNode.setParent(parent.getId());
+                    orgChartData.add(departmentNode);
+                }
+            }
         }
+
+
+        // 사원을 추가
         for (GroupEmp employee : employeeList) {
             ChartData employeeNode = createEmployeeNode(employee);
-            nodeMap.put(employee.getEmpCode(), employeeNode);
-            // 사원의 부모를 찾아서 설정
+            // 부서의 아이디를 찾아서 부모로 설정
             ChartData parent = nodeMap.get(employee.getDepartment().getDeptCode());
             if (parent != null) {
                 employeeNode.setParent(parent.getId());
@@ -168,11 +206,11 @@ public class GroupEmpService {
         return orgChartData;
     }
 
-    // 본부 또는 부서를 jstree와 호환되는 형태로 변환
+    // 본부를 jstree와 호환되는 형태로 변환
     private ChartData createDepartmentNode(GroupDept department) {
         ChartData departmentNode = new ChartData();
         departmentNode.setId("dept_" + String.valueOf(department.getDeptCode()));
-        departmentNode.setParent(department.getParentDeptCode() == null ? "#" : "dept_" + String.valueOf(department.getParentDeptCode()));
+        departmentNode.setParent("#"); // 본부는 최상위 노드이므로 부모를 "#"으로 설정
         departmentNode.setText(department.getDeptName());
         departmentNode.setType("dept");
         departmentNode.setState(new ChartState(true)); // 예시로 모든 부서가 열려있다고 가정
@@ -180,11 +218,12 @@ public class GroupEmpService {
         return departmentNode;
     }
 
+
     // 사원을 jstree와 호환되는 형태로 변환
     private ChartData createEmployeeNode(GroupEmp employee) {
         ChartData employeeNode = new ChartData();
-        employeeNode.setId("emp_" + String.valueOf(employee.getEmpCode())); // 접두사를 붙여 고유한 아이디 생성
-        employeeNode.setParent("dept_" + String.valueOf(employee.getDepartment().getDeptCode())); // 부서의 아이디를 부모로 설정
+        employeeNode.setId("emp_" + String.valueOf(employee.getEmpCode()));
+        employeeNode.setParent("dept_" + String.valueOf(employee.getDepartment().getDeptCode()));
         employeeNode.setText(employee.getEmpName());
         employeeNode.setType("employee");
         // 다른 필요한 정보 추가
