@@ -21,7 +21,7 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
             @Param("userCode")Long userCode,
             @Param("emailStatus") String emailStatus
     );
-    @Query("SELECT e FROM MAIL_EMAIL e JOIN e.emailSender ere WHERE e.emailStatus = :emailStatus AND ere.employeeCode = :userCode")
+    @Query("SELECT e FROM MAIL_EMAIL e JOIN e.emailSender ere WHERE e.emailStatus = :emailStatus AND ere.employeeCode = :userCode ORDER BY e.emailSendTime asc")
     List<Email> findSendMail(
             @Param("userCode")Long userCode,
             @Param("emailStatus") String emailStatus
@@ -31,5 +31,21 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
     List<Email> findAllByEmailSender(Employee employee);
     List<Email> findAllByEmailSendTime(LocalDateTime word);
     List<Email> findAllByEmailContentLike(String word);
-    List<Object> findAllByEmailTitleLike(String word);
+
+    List<Email> findAllByEmailTitleContainingAndEmailReceiver(String word,Employee me);
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM tbl_email WHERE email_receiver_employee_code = :receiver AND email_sender_employee_code IN :sender ORDER BY email_send_time desc")
+    List<Email> findAllByEmailReceiverMail(@Param("receiver") Long receiver, @Param("sender") List<Long> sender);
+
+    List<Email> findByEmailReceiverAndEmailStatusIn(Employee employee, List<String> strings);
+
+
+    Long countByEmailReadStatusAndEmailReceiver(String readStatus, Employee employee);
+
+    List<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatusIn(String n, Employee map, List<String> send);
+
+    List<Email> findByEmailReceiverAndEmailStatusInOrderByEmailSendTimeDesc(Employee employee, List<String> send);
+
+    List<Email> findAllByEmailSenderOrderByEmailSendTimeDesc(Employee employee);
+
 }

@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class EmployeeRoleDTO {
 
-    private int employeeNo;
+    private int employeeCode;
 
     private int authorityCode;
 
@@ -19,12 +19,12 @@ public class EmployeeRoleDTO {
     }
 
     public EmployeeRoleDTO(int employeeNo, int authorityCode) {
-        this.employeeNo = employeeNo;
+        this.employeeCode = employeeNo;
         this.authorityCode = authorityCode;
     }
 
     public EmployeeRoleDTO(int employeeNo, int authorityCode, AuthorityDTO authority) {
-        this.employeeNo = employeeNo;
+        this.employeeCode = employeeNo;
         this.authorityCode = authorityCode;
         this.authority = authority;
     }

@@ -3,6 +3,7 @@ package com.wittypuppy.backend.project.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +18,9 @@ public class ProjectPostDTO {
     private String projectPostStatus;
     private String projectPostPriority;
     private String projectPostTitle;
-    private LocalDateTime projectPostCreationDate;
-    private LocalDateTime projectPostModifyDate;
-    private LocalDateTime projectPostDueDate;
+    private Date projectPostCreationDate;
+    private Date projectPostModifyDate;
+    private Date projectPostDueDate;
     private String employeeName;
     private String employeeDeptName;
     private Long projectPostMemberCount;

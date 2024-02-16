@@ -1,6 +1,6 @@
 package com.wittypuppy.backend.approval.entity;
 
-import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +14,7 @@ import lombok.*;
 public class ApprovalReference {
     @Id
     @Column(name = "approval_reference_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalReferenceCode;
 
     @JoinColumn(name = "approval_document_code")
@@ -22,7 +23,7 @@ public class ApprovalReference {
 
     @JoinColumn(name = "employee_code")
     @ManyToOne
-    private Employee employee;
+    private LoginEmployee loginEmployee;
 
     @Column(name = "whether_checked_approval")
     private String whetherCheckedApproval;

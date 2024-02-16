@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class ProjectMainDTO {
     private String projectTitle;
     private String projectDescription;
     private String projectProgressStatus;
-    private LocalDateTime projectDeadline;
+    private Date projectDeadline;
     private String projectLockedStatus;
     private Long projectMemberCount;
 }

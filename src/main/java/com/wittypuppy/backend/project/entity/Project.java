@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -35,7 +35,7 @@ public class Project {
     private String projectProgressStatus;
 
     @Column(name = "project_deadline")
-    private LocalDateTime projectDeadline;
+    private Date projectDeadline;
 
     @Column(name = "project_locked_status")
     private String projectLockedStatus;
@@ -73,7 +73,7 @@ public class Project {
         return this;
     }
 
-    public Project setProjectDeadline(LocalDateTime projectDeadline) {
+    public Project setProjectDeadline(Date projectDeadline) {
         this.projectDeadline = projectDeadline;
         return this;
     }

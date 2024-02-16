@@ -1,8 +1,10 @@
 package com.wittypuppy.backend.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,5 +15,5 @@ public class ProjectPostCommentFileDTO {
     private Long projectPostCommentCode;
     private Long projectPostCommentFileCode;
     private String fileURL;
-    private LocalDateTime fileCreationDate;
+    private Date fileCreationDate;
 }

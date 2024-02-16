@@ -2,7 +2,7 @@ package com.wittypuppy.backend.project.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class ProfileDTO {
 
     private String profileChangedFile;
 
-    private LocalDateTime profileRegistDate;
+    private Date profileRegistDate;
 
     private String profileDeleteStatus;
 }

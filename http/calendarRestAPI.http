@@ -1,0 +1,32 @@
+### 회원가입
+POST http://localhost:1208/auth/signup
+Content-Type: application/json
+Accept: */*
+
+### {
+###   "employeeId": "wnsrud00012",
+###   "employeePassword": "wnsrud00012",
+###   "employeeName": "벚님12",
+###   "employeeEmail": "cherryblossom12@gmail.com",
+###   "employeeRetirementDate": "",
+###   "employeeBirthDate": "1990-12-12",
+###   "empAddress": "경기도 의정부시 회룡로 12",
+###   "empPhone": "012-1212-1212"
+### }
+
+### 로그인
+POST http://localhost:1208/auth/login
+Content-Type: application/json
+Accept: */*
+Access-Control-Allow-Origin: *
+
+{
+  "employeeId": "wnsrud0001",
+  "employeePassword": "wnsrud0001"
+}
+
+### 캘린더 접속
+GET http://localhost:1208/api/v1/calendar
+Content-Type: application/json
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA3MzU3MjQ0NTU5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLrsprri5gyIiwic3ViIjoid25zcnVkMDAwMiIsImVtcENvZGUiOjE4LCJlbXBsb3llZUVtYWlsIjoiY2hlcnJ5Ymxvc3NvbTJAZ21haWwuY29tIiwiZXhwIjoxNzA3MzYwODQ0LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlTm8iOjAsImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9BRE1JTiIsImF1dGhvcml0eURlc2MiOiLqtIDrpqzsnpAifX1dfQ.iDt66EvGijPOSbIZmhKENzYMjl_9htYLvJdMoxg43yU

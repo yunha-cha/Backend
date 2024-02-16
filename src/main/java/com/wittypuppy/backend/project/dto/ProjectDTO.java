@@ -1,8 +1,10 @@
 package com.wittypuppy.backend.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,7 +14,7 @@ public class ProjectDTO {
     private Long projectCode;
     private String projectTitle;
     private String projectDescription;
-    private LocalDateTime projectDeadline;
+    private Date projectDeadline;
     private String projectLockedStatus;
 
     public ProjectDTO setProjectCode(Long projectCode) {
@@ -30,7 +32,7 @@ public class ProjectDTO {
         return this;
     }
 
-    public ProjectDTO setProjectDeadline(LocalDateTime projectDeadline) {
+    public ProjectDTO setProjectDeadline(Date projectDeadline) {
         this.projectDeadline = projectDeadline;
         return this;
     }

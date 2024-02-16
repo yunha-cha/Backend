@@ -1,8 +1,10 @@
 package com.wittypuppy.backend.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -10,10 +12,9 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class ProjectOptionsDTO {
-    private Long projectCode;
     private String projectTitle;
     private String projectDescription;
     private String progressStatus;
-    private LocalDateTime projectDeadline;
+    private Date projectDeadline;
     private String projectLockedStatus;
 }

@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public class AttendanceManagementDTO {
 
     private Long attendanceManagementCode;
 
-    private EmployeeDTO attendanceEmployeeCode;
+    private User attendanceEmployeeCode;
 
     private LocalDateTime attendanceManagementArrivalTime;
 

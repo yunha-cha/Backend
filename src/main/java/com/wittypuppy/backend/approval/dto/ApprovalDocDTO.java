@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.approval.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,9 +11,9 @@ import java.time.LocalDateTime;
 @Setter
 public class ApprovalDocDTO {
 
-    private Long ApprovalDocCode;
+    private Long approvalDocCode;
     private String approvalForm;
-    private EmployeeDTO employeeDTO;
+    private User employeeCode;
     private LocalDateTime approvalRequestDate;
     private String whetherSavingApproval;
 }

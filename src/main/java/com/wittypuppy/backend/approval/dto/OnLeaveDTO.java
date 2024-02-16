@@ -1,8 +1,9 @@
 package com.wittypuppy.backend.approval.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,11 +12,11 @@ import java.time.LocalDateTime;
 @ToString
 public class OnLeaveDTO {
     private Long onLeaveCode;
-    private ApprovalDocDTO approvalDocDTO;
+    private Long approvalDocCode;
     private String onLeaveTitle;
-    private EmployeeDTO onLeaveCount;
+    private User onLeaveCount;
     private String kindOfOnLeave;
-    private LocalDateTime onLeaveStartDate;
-    private LocalDateTime onLeaveEndDate;
+    private Date onLeaveStartDate;
+    private Date onLeaveEndDate;
     private String onLeaveReason;
 }

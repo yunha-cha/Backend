@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.approval.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 @NoArgsConstructor
@@ -10,6 +11,6 @@ import lombok.*;
 public class ApprovalReferenceDTO {
     private Long approvalReferenceCode;
     private ApprovalDocDTO approvalDocDTO;
-    private EmployeeDTO employeeDTO;
+    private User user;
     private String whetherCheckedApproval;
 }

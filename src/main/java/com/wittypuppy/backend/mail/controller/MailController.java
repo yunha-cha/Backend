@@ -1,81 +1,143 @@
 package com.wittypuppy.backend.mail.controller;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.config.scheduler.DynamicTaskScheduler;
 import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.mail.dto.EmployeeDTO;
 import com.wittypuppy.backend.mail.service.EmailService;
+import com.wittypuppy.backend.util.TokenUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
-
+//com.wittypuppy.backend.Employee.dto.EmployeeDTO
 @RequestMapping("/mail")
 @RestController
 public class MailController {
     private final EmailService emailService;
     private final SimpMessagingTemplate simp;
     private final DynamicTaskScheduler dynamicTaskScheduler;
+    private final RestTemplate restTemplate;
 
-    public MailController(EmailService emailService, SimpMessagingTemplate simp, DynamicTaskScheduler dynamicTaskScheduler) {
+    public MailController(EmailService emailService, SimpMessagingTemplate simp, DynamicTaskScheduler dynamicTaskScheduler, RestTemplateBuilder restTemplateBuilder) {
         this.emailService = emailService;
         this.simp = simp;
         this.dynamicTaskScheduler = dynamicTaskScheduler;
+        this.restTemplate = restTemplateBuilder.build();
     }
 
-    //예약한 메일 보내는 기능, 예약한 메일 전송 됐을 때 알람도 있어야 함
-    //하드코딩 2개 있음
-
-    /**
-     * 일반 메일 전송
-     * @param email 보내는 이메일DTO 객체
-     */
-    @MessageMapping("/mail/alert/send")
-    public void mailAlert(@Payload EmailDTO email){
-        simp.convertAndSend("/topic/mail/alert/"+1,    //하드코딩 1
-                emailService.sendMail(setDefault(email),"send"));
+    @GetMapping("find-email-by-code")
+    public ResponseEntity<ResponseDTO> findByEmailId(@RequestParam Long emailCode){
+        System.out.println("여기 오는건 맞음?");
+        EmailDTO email =  emailService.findById(emailCode);
+        System.out.println("==============================================================="+email);
+        return res("성공",email);
     }
-    /**
-     *  임시 저장
-     * @param email 사용자가 메일 쓰기 중 입력한 데이터
-     * @param status send, temporary, reserve 로 나뉜다.(일반, 임시저장, 예약)
-     * @return 응답
-     */
-    @PostMapping("send-mail")
-    public ResponseEntity<ResponseDTO> sendMail(@RequestBody EmailDTO email,@RequestParam String status) {
-        //에러 처리 하셈
-        EmailDTO result = emailService.sendMail(setDefault(email),status);
 
-        return res("임시저장에 성공했습니다.", result);
+    @GetMapping("unread-email-count")
+    public Long countUnreadEmail(@AuthenticationPrincipal User user){
+        return emailService.findByEmailReadStatusCount(user);
     }
+
+
+    @GetMapping("getUser")
+    public User getUser(@AuthenticationPrincipal User user){
+        return user;
+    }
+
+//    /**
+//     *  임시 저장
+//     * @param email 사용자가 메일 쓰기 중 입력한 데이터
+//     * @param status send, temporary, reserve 로 나뉜다.(일반, 임시저장, 예약)
+//     * @return 응답
+//     */
+//    @PostMapping("send-mail")
+//    public ResponseEntity<ResponseDTO> sendMail(@RequestBody EmailDTO email,@RequestParam String status) {
+//        //에러 처리 하셈
+//        EmailDTO result = emailService.sendMail(setDefault(email),status);
+//
+//        return res("임시저장에 성공했습니다.", result);
+//    }
     //예약 메일 등록 후 예약 처리
-    @GetMapping("send-reserve-mail")
-    public ResponseEntity<ResponseDTO> test(@RequestBody EmailDTO emailDTO){
-
-        EmailDTO result = emailService.sendReserveMail(setDefault(emailDTO));
-        Long emailCode = result.getEmailCode();
-
-        System.out.println("예약한 시간 : "+emailDTO.getEmailReservationTime());
-        dynamicTaskScheduler.scheduleTask(emailDTO.getEmailReservationTime(),emailCode);
-        return res("예약 메일이 정상적으로 등록되었습니다.",null);
-    }
+//    @GetMapping("send-reserve-mail")
+//    public ResponseEntity<ResponseDTO> test(@RequestBody EmailDTO emailDTO){
+//
+//        EmailDTO result = emailService.sendReserveMail(setDefault(emailDTO));
+//        Long emailCode = result.getEmailCode();
+//
+//        System.out.println("예약한 시간 : "+emailDTO.getEmailReservationTime());
+//        dynamicTaskScheduler.scheduleTask(emailDTO.getEmailReservationTime(),emailCode);
+//        return res("예약 메일이 정상적으로 등록되었습니다.",null);
+//    }
 
     @GetMapping("/find-receive-mail")
-    public ResponseEntity<ResponseDTO> findReceiveMail(@RequestParam String condition){
+    public ResponseEntity<ResponseDTO> findReceiveMail(@RequestParam String condition,@AuthenticationPrincipal User user){
+        System.out.println(condition);
+        List<EmailDTO> emailList = emailService.findReceiveMail(condition,user);
+        for(EmailDTO email : emailList){
+            System.out.println(email);
+        }
+        if(condition.equals("temporary")){
+            for(EmailDTO email : emailList){
+                email.setEmailTitle("[임시저장] "+email.getEmailTitle());
+            }
+        }
+        if(condition.equals("reserve")){
+            for(EmailDTO email : emailList){
+                email.setEmailTitle("[예약메일] "+email.getEmailTitle());
+            }
+        }
+        if(condition.equals("trash")){
+            for(EmailDTO email : emailList){
+                email.setEmailTitle("[휴지통] "+email.getEmailTitle());
+            }
+        }
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat inputFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
+        SimpleDateFormat outputFormat2 = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
 
-        List<EmailDTO> emailList = emailService.findReceiveMail(condition);
         if(emailList == null){
             return resNull(1003,"받은 이메일이 없습니다.");
         }
+        for(EmailDTO email : emailList) {
+            try {
+                Date date = inputFormat.parse(email.getEmailSendTime());
+                String formattedDate = outputFormat.format(date);
+                email.setEmailSendTime(formattedDate);
+            } catch (ParseException e) {
+                try {
+                    Date date = inputFormat2.parse(email.getEmailSendTime());
+                    String formattedDate2 = outputFormat2.format(date);
+                    email.setEmailSendTime(formattedDate2);
+                } catch (ParseException ex) {
+                    System.out.println(ex);
+                    return null;
+                }
+
+            }
+
+        }
         return res("받은 이메일 조회 성공",emailList);
     }
+
+
     @GetMapping("/find-send-mail")
     public ResponseEntity<ResponseDTO> findSendMail(@RequestParam String condition){
         List<EmailDTO> emailList = emailService.findSendMail(condition);
@@ -119,6 +181,21 @@ public class MailController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/toggle-important")
+    public ResponseEntity<ResponseDTO> updateStatus(@RequestParam Long emailCode, @RequestParam String emailStatus){
+        EmailDTO emailDTO = emailService.findById(emailCode);
+        System.out.println(emailDTO);
+        EmailDTO result = emailService.updateStatus(emailDTO,emailStatus);
+        return res("성공",result);
+    }
+    @PutMapping("/update-status")
+    public ResponseEntity<ResponseDTO> updateMail(@RequestParam Long emailCode, @RequestParam String status){
+        System.out.println("emailcode는 : "+emailCode);
+        System.out.println("status는 : "+status);
+        boolean result = emailService.updateEmailStatus(emailCode,status);
+        return res("쓰레기통 버리기 성공",result);
+    }
     /**
      * 이메일 완전 삭제 메소드
      * @param emails List타입의 이메일 코드
@@ -134,16 +211,33 @@ public class MailController {
             return resNull(1999,"복합적인 에러가 발생했습니다.");
         }
     }
+    @GetMapping("/find-a-mail")
+    public ResponseEntity<ResponseDTO> findAMail(@RequestParam Long emailCode){
+        EmailDTO email = emailService.findById(emailCode);
+        return res("메일을 검색했습니다.",email);
+    }
+    /**
+     * 이메일을 옵션에 따라 검색하는 메서드
+     * @param word 검색어
+     * @param option 옵션(title,content,sendTime,sender)
+     * @return 응답
+     */
     @GetMapping("/find-email")
-    public ResponseEntity<ResponseDTO> findEmail(@RequestParam String word,@RequestParam String option){
+    public ResponseEntity<ResponseDTO> findEmail(@RequestParam String word,@RequestParam String option,@AuthenticationPrincipal User user){
+        EmployeeDTO me = new EmployeeDTO((long)user.getEmployeeCode());
         List<EmailDTO> emails = new ArrayList<>();
+        System.out.println("프론트에서 가져온 word는 : "+word);
+        System.out.println("프론트에서 가져온 option은 : "+option);
+        Long receiver = (long)user.getEmployeeCode();
         emails = switch (option) {
-            case "title" -> emailService.findByEmailTitle(word);
-            case "content" -> emailService.findByEmailContent(word);
-            case "sendTime" -> emailService.findByEmailSendTime(word);
-            case "sender" -> emailService.findByEmailSender(word);
+            case "title" -> emailService.findByEmailTitle(word,me);
+            case "receiver" -> emailService.findAllByEmailSender(word,receiver);
             default -> emails;
         };
+        System.out.println(emails);
+        if(emails == null){
+            return resNull(1100,"검색된 메일이 없습니다.");
+        }
         return res("메일을 검색했습니다.",emails);
     }
 
@@ -155,6 +249,32 @@ public class MailController {
     public ResponseEntity<ResponseDTO> readTemporary(){
         //유저 코드 넣어주면서 임시저장한 거 찾아오기
         List<EmailDTO> emailDTO = emailService.findByEmailSender(new EmployeeDTO(1L));
+        return res("성공",emailDTO);
+    }
+
+    /**
+     * 이메일 눌렀을 때 읽음으로 바꿔주는 메섣,
+     * @param emailCode 이메일코드
+     * @return 응답
+     */
+    @PutMapping("/read-stats-y")
+    public ResponseEntity<ResponseDTO> updateReadStatus(@RequestParam Long emailCode){
+        EmailDTO emailDTO = emailService.findById(emailCode);
+        emailDTO.setEmailReadStatus("Y");
+        emailDTO = emailService.updateEmailReadStatus(emailDTO);
+        return res("성공적으로 읽음",emailDTO);
+    }
+    @PutMapping("/read-stats-n")
+    public ResponseEntity<ResponseDTO> changeReadStatus(@RequestParam Long emailCode){
+        EmailDTO emailDTO = emailService.findById(emailCode);
+        emailDTO.setEmailReadStatus("N");
+        emailDTO = emailService.updateEmailReadStatus(emailDTO);
+        return res("성공적으로 안읽은 것으로 만들었음",emailDTO);
+    }
+    @GetMapping("/non-read-email")
+    public ResponseEntity<ResponseDTO> findByEmailReadStatus(@AuthenticationPrincipal User user){
+        EmployeeDTO employee = new EmployeeDTO((long)user.getEmployeeCode(),user.getEmployeeId());
+        List<EmailDTO> emailDTO = emailService.findByEmailReadStatus(employee);
         return res("성공",emailDTO);
     }
 
@@ -193,13 +313,43 @@ public class MailController {
             return "에러";
         }
     }
-    private EmailDTO setDefault(EmailDTO email){
-        String receiverId = getId(email.getEmailReceiver().getEmployeeId());
+    /**
+     * 일반 메일 전송
+     * @param email 보내는 이메일DTO 객체
+     */
+    @MessageMapping("/mail/alert/send") //방법 3 시도 중
+    public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+        //wERjtIdxQ8lNjF0w/AAiN6HqTASaCAUzSq6nbKefMwf5CbPE8GvwLsClz94uVt9Q1esxYwwXVU+BYn7/mR01Qg== 비밀키임
+
+        String token = accessor.getFirstNativeHeader("Authorization");
+        TokenUtils tokenUtils = new TokenUtils();
+        if (token != null) {
+            System.out.println("유저의 아이디는 : "+tokenUtils.getUserId(token));
+            System.out.println("유저가 누구에게 보내냐 : "+email.getEmailReceiver().getEmployeeId());
+            EmailDTO emailDTO = setDefault(email,tokenUtils.getUserId(token));
+            System.out.println("가져온 이메일의 내용은 : "+emailDTO);
+
+            emailDTO = emailService.sendMail(emailDTO,"send");
+            System.out.println("누구에게 알람을 보내냐 하면 : "+emailDTO.getEmailReceiver().getEmployeeCode());
+            System.out.println("알람의 총 주소는 : "+"/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode());
+            simp.convertAndSend("/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode(),emailDTO);
+
+        } else {
+            System.out.println("토큰이 없다.");
+        }
+
+
+
+//        simp.convertAndSend("/topic/mail/alert/"+1,    //누구에게 보낼건지
+//                emailService.sendMail(setDefault(email),"send"));   //뭐를 보낼건지
+    }
+    private EmailDTO setDefault(EmailDTO email, String user){
+        String receiverId = getId(email.getEmailReceiver().getEmployeeId());    //받는 사람
+        System.out.println("받는 사람 : "+receiverId);  //얘가 없을 때 처리를 해줘야겠네
         email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
+        email.setEmailSender(emailService.findByEmployeeId(user));              //보내는 사람 찾아 와서 설정함.(보내는 사람이 없을 순 없다)
 
-        email.setEmailSender(new EmployeeDTO(1L,"inji2349"));//보내는 사람 하드코딩
-
-        email.setEmailSendTime(LocalDateTime.now());                            //보낼 시간 현재로 저장
+        email.setEmailSendTime(new Date().toString());                            //보낼 시간 현재로 저장
         email.setEmailReadStatus("N");                                          //읽지 않음으로 저장
         email.setEmailStatus("send");                                            //이메일 상태 기본으로
         return email;

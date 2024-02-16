@@ -13,8 +13,6 @@ import java.util.Optional;
 public interface MessengerRepository extends JpaRepository<Messenger, Long> {
     Optional<Messenger> findByEmployee_EmployeeCode(Long employeeCode);
 
-    Optional<Messenger> findByEmployee_EmployeeCodeAndChatroomList_ChatroomCode(Long employeeCode, Long chatroomCode);
-
     @Query(value =
             "SELECT cr.chatroom_code chatroomCode, " +
                     "cr.chatroom_title chatroomTitle, " +

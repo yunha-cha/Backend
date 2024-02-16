@@ -1,12 +1,15 @@
 package com.wittypuppy.backend.util;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,10 +21,14 @@ import java.util.Map;
  * */
 
 @Component
+@Slf4j
 public class TokenUtils {
 
     private static String jwtSecretKey;
     private static Long tokenValidateTime;
+
+    private static final SecureRandom secureRandom = new SecureRandom();
+
 
 
     @Value("${jwt.key}")
@@ -93,7 +100,7 @@ public class TokenUtils {
      * @return String - token
      * */
 
-    public static String generateJwtToken(EmployeeDTO employee) {
+    public static String generateJwtToken(User employee) {
         Date expireTime = new Date(System.currentTimeMillis() + tokenValidateTime);
 
 
@@ -129,18 +136,25 @@ public class TokenUtils {
      * @param employee - 사용자 정보
      * @return Map<String, Object> - cliams 정보
      * */
-    private static Map<String, Object> createClaims(EmployeeDTO employee){
+    private static Map<String, Object> createClaims(User employee){
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("employeeName", employee.getEmployeeName());
         claims.put("employeeRole", employee.getEmployeeRole());
         claims.put("employeeEmail", employee.getEmployeeEmail());
         claims.put("empCode", employee.getEmployeeCode());
+        claims.put("employeeId", employee.getEmployeeId());
         //클래임은 문자열 키와 그에 해당하는 값으로 이루어진 맵 형태이다.
 
         return claims;
     }
-
+    public String getUserId(String token){
+        Claims claims = Jwts.parser()   //JWT를 파싱하기 위해서
+                .setSigningKey(jwtSecretKey)    //생성된 시크릿 키
+                .parseClaimsJws(token.replace("Bearer ", ""))   //Bearer빼고 파싱함
+                .getBody(); //바디를 가져옴 사용자 정보 같은 거 여기 있음
+        return claims.getSubject(); //아이디 나와라
+    }
     /**
      * JWT 서명을 발급해주는 메서드이다.
      *
@@ -154,5 +168,23 @@ public class TokenUtils {
         //여기서 secretBytes는 디코딩된 비밀키를 나타내고, SignatureAlgorithm.HS256.getJcaName()이라는 알고리즘을 지정해서
         //이 알고리즘에 사용될 수 잇는 key객체를 생성하여 반환
     }
+
+//    /***
+//     * 토큰이나 임시 비밀번호를 위한 랜덤 문자열 생성 매서드이다.
+//     * @return 랜덤 문자열
+//     */
+    public static String randomString() {
+        byte[] randomBytes = new byte[8];
+        try {
+            secureRandom.nextBytes(randomBytes);
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리 - 원하는 방식으로 처리하도록 수정 가능
+        }
+        System.out.println("randomBytes 출력 = " + randomBytes);
+        log.info("ramdom번호 출력 나오냐", randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+
+
 
 }

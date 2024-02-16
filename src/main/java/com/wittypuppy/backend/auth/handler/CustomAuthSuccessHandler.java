@@ -1,7 +1,7 @@
 package com.wittypuppy.backend.auth.handler;
 
 import com.wittypuppy.backend.common.dto.AuthConstants;
-import com.wittypuppy.backend.Employee.dto.EmployeeDTO;
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.dto.TokenDTO;
 import com.wittypuppy.backend.util.ConvertUtil;
 import com.wittypuppy.backend.util.TokenUtils;
@@ -22,7 +22,7 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        EmployeeDTO employee  = ((EmployeeDTO) authentication.getPrincipal());
+        User employee  = ((User) authentication.getPrincipal());
 
         HashMap<String, Object> responseMap = new HashMap<>();
         JSONObject jsonValue = null;
@@ -37,6 +37,8 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
             // tokenDTO response
             TokenDTO tokenDTO = TokenDTO.builder()
                                 .employeeName(employee.getEmployeeName())
+                                .employeeCode(employee.getEmployeeCode())
+                                .employeeId(employee.getEmployeeId())
                                 .accessToken(token)
                                 .grantType(AuthConstants.TOKEN_TYPE)
                                 .build();

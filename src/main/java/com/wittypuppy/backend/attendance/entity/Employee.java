@@ -1,17 +1,9 @@
 package com.wittypuppy.backend.attendance.entity;
 
-import com.wittypuppy.backend.calendar.entity.Department;
-import com.wittypuppy.backend.common.entity.ApprovalDocument;
-import com.wittypuppy.backend.common.entity.ApprovalLine;
-import com.wittypuppy.backend.common.entity.AttendanceManagement;
-import com.wittypuppy.backend.common.entity.AttendanceWorkType;
-import com.wittypuppy.backend.common.entity.Vacation;
-import com.wittypuppy.backend.common.entity.*;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor

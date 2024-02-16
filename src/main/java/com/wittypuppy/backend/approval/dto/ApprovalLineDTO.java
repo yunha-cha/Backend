@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 public class ApprovalLineDTO {
     private Long approvalLineCode;
-    private ApprovalDocDTO approvalDocDTO;
-    private EmployeeDTO employeeDTO;
+    private Long approvalDocCode;
+    private Long employeeCode;
     private Long approvalProcessOrder;
     private String ApprovalProcessStatus;
     private LocalDateTime approvalProcessDate;

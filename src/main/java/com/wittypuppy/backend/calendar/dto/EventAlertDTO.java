@@ -1,9 +1,9 @@
 package com.wittypuppy.backend.calendar.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +15,7 @@ public class EventAlertDTO {
 
     private Long eventAttendeeCode;
 
-    private LocalDateTime eventAlertNotificationTime;
+    private Date eventAlertNotificationTime;
 
     private String eventAlertCheckStatus;
 }
