@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +15,6 @@ public class ProjectOptionsDTO {
     private String projectTitle;
     private String projectDescription;
     private String progressStatus;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime projectDeadline;
+    private Date projectDeadline;
     private String projectLockedStatus;
 }

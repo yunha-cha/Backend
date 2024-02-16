@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -20,8 +21,7 @@ public class EmployeeDTO {
 
     private String employeeName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime employeeRetirementDate;
+    private Date employeeRetirementDate;
 
     private List<ProfileDTO> profileList;
 }

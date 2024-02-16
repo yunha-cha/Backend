@@ -5,6 +5,7 @@ import com.wittypuppy.backend.calendar.dto.CalendarDTO;
 import com.wittypuppy.backend.calendar.dto.EventDTO;
 import com.wittypuppy.backend.calendar.dto.EventInterfaceAndEventAttendeesDTO;
 import com.wittypuppy.backend.calendar.dto.EventOptionsDTO;
+import com.wittypuppy.backend.calendar.dto.*;
 import com.wittypuppy.backend.calendar.service.CalendarService;
 import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.common.dto.PageDTO;
@@ -27,7 +28,7 @@ import java.util.Map;
 public class CalendarController {
     private final CalendarService calendarService;
 
-    @Tag(name="캘린더 조회", description = "해당 계정(사원)의 캘린더 정보 조회")
+    @Tag(name = "캘린더 조회", description = "해당 계정(사원)의 캘린더 정보 조회")
     @GetMapping("")
     public ResponseEntity<ResponseDTO> selectCalendar(
             @AuthenticationPrincipal User principal) {
@@ -38,7 +39,7 @@ public class CalendarController {
         return res("캘린더 정보 가져오기 성공", calendarDTO);
     }
 
-    @Tag(name="일정 조회", description = "해당 계정(사원)의 일정 정보 전체 조회")
+    @Tag(name = "일정 조회", description = "해당 계정(사원)의 일정 정보 전체 조회")
     @GetMapping("/events")
     public ResponseEntity<ResponseDTO> selectEvents(
             @AuthenticationPrincipal User principal) {
@@ -76,7 +77,7 @@ public class CalendarController {
         return res("이벤트 정보 가져오기 성공", resultMap);
     }
 
-    @Tag(name="사원 조회", description = "해당 회사의 현재 퇴사하지 않은 전체 사원 목록 조회(사원 초대를 위함)")
+    @Tag(name = "사원 조회", description = "해당 회사의 현재 퇴사하지 않은 전체 사원 목록 조회(사원 초대를 위함)")
     @GetMapping("/employees")
     public ResponseEntity<ResponseDTO> selectEmployeeList(
             @AuthenticationPrincipal User principal) {
@@ -84,35 +85,45 @@ public class CalendarController {
         return res("이벤트 참여자 초대를 위한 사원 목록 가져오기 성공", calendarService.selectEmployeeList());
     }
 
-    @Tag(name="일정 생성", description = "없던 일정을 새로 생성")
+    @Tag(name = "일정 생성", description = "없던 일정을 새로 생성")
     @PostMapping("/events")
     public ResponseEntity<ResponseDTO> createEvent(
             @RequestBody EventOptionsDTO eventOptions,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.createEvent(eventOptions, userEmployeeCode));
+        return res("일정 생성 성공", calendarService.createEvent(eventOptions, userEmployeeCode));
     }
 
-    @Tag(name="일정 수정", description = "이미 존재하던 일정을 수정")
+    @Tag(name = "일정 수정", description = "이미 존재하던 일정을 수정")
     @PutMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> modifyEvent(
-            @PathVariable Long eventCode,
+            @PathVariable String eventCode,
             @RequestBody EventOptionsDTO eventOptions,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.modifyEventOptions(eventCode, eventOptions, userEmployeeCode));
+        return res("일정 수정 성공", calendarService.modifyEventOptions(Long.parseLong(eventCode), eventOptions, userEmployeeCode));
     }
 
-    @Tag(name="일정 삭제", description = "해당 일정을 삭제")
+    @Tag(name = "일정 수정", description = "단순히 시간만 바뀌는 경우")
+    @PutMapping("/events/{eventCode}/date")
+    public ResponseEntity<ResponseDTO> modifyEventAboutDate(
+            @PathVariable String eventCode,
+            @RequestBody EventOptionsAboutDateDTO eventOptionsAboutDate,
+            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res(calendarService.modifyEventOptionsAboutDate(Long.parseLong(eventCode), eventOptionsAboutDate, userEmployeeCode));
+    }
+
+    @Tag(name = "일정 삭제", description = "해당 일정을 삭제(기존상태에서 임시삭제, 임시삭제상태에서 영구삭제)")
     @DeleteMapping("/events/{eventCode}")
     public ResponseEntity<ResponseDTO> deleteEvent(
             @PathVariable Long eventCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.deleteEvent(eventCode, userEmployeeCode));
+        return res("일정 삭제 성공", calendarService.deleteEvent(eventCode, userEmployeeCode));
     }
 
-    @Tag(name="일정 삭제", description = "해당 일정을 삭제(기존상태에서 임시삭제, 임시삭제상태에서 영구삭제)")
+    @Tag(name = "임시삭제한 일정 가져오기", description = "임시삭제한 일정을 가져온다.")
     @GetMapping("/events/deleted-temporary")
     public ResponseEntity<ResponseDTO> selectTemporarilyDeleteEventList(
             @AuthenticationPrincipal User principal) {
@@ -121,13 +132,13 @@ public class CalendarController {
         return res("임시 삭제 일정 목록 가져오기 성공", eventDTOList);
     }
 
-    @Tag(name="일정 복구", description = "임시삭제상태의 일정 복구")
+    @Tag(name = "일정 복구", description = "임시삭제상태의 일정 복구")
     @PutMapping("/events/{eventCode}/deleted-rollback")
     public ResponseEntity<ResponseDTO> rollbackEvent(
             @PathVariable Long eventCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(calendarService.rollbackEvent(eventCode, userEmployeeCode));
+        return res("일정 롤백 성공", calendarService.rollbackEvent(eventCode, userEmployeeCode));
     }
 
     /**

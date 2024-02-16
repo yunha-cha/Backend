@@ -33,6 +33,9 @@ public class Employee {
     @Column(name = "employee_retirement_date")
     private Date employeeRetirementDate;
 
+    @Column(name="employee_assigned_code")
+    private Long employeeAssignedCode;
+
     @JoinColumn(name = "employee_code")
     @OneToMany
     private List<Profile> profileList;

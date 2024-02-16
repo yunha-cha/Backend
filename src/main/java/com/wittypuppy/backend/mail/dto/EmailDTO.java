@@ -13,7 +13,7 @@ public class EmailDTO {
     private String emailTitle;
     private String emailContent;
 
-    private LocalDateTime emailSendTime;
+    private String  emailSendTime;
     private LocalDateTime emailReservationTime;
     private String emailStatus;
     private EmployeeDTO emailSender;    //이 사람이 메서드를 호출하는 거니까 security에서 얻어올 수 있다.

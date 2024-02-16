@@ -10,9 +10,9 @@ import java.util.Date;
 @ToString
 @Setter
 public class EventDTO {
-    private Long calendarCode;
-
     private Long eventCode;
+
+    private Long calendarCode;
 
     private String departmentName;
 

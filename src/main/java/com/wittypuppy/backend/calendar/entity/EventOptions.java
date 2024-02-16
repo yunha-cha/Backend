@@ -62,6 +62,9 @@ public class EventOptions {
     @Column(name = "event_border_color", columnDefinition = "VARCHAR(100)")
     private String eventBorderColor;
 
+    @Column(name = "event_isallday")
+    private String eventIsAllDay;
+
     public EventOptions setEventOptionsCode(Long eventOptionsCode) {
         this.eventOptionsCode = eventOptionsCode;
         return this;
@@ -137,7 +140,12 @@ public class EventOptions {
         return this;
     }
 
+    public EventOptions setEventIsAllDay(String eventIsAllDay) {
+        this.eventIsAllDay = eventIsAllDay;
+        return this;
+    }
+
     public EventOptions builder() {
-        return new EventOptions(eventOptionsCode, eventCode, eventTitle, eventContent, eventStartDate, eventEndDate, eventLocation, eventRecurrenceRule, eventDeleteTime, eventDeleteStatus, eventEditable, eventColor, eventBackgroundColor, eventDragBackgroundColor, eventBorderColor);
+        return new EventOptions(eventOptionsCode, eventCode, eventTitle, eventContent, eventStartDate, eventEndDate, eventLocation, eventRecurrenceRule, eventDeleteTime, eventDeleteStatus, eventEditable, eventColor, eventBackgroundColor, eventDragBackgroundColor, eventBorderColor, eventIsAllDay);
     }
 }

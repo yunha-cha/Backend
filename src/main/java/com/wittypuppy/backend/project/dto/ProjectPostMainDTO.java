@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,12 +19,9 @@ public class ProjectPostMainDTO {
     private String projectPostStatus;
     private String projectPostPriority;
     private String projectPostTitle;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime projectPostCreationDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime projectPostModifyDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime projectPostDueDate;
+    private Date projectPostCreationDate;
+    private Date projectPostModifyDate;
+    private Date projectPostDueDate;
 
     public ProjectPostMainDTO setProjectPostCode(Long projectPostCode) {
         this.projectPostCode = projectPostCode;
@@ -50,17 +48,17 @@ public class ProjectPostMainDTO {
         return this;
     }
 
-    public ProjectPostMainDTO setProjectPostCreationDate(LocalDateTime projectPostCreationDate) {
+    public ProjectPostMainDTO setProjectPostCreationDate(Date projectPostCreationDate) {
         this.projectPostCreationDate = projectPostCreationDate;
         return this;
     }
 
-    public ProjectPostMainDTO setProjectPostModifyDate(LocalDateTime projectPostModifyDate) {
+    public ProjectPostMainDTO setProjectPostModifyDate(Date projectPostModifyDate) {
         this.projectPostModifyDate = projectPostModifyDate;
         return this;
     }
 
-    public ProjectPostMainDTO setProjectPostDueDate(LocalDateTime projectPostDueDate) {
+    public ProjectPostMainDTO setProjectPostDueDate(Date projectPostDueDate) {
         this.projectPostDueDate = projectPostDueDate;
         return this;
     }
