@@ -26,4 +26,11 @@ public class AttendanceManagementDTO {
 
     private LocalDate attendanceManagementWorkDay;
 
+    private String attendanceWorkTypeStatus;
+
+    private int normal; //정상 출퇴근 횟수
+
+    private int late; //지각 횟수
+
+    private int early; //조퇴 횟수
 }

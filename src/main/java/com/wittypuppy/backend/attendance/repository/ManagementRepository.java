@@ -1,8 +1,8 @@
 package com.wittypuppy.backend.attendance.repository;
 
-import com.wittypuppy.backend.attendance.entity.ApprovalLine;
-import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
-import com.wittypuppy.backend.attendance.entity.Vacation;
+import com.wittypuppy.backend.attendance.entity.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,9 +18,12 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
             "A.attendance_management_departure_time, " +
             "A.attendance_management_state, " +
             "A.attendance_management_work_day, " +
-            "A.employee_code, B.employee_name " +
+            "A.employee_code, " +
+            "B.employee_name," +
+            "C.attendance_work_type_status " +
             "FROM tbl_attendance_management A " +
             "LEFT JOIN tbl_employee B ON A.employee_code = B.employee_code " +
+            "LEFT JOIN tbl_attendance_work_type C ON A.attendance_management_code = C.attendance_management_code " +
             "WHERE A.employee_code = :employeeCode " +
             "AND A.attendance_management_work_day = CURDATE()",
             nativeQuery = true)
@@ -63,4 +66,36 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
 
 
 
+
+    @Query(value = "SELECT " +
+            "A.attendance_management_arrival_time, " +
+            "A.attendance_management_departure_time, " +
+            "A.attendance_management_code, " +
+            "A.attendance_management_state, " +
+            "A.attendance_management_work_day," +
+            "A.employee_code, " +
+            "B.attendance_work_type_status " +
+            "FROM tbl_attendance_management A " +
+            "LEFT JOIN tbl_attendance_work_type B ON A.attendance_management_code = B.attendance_management_code " +
+            "WHERE A.employee_code = :employeeCode " +
+            "AND DATE_FORMAT(A.attendance_management_work_day, '%Y-%m') = :yearMonth",
+            nativeQuery = true)
+    Page<AttendanceManagement> attendanceList(String yearMonth, int employeeCode, Pageable paging);
+
+
+
+    @Query(value = "SELECT " +
+            "A.attendance_management_arrival_time, " +
+            "A.attendance_management_departure_time, " +
+            "A.attendance_management_code, " +
+            "A.attendance_management_state, " +
+            "A.attendance_management_work_day," +
+            "A.employee_code, " +
+            "B.attendance_work_type_status " +
+            "FROM tbl_attendance_management A " +
+            "LEFT JOIN tbl_attendance_work_type B ON A.attendance_management_code = B.attendance_management_code " +
+            "WHERE A.employee_code = :employeeCode " +
+            "AND DATE_FORMAT(A.attendance_management_work_day, '%Y-%m') = :yearMonth",
+            nativeQuery = true)
+    List<AttendanceManagement> normal(int employeeCode, String yearMonth);
 }

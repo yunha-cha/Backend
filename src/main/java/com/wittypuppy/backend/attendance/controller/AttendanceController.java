@@ -6,7 +6,6 @@ import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
 import com.wittypuppy.backend.attendance.paging.PagingResponseDTO;
 import com.wittypuppy.backend.attendance.service.AttendanceService;
-import com.wittypuppy.backend.common.dto.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -110,52 +109,62 @@ public class AttendanceController {
             @AuthenticationPrincipal User employeeCode,
             @RequestBody Map<String, Object> requestBody
     ){
+
+
         //출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
 
         LocalDateTime departureTime = LocalDateTime.parse((String) requestBody.get("departureTime"));
-        String status = (boolean) requestBody.get("early") ? "조퇴" : "정상";
+        String status = (boolean) requestBody.get("early") ? "조퇴" : "";
 
         System.out.println("========== employeeCode ==========> " + employeeCode);
         System.out.println("========== departureTime =========== " + departureTime);
         System.out.println("============= status ============== " + status);
         System.out.println("=========== commuteUpdate ControllerStart ============");
 
+        // 조퇴인 경우에만 상태값 업데이트
+        if (status.equals("조퇴")) {
+            // 퇴근 업데이트
+            String login = attendanceService.updateDeparture(employeeCode, departureTime, status);
+            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 퇴근& 상태값 수정 성공", login));
+        } else {
+            String noState = attendanceService.updateOnlyDeparture(employeeCode, departureTime);
+            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 퇴근만 수정 완료", noState));
+        }
 
-
-        // 퇴근 업데이트
-        String login = attendanceService.updateDeparture(employeeCode, departureTime , status);
-
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 퇴근 수정 성공", login));
     }
 
 
 
         //출퇴근 목록
         @Operation(summary = "근태 목록 화면 출근 리스트 확인", description = "근태 목록을 월별로 조회 합니다")
-    @GetMapping("/attendances/lists")
-    public ResponseEntity<ResponseDTO> selectCommuteList(
+        @GetMapping("/attendances/lists")
+        public ResponseEntity<WorkTypeResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "") String yearMonth  //리액트 값 받기
+            @RequestParam(name = "yearMonth", defaultValue = "") String yearMonth,  //리액트 값 받기
+            @AuthenticationPrincipal User employeeInFo
+        ) {
 
-    ) {
+        int employeeCode = employeeInFo.getEmployeeCode();
+        System.out.println("employeeCode = " + employeeCode);
         System.out.println("==============selectCommuteList==================");
         System.out.println("===============offset ================= " + offset);
         System.out.println("===============year ================= " + yearMonth);
 
 
-        Long employeeCode = 1L; // 로그인한 코드 넣기
-
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
         PagingResponseDTO pagingResponse = new PagingResponseDTO();
 
-        Page<AttendanceWorkTypeDTO> attendanceList = attendanceService.selectCommuteList(cri, yearMonth, employeeCode);
+        Page<AttendanceManagementDTO> attendanceList = attendanceService.selectCommuteList(cri, yearMonth, employeeCode);
         pagingResponse.setData(attendanceList);
 
         System.out.println("==================attendanceList = " + attendanceList);
         pagingResponse.setPageInfo(new PageDTO(cri, (int) attendanceList.getTotalElements()));
 
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "출퇴근 목록 조회 성공", pagingResponse));
+        //정상횟수 구하기
+            AttendanceManagementDTO normal = attendanceService.countNormal(employeeCode,yearMonth);
+
+        return ResponseEntity.ok().body(new WorkTypeResponseDTO(HttpStatus.OK, "출퇴근 목록 조회 성공", pagingResponse,normal));
     }
 
 
@@ -165,15 +174,16 @@ public class AttendanceController {
     @Operation(summary = "내가 기안 문서", description = "내가 기안한 문서중 미 결제된 것을 조회 합니다")
     @GetMapping("/attendances/my/documents-waiting")
     public ResponseEntity<ResponseDTO> myDocumentWaiting(
-            @RequestParam(name = "offset", defaultValue = "1") String offset
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
 
-            // @AuthenticationPrincipal 로그인 한 DTO
         ) {
+
+        int employeeCode = employeeInFo.getEmployeeCode();
+        System.out.println("employeeCode = " + employeeCode);
 
         System.out.println("====controller======documentWaitingStart==========");
         System.out.println("========== offset ======== " + offset);
-
-        Long employeeCode = 1L; // 로그인한 코드 넣기
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
@@ -195,15 +205,15 @@ public class AttendanceController {
     @Operation(summary = "내가 기안 문서", description = "내가 기안한 문서중 결재 완료된 것을 조회 합니다")
     @GetMapping("/attendances/my/documents-payment")
     public ResponseEntity<ResponseDTO> myDocumentPayment(
-            @RequestParam(name = "offset", defaultValue = "1") String offset
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
 
-            // @AuthenticationPrincipal 로그인 한 DTO
     ) {
 
+        int employeeCode = employeeInFo.getEmployeeCode();
         System.out.println("====controller======myDocumentPayment==========");
         System.out.println("========== offset ======== " + offset);
-
-        Long employeeCode = 1L; // 로그인한 코드 넣기
+        System.out.println("employeeCode ========== " + employeeCode);
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
@@ -224,14 +234,14 @@ public class AttendanceController {
     @Operation(summary = "내가 기안 문서", description = "내가 기안한 문서중 반려된 것을 조회 합니다")
     @GetMapping("/attendances/my/documents-companion")
     public ResponseEntity<ResponseDTO> myDocumentCompanion(
-            @RequestParam(name = "offset", defaultValue = "1") String offset
-
-            // @AuthenticationPrincipal 로그인 한 DTO
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
     ) {
+
+        int employeeCode = employeeInFo.getEmployeeCode();
         System.out.println("====controller======myDocumentCompanion==========");
         System.out.println("========== offset ======== " + offset);
-
-        Long employeeCode = 1L; // 로그인한 코드 넣기
+        System.out.println("employeeCode = " + employeeCode);
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
@@ -251,13 +261,15 @@ public class AttendanceController {
     @Operation(summary = "내 결재 문서" , description = "내가 결재 완료한 문서를 조회 합니다")
     @GetMapping("/attendances/payment/completed")
     public ResponseEntity<ResponseDTO> PaymentCompleted (
-            @RequestParam(name = "offset", defaultValue = "1") String offset
-            // @AuthenticationPrincipal 로그인 한 DTO
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
     ) {
+
+        int employeeCode = employeeInFo.getEmployeeCode();
+
         System.out.println("====controller======PaymentCompleted==========");
         System.out.println("========== offset ======== " + offset);
-
-        Long employeeCode = 31L; // 로그인한 코드 넣기
+        System.out.println("employeeCode = " + employeeCode);
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
@@ -277,13 +289,15 @@ public class AttendanceController {
     @Operation(summary = "내 결재 문서" , description = "내가 반려한 문서를 조회 합니다")
     @GetMapping("/attendances/payment/rejection")
     public ResponseEntity<ResponseDTO> PaymentRejection (
-            @RequestParam(name = "offset", defaultValue = "1") String offset
-            // @AuthenticationPrincipal 로그인 한 DTO
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
     ) {
+
+        int employeeCode = employeeInFo.getEmployeeCode();
+
         System.out.println("====controller======PaymentRejection==========");
         System.out.println("========== offset ======== " + offset);
-
-        Long employeeCode = 31L; // 로그인한 코드 넣기
+        System.out.println("========= employeeCode = " + employeeCode);
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 
@@ -303,13 +317,14 @@ public class AttendanceController {
     @Operation(summary = "내 결재 문서" , description = "내가 결재 할 문서를 조회 합니다")
     @GetMapping("/attendances/payment/waiting")
     public ResponseEntity<ResponseDTO> PaymentWaiting (
-            @RequestParam(name = "offset", defaultValue = "1") String offset
-            // @AuthenticationPrincipal 로그인 한 DTO
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
     ) {
+        int employeeCode = employeeInFo.getEmployeeCode();
+
         System.out.println("====controller======PaymentWaiting==========");
         System.out.println("========== offset ======== " + offset);
-
-        Long employeeCode = 31L; // 로그인한 코드 넣기
+        System.out.println("employeeCode = " + employeeCode);
 
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
 

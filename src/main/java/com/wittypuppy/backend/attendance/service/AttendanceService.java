@@ -4,7 +4,6 @@ import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
-import com.wittypuppy.backend.attendance.entity.AttendanceWorkType;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.repository.AttendanceApprovalRepository;
 import com.wittypuppy.backend.attendance.repository.AttendanceLineRepository;
@@ -45,7 +44,7 @@ public class AttendanceService {
         this.managementRepository = managementRepository;
     }
 
-    public Page<AttendanceWorkTypeDTO> selectCommuteList(Criteria cri, String yearMonth, Long employeeCode) {
+    public Page<AttendanceManagementDTO> selectCommuteList(Criteria cri, String yearMonth, int employeeCode) {
         System.out.println("=============WorkTypeList start= service===============");
 
         int index = cri.getPageNum() - 1;
@@ -55,10 +54,11 @@ public class AttendanceService {
         System.out.println("========= employeeCode ====== " + employeeCode);
         System.out.println("========== yearMonth ======= " + yearMonth);
 
-        Page<AttendanceWorkType> result = commuteWorkTypeRepository.attendanceList(yearMonth, employeeCode, paging);
+        Page<AttendanceManagement> result = managementRepository.attendanceList(yearMonth, employeeCode, paging);
 
-        Page<AttendanceWorkTypeDTO> workTypeList = result.map(myDocumentWaiting -> modelMapper.map(myDocumentWaiting, AttendanceWorkTypeDTO.class));
+        Page<AttendanceManagementDTO> workTypeList = result.map(myDocumentWaiting -> modelMapper.map(myDocumentWaiting, AttendanceManagementDTO.class));
 
+        System.out.println("============== result ================== " + result);
         System.out.println("WorkTypeList = " + workTypeList);
         System.out.println("========== WorkTypeList End ===========");
 
@@ -67,7 +67,8 @@ public class AttendanceService {
 
 
 
-    public Page<ApprovalLineDTO> myDocumentWaitingList(Criteria cri, Long employeeCode) {
+
+    public Page<ApprovalLineDTO> myDocumentWaitingList(Criteria cri, int employeeCode) {
 
         /*
         * 내가 신청한 문서 기안
@@ -99,7 +100,7 @@ public class AttendanceService {
 
 
 
-    public Page<ApprovalLineDTO> myDocumentPaymentList(Criteria cri, Long employeeCode) {
+    public Page<ApprovalLineDTO> myDocumentPaymentList(Criteria cri, int employeeCode) {
         /*
         * 신청한 문서 결재 완료 상태
         * */
@@ -124,7 +125,7 @@ public class AttendanceService {
     }
 
 
-    public Page<ApprovalLineDTO> myDocumentCompanionList(Criteria cri, Long employeeCode) {
+    public Page<ApprovalLineDTO> myDocumentCompanionList(Criteria cri, int employeeCode) {
 
         /*
          * 신청한 문서 반려 상태
@@ -151,7 +152,7 @@ public class AttendanceService {
     }
 
 
-    public Page<ApprovalLineDTO> paymentCompletedList(Criteria cri, Long employeeCode) {
+    public Page<ApprovalLineDTO> paymentCompletedList(Criteria cri, int employeeCode) {
 
         /*
         * 내가 결재한 문서
@@ -177,7 +178,7 @@ public class AttendanceService {
     }
 
 
-    public Page<ApprovalLineDTO> paymentRejectionList(Criteria cri, Long employeeCode) {
+    public Page<ApprovalLineDTO> paymentRejectionList(Criteria cri, int employeeCode) {
 
         /*
         * 내가 반려한 문서
@@ -202,7 +203,7 @@ public class AttendanceService {
         return resultList;
     }
 
-    public Page<ApprovalLineDTO> paymentWaitingList(Criteria cri, Long employeeCode) {
+    public Page<ApprovalLineDTO> paymentWaitingList(Criteria cri, int employeeCode) {
 
         /*
         * 대기 문서
@@ -387,6 +388,82 @@ public class AttendanceService {
 
         return result > 0 ? "퇴근시간 수정 성공" : "퇴근시간  수정 실패";
     }
+
+
+    @Transactional
+    public String updateOnlyDeparture(User employeeCode, LocalDateTime departureTime) {
+
+        System.out.println("===== employeeCode =====> " + employeeCode);
+        System.out.println("========== departureTime ============ " + departureTime);
+        System.out.println("##### updateOnlyDeparture start = ");
+
+        int employeeNum = employeeCode.getEmployeeCode();
+        System.out.println("========== employeeNum ==========> " + employeeNum);
+
+        int result = 0;
+
+        try {
+            //가장 최근에 인처트 된 출근 시간 조회
+            AttendanceManagement updateAttendance = managementRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
+
+            System.out.println("======= updateAttendance = " + updateAttendance);
+
+            updateAttendance.setAttendanceManagementDepartureTime(departureTime);
+
+            System.out.println("======= updateAttendance ======> " + updateAttendance);
+            result = 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result > 0 ? "퇴근시간 수정 성공" : "퇴근시간  수정 실패";
+
+    }
+
+
+    public AttendanceManagementDTO countNormal(int employeeCode, String yearMonth) {
+
+        List<AttendanceManagement> attendanceList = managementRepository.normal(employeeCode, yearMonth);
+
+        System.out.println("======= attendanceList ======= " + attendanceList);
+
+        int normalCount = 0;
+        int lateCount = 0;
+        int earlyCount = 0;
+
+        for (AttendanceManagement attendance : attendanceList) {
+            String state = attendance.getAttendanceManagementState();
+
+            // attendanceManagementState 값에 따라 정상, 지각, 조퇴를 판단하여 횟수를 계산
+            switch (state) {
+                case "정상":
+                    normalCount++;
+                    break;
+                case "지각":
+                    lateCount++;
+                    break;
+                case "조퇴":
+                    earlyCount++;
+                    break;
+                default:
+                    // 처리하지 않는 상태 또는 오류 상태에 대한 처리
+                    break;
+            }
+        }
+
+        System.out.println("정상 출근 횟수: " + normalCount);
+        System.out.println("지각 횟수: " + lateCount);
+        System.out.println("조퇴 횟수: " + earlyCount);
+
+        AttendanceManagementDTO attendanceManagementDTO = new AttendanceManagementDTO();
+        attendanceManagementDTO.setNormal(normalCount);
+        attendanceManagementDTO.setLate(lateCount);
+        attendanceManagementDTO.setEarly(earlyCount);
+
+
+        return attendanceManagementDTO;
+    }
+
 
 
 }

@@ -28,7 +28,7 @@ public interface AttendanceLineRepository extends JpaRepository<ApprovalLine, Lo
             , nativeQuery = true)
 
     //내가 반려한 문서
-    Page<ApprovalLine> rejectionDocument(Pageable paging, Long employeeCode);
+    Page<ApprovalLine> rejectionDocument(Pageable paging, int employeeCode);
 
 
 }

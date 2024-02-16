@@ -32,7 +32,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "FROM tbl_approval_document  " +
             "WHERE employee_code = :empCode) ",
             nativeQuery = true)
-    Page<ApprovalLine> findByApprovalProcessStatusAndLineEmployeeCode_EmployeeCodeNative(Pageable pageable, Long empCode);
+    Page<ApprovalLine> findByApprovalProcessStatusAndLineEmployeeCode_EmployeeCodeNative(Pageable pageable, int empCode);
 
 
 //내 문서 승인
@@ -54,7 +54,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "FROM tbl_approval_line " +
             "WHERE A.approval_document_code = approval_document_code) ",
             nativeQuery = true)
-    Page<ApprovalLine> findMyDocumentPayment(Long employeeCode, Pageable paging);
+    Page<ApprovalLine> findMyDocumentPayment(int employeeCode, Pageable paging);
 
 
     //내 기안 문서
@@ -71,7 +71,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "AND A.approval_process_order = 1 " +
             "AND A.employee_code = :employeeCode",
             nativeQuery = true)
-    Page<ApprovalLine> findByApplyDocument(Long employeeCode, Pageable paging);
+    Page<ApprovalLine> findByApplyDocument(int employeeCode, Pageable paging);
 
 
 
@@ -95,7 +95,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             , nativeQuery = true)
 
     // 내가 결재한 문서
-    Page<ApprovalLine> approvalPayment(Pageable paging, Long employeeCode);
+    Page<ApprovalLine> approvalPayment(Pageable paging, int employeeCode);
 
 
 
@@ -126,7 +126,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "      AND A.approval_process_order - 1 IN (SELECT approval_process_order FROM tbl_approval_line " +
             "                                           WHERE approval_process_status IN ('대기'or '반려'or '회수'))))",
             nativeQuery = true)
-    Page<ApprovalLine> paymentWaiting(Pageable paging, Long employeeCode);
+    Page<ApprovalLine> paymentWaiting(Pageable paging, int employeeCode);
 
 
 
