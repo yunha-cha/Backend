@@ -11,4 +11,6 @@ public interface MailEmployeeRepository extends JpaRepository<Employee, Integer>
 
 
     Employee findByEmployeeIdLike(String emailReceiverEmployee);
+
+    Employee findByEmployeeId(String user);
 }
