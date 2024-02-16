@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class ProjectPostComment {
     private String projectPostCommentContent;
 
     @Column(name = "project_post_comment_creation_date")
-    private LocalDateTime projectPostCommentCreationDate;
+    private Date projectPostCommentCreationDate;
 
     @Column(name = "project_post_member_code")
     private Long projectPostMemberCode;
@@ -52,7 +53,7 @@ public class ProjectPostComment {
         return this;
     }
 
-    public ProjectPostComment setProjectPostCommentCreationDate(LocalDateTime projectPostCommentCreationDate) {
+    public ProjectPostComment setProjectPostCommentCreationDate(Date projectPostCommentCreationDate) {
         this.projectPostCommentCreationDate = projectPostCommentCreationDate;
         return this;
     }

@@ -13,6 +13,7 @@ public class PageDTO {
     private int pageEnd;            // 페이지 끝 번호
     private boolean next, prev;     // 이전, 다음 버튼 존재 여부
     private int total;              // 행 전체 개수
+    private int realEnd;            // 페이지 전체 개수
 
     /* 현재 페이지 번호(PageNum), 행 표시 수(amount), 검색 키워드(keyword), 검색 종류(type)등등*/
     private Criteria cri;           // 검색 정보
@@ -30,17 +31,16 @@ public class PageDTO {
         this.pageStart = this.pageEnd - 9;
 
         /* 전체 마지막 페이지 번호 */
-        int realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
-
+        this.realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
         /* 페이지 끝 번호 유효성 체크 */
         if (realEnd < pageEnd) {
-            this.pageEnd = realEnd;
+            this.pageEnd = this.realEnd;
         }
 
         /* 이전 버튼 값 초기화 */
-        this.prev = this.pageStart > 1;
+        this.prev = cri.getPageNum() > 1;
 
         /* 다음 버튼 값 초기화 */
-        this.next = this.pageEnd < realEnd;
+        this.next = cri.getPageNum() < realEnd;
     }
 }
