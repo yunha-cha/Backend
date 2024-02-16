@@ -15,7 +15,7 @@ public class ChartData {
     private String text;
     private ChartState state;
     private String type;
-//    private List<ChartData> children; // 자식 노드 목록
+
 
 
 }
