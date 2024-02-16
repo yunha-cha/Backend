@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +36,13 @@ public class EmailService {
         if(emailStatus.equals("send")){ //클라이언트에서 send를 가져왔으면
             Employee employee = new Employee();
             employee.setEmployeeCode((long) user.getEmployeeCode());    //유저의 코드 삽입
-            List<Email> emailList = emailRepository.findByEmailReceiverAndEmailStatusIn(employee,List.of("send","important"));  //send,important인 메일을 찾아라
+            System.out.println("이메일 조회할 때 나의 정보는 : "+employee.getEmployeeCode());
+            List<Email> emailList = emailRepository.findByEmailReceiverAndEmailStatusInOrderByEmailSendTimeDesc(employee,List.of("send","important"));  //send,important인 메일을 찾아라
+            return convert(emailList,EmailDTO.class);
+        } else if (emailStatus.equals("me")){
+            Employee employee = new Employee();
+            employee.setEmployeeCode((long) user.getEmployeeCode());
+            List<Email> emailList = emailRepository.findAllByEmailSenderOrderByEmailSendTimeDesc(employee);
             return convert(emailList,EmailDTO.class);
         } else {    //클라에서 send말고 다른걸 가져왔으면
             List<Email> emailList = emailRepository.findReceiveMail((long)user.getEmployeeCode(), emailStatus);   //가져온 상태로 찾아라
@@ -47,7 +54,6 @@ public class EmailService {
 
     public List<EmailDTO> findSendMail(String emailStatus) {
         List<Email> emailList = emailRepository.findSendMail(1L, emailStatus);
-
         return emailList.stream().map(email->modelMapper.map(email,EmailDTO.class)).toList();
     }
 
@@ -66,13 +72,12 @@ public class EmailService {
     @Transactional
     public EmailDTO sendMail(EmailDTO email, String status){
         //여기에 상태에 맞춰서 처리하자.
-//        if (status.equals("temporary")) {   //임시저장
-//            email.setEmailStatus("temporary");//별도 처리 필요 없음
-//        }
-//        Email emailEntity = modelMapper.map(email,Email.class);    //엔티티로 변환 됨
-//        return modelMapper.map(emailRepository.save(emailEntity),EmailDTO.class);
-        return null;
-
+        if (status.equals("temporary")) {   //임시저장
+            email.setEmailStatus("temporary");//별도 처리 필요 없음
+        }
+        Email emailEntity = modelMapper.map(email,Email.class);    //엔티티로 변환 됨
+        emailEntity.setEmailSendTime(LocalDateTime.now());
+        return modelMapper.map(emailRepository.save(emailEntity),EmailDTO.class);
     }
 
 
@@ -240,5 +245,10 @@ public class EmailService {
             return false;
         }
 
+    }
+
+    public EmployeeDTO findByEmployeeId(String user) {
+        Employee employee = employeeRepository.findByEmployeeId(user);
+        return modelMapper.map(employee, EmployeeDTO.class);
     }
 }

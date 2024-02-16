@@ -4,13 +4,13 @@ Content-Type: application/json
 Accept: */*
 
 {
-  "employeeId": "user777",
-  "employeePassword": "pass777",
-  "employeeName": "강남",
-  "employeeEmail": "kang777@gmail.com",
+  "employeeId": "root1",
+  "employeePassword": "root1",
+  "employeeName": "정지섭2",
+  "employeeEmail": "rude@gmail.com",
   "employeeRetirementDate": "",
-  "employeeBirthDate": "2003-03-03",
-  "empAddress": "동대문구 종로구 하이미디어",
+  "employeeBirthDate": "1476-02-13",
+  "empAddress": "한양대리 18통 3호",
   "empPhone": "010-1111-1111"
 
 }

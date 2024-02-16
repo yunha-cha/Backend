@@ -6,6 +6,9 @@ import com.wittypuppy.backend.config.scheduler.DynamicTaskScheduler;
 import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.mail.dto.EmployeeDTO;
 import com.wittypuppy.backend.mail.service.EmailService;
+import com.wittypuppy.backend.util.TokenUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -52,25 +55,7 @@ public class MailController {
         return emailService.findByEmailReadStatusCount(user);
     }
 
-    /**
-     * 일반 메일 전송
-     * @param email 보내는 이메일DTO 객체
-     */
-    @MessageMapping("/mail/alert/send") //방법 2 시도 중
-    public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
-        Authentication authentication = (Authentication) accessor.getUser();
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            User user = (User) authentication.getPrincipal();
-            System.out.println(user);
-        } else {
-            System.out.println("아무 것도 없음"); //이거 뜸 아오!
-        }
-        //System.out.println(user);
-        //System.out.println(email.getEmailReceiver().getEmployeeId());
-        //System.out.println("가져온 이메일의 내용은 : "+setDefault(email,user));
-//        simp.convertAndSend("/topic/mail/alert/"+1,    //누구에게 보낼건지
-//                emailService.sendMail(setDefault(email),"send"));   //뭐를 보낼건지
-    }
+
     @GetMapping("getUser")
     public User getUser(@AuthenticationPrincipal User user){
         return user;
@@ -328,12 +313,41 @@ public class MailController {
             return "에러";
         }
     }
-    private EmailDTO setDefault(EmailDTO email, User user){
-        System.out.println("일반 메서드에서 유저 : "+user);
-        String receiverId = getId(email.getEmailReceiver().getEmployeeId());
-        email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
+    /**
+     * 일반 메일 전송
+     * @param email 보내는 이메일DTO 객체
+     */
+    @MessageMapping("/mail/alert/send") //방법 3 시도 중
+    public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+        //wERjtIdxQ8lNjF0w/AAiN6HqTASaCAUzSq6nbKefMwf5CbPE8GvwLsClz94uVt9Q1esxYwwXVU+BYn7/mR01Qg== 비밀키임
 
-        email.setEmailSender(new EmployeeDTO((long)user.getEmployeeCode(),user.getEmployeeId()));//보내는 사람 하드코딩
+        String token = accessor.getFirstNativeHeader("Authorization");
+        TokenUtils tokenUtils = new TokenUtils();
+        if (token != null) {
+            System.out.println("유저의 아이디는 : "+tokenUtils.getUserId(token));
+            System.out.println("유저가 누구에게 보내냐 : "+email.getEmailReceiver().getEmployeeId());
+            EmailDTO emailDTO = setDefault(email,tokenUtils.getUserId(token));
+            System.out.println("가져온 이메일의 내용은 : "+emailDTO);
+
+            emailDTO = emailService.sendMail(emailDTO,"send");
+            System.out.println("누구에게 알람을 보내냐 하면 : "+emailDTO.getEmailReceiver().getEmployeeCode());
+            System.out.println("알람의 총 주소는 : "+"/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode());
+            simp.convertAndSend("/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode(),emailDTO);
+
+        } else {
+            System.out.println("토큰이 없다.");
+        }
+
+
+
+//        simp.convertAndSend("/topic/mail/alert/"+1,    //누구에게 보낼건지
+//                emailService.sendMail(setDefault(email),"send"));   //뭐를 보낼건지
+    }
+    private EmailDTO setDefault(EmailDTO email, String user){
+        String receiverId = getId(email.getEmailReceiver().getEmployeeId());    //받는 사람
+        System.out.println("받는 사람 : "+receiverId);  //얘가 없을 때 처리를 해줘야겠네
+        email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
+        email.setEmailSender(emailService.findByEmployeeId(user));              //보내는 사람 찾아 와서 설정함.(보내는 사람이 없을 순 없다)
 
         email.setEmailSendTime(new Date().toString());                            //보낼 시간 현재로 저장
         email.setEmailReadStatus("N");                                          //읽지 않음으로 저장

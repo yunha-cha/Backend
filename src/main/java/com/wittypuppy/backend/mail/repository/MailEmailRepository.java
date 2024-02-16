@@ -34,7 +34,7 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
 
     List<Email> findAllByEmailTitleContainingAndEmailReceiver(String word,Employee me);
     @Query(nativeQuery = true,
-            value = "SELECT * FROM tbl_email WHERE email_receiver_employee_code = :receiver AND email_sender_employee_code IN :sender")
+            value = "SELECT * FROM tbl_email WHERE email_receiver_employee_code = :receiver AND email_sender_employee_code IN :sender ORDER BY email_send_time desc")
     List<Email> findAllByEmailReceiverMail(@Param("receiver") Long receiver, @Param("sender") List<Long> sender);
 
     List<Email> findByEmailReceiverAndEmailStatusIn(Employee employee, List<String> strings);
@@ -43,4 +43,9 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
     Long countByEmailReadStatusAndEmailReceiver(String readStatus, Employee employee);
 
     List<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatusIn(String n, Employee map, List<String> send);
+
+    List<Email> findByEmailReceiverAndEmailStatusInOrderByEmailSendTimeDesc(Employee employee, List<String> send);
+
+    List<Email> findAllByEmailSenderOrderByEmailSendTimeDesc(Employee employee);
+
 }
