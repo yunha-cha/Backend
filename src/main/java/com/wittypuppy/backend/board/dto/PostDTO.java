@@ -23,7 +23,7 @@ public class PostDTO {
 
     private Long boardCode;
 
-    private Long employeeCode;
+    private EmployeeDTO employee;
 
     private String postNoticeStatus;
 

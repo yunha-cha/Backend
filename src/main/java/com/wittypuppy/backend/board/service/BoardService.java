@@ -2,9 +2,14 @@ package com.wittypuppy.backend.board.service;
 
 import com.wittypuppy.backend.board.dto.*;
 import com.wittypuppy.backend.board.entity.*;
+import com.wittypuppy.backend.board.paging.Criteria;
 import com.wittypuppy.backend.board.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,6 +92,8 @@ public class BoardService {
     public List<PostDTO> selectPostListByBoardCode(Long boardCode) {
 
         Board board = boardRepository.findById(boardCode).get();
+
+        System.out.println("board.getBoardAccessStatus().equals(\"Y\") = " + board.getBoardAccessStatus().equals("Y"));
 
         if(board.getBoardAccessStatus().equals("Y")){
             List<Post> postList = postRepository.findByBoardCodeOrderByPostDateDesc(boardCode);
@@ -274,19 +281,37 @@ public class BoardService {
 
 
     @Transactional
-    public List<PostDTO> searchPostList(String search, Long boardCode) {
-
-//        List<Post> postList = postRepository.findByBoardCodeOrderByPostDateDesc(boardCode);
-
-        List<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%');
-
-        List<PostDTO> postDTOList = postListByTitle.stream().map(
-                post -> modelMapper.map(post, PostDTO.class)
-        ).toList();
+    public Page<PostDTO> searchPostListWithPaging(Criteria cri, String search, Long boardCode) {
 
 
-        System.out.println("postDTOList = " + postDTOList);
-        return postDTOList;
+        // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
+        int currentIndex = cri.getPageNum() - 1;
+        int quantity = cri.getQuantity();
+
+        // Pageable 객체 생성
+        Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
+
+        Board board = boardRepository.findById(boardCode).get();
+        System.out.println("board = " + board);
+
+        if(board.getBoardAccessStatus().equals("Y")){
+
+            Page<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%', paging);
+
+            System.out.println("postListByTitle = " + postListByTitle);
+
+            Page<PostDTO> postDTOList = postListByTitle.map(
+                    post -> modelMapper.map(post, PostDTO.class)
+            );
+
+            System.out.println("postDTOList = " + postDTOList);
+            return postDTOList;
+
+        }
+        else {
+            return null;
+        }
+
     }
 
     
@@ -319,7 +344,6 @@ public class BoardService {
         try{
             PostLike postLike = modelMapper.map(postLikeDTO, PostLike.class);
             postLikeRepository.delete(postLike);
-            System.out.println("dpd?");
             result = 1;
 
         }catch (Exception e){
@@ -434,6 +458,8 @@ public class BoardService {
 
     }
 
+
+    @Transactional
     public String noticePostList(List<PostDTO> postDTOList) {
 
 
@@ -459,6 +485,7 @@ public class BoardService {
     }
 
 
+
     public List<BoardMemberDTO> selectBoardMember(Long boardCode) {
 
         return convert(boardMemberRepository.findByBoardCode(boardCode), BoardMemberDTO.class);
@@ -476,6 +503,45 @@ public class BoardService {
         return null;
 
     }
+
+
+    /* 페이징된 게시글 조회 */
+    @Transactional
+    public Page<PostDTO> selectPostListWithPaging(Criteria cri, Long boardCode) {
+
+        log.info("[BoardService] selectPostListWithPaging =================>");
+
+        // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
+        int currentIndex = cri.getPageNum() - 1;
+        int quantity = cri.getQuantity();
+
+        // Pageable 객체 생성
+        Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
+
+        Board board = boardRepository.findById(boardCode).get();
+        if(board.getBoardAccessStatus().equals("Y")){
+
+            // 페이징 적용하여 데이터 조회
+            Page<Post> postList = postRepository.findByBoardCode(boardCode, paging);
+
+            // 엔티티 조회되는지 출력
+            System.out.println("postList = " + postList);
+
+            // 엔티티를 dto로 변환
+            Page<PostDTO> postDTOList = postList
+                    .map(post -> modelMapper.map(post, PostDTO.class));
+
+            return postDTOList;
+
+        } else {
+
+            return null;
+        }
+
+
+    }
+
+
 }
 
 

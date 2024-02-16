@@ -2,10 +2,14 @@ package com.wittypuppy.backend.board.controller;
 
 
 import com.wittypuppy.backend.board.dto.*;
+import com.wittypuppy.backend.board.paging.Criteria;
+import com.wittypuppy.backend.board.paging.PageDTO;
+import com.wittypuppy.backend.board.paging.PagingResponseDTO;
 import com.wittypuppy.backend.board.service.BoardService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -31,34 +35,63 @@ public class BoardController {
 
 
     // 게시판에서 게시글 최신순대로 정렬
-    @GetMapping("/")
-    public ResponseEntity<ResponseDTO> selectPostList() {
-        log.info("BoardController >>> selectPostList >>> start");
+//    @GetMapping("")
+//    public ResponseEntity<ResponseDTO> selectPostList() {
+//        log.info("BoardController >>> selectPostList >>> start");
+//
+//        List<PostDTO> postDTOList = boardService.selectPostList();
+//
+//        log.info("BoardController >>> selectPostList >>> end");
+//
+//        System.out.println("postDTOList = " + postDTOList);
+//
+//        return res("성공", postDTOList);
+//
+//    }
 
-        List<PostDTO> postDTOList = boardService.selectPostList();
 
-        log.info("BoardController >>> selectPostList >>> end");
+    /* 게시판 카테고리 조회 */
+    @GetMapping("")
+    public ResponseEntity<ResponseDTO> selectBoardList() {
+        log.info("BoardController >>> selectBoardList >>> start");
 
-        System.out.println("postDTOList = " + postDTOList);
+//        List<BoardDTO> boardDTOList = boardService.selectBoardList();
 
-        return res("성공", postDTOList);
 
+
+//        System.out.println("boardDTOList = " + boardDTOList);
+
+//        return res("성공", boardDTOList);
+
+        return null;
     }
+
+
 
 
     // 특정 게시판에서 게시글 정렬
     @GetMapping("/{boardCode}")
-    public ResponseEntity<ResponseDTO> selectPostListByBoardCode(@PathVariable Long boardCode) {
+    public ResponseEntity<ResponseDTO> selectPostListByBoardCode(@PathVariable Long boardCode,
+                                                                 @RequestParam(defaultValue = "1") String offset) {
         log.info("BoardController >>> selectPostsOfBoard >>> start");
 
         // 1. 게시판 중 허가 상태가 "Y"인거 find
         List<PostDTO> postDTOList = boardService.selectPostListByBoardCode(boardCode);
 
+
+        /* 페이징 */
+        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
+
+        // 페이지 번호에 맞게 데이터 가져오기
+        Page<PostDTO> postDTOPages = boardService.selectPostListWithPaging(cri, boardCode);
+
+        // pageDTO 적용, 화면에서 페이징 버튼 처리
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO(new PageDTO(cri, (Long) postDTOPages.getTotalElements()),postDTOPages);
+
+        System.out.println("pagingResponseDTO = " + pagingResponseDTO);
         log.info("BoardController >>> selectPostsOfBoard >>> end");
 
-        System.out.println("boardCode = " + boardCode);
-
-        return res("성공", postDTOList);
+        return res("페이징 적용한 조회", pagingResponseDTO);
 
     }
 
@@ -112,7 +145,7 @@ public class BoardController {
             return res("좋아요~~~", postLikeDTO1);
 
         } else{
-            System.out.println("삭제");
+
             String result = boardService.deletePostLike(postLikeDTO);
             System.out.println("result = " + result);
 
@@ -164,14 +197,30 @@ public class BoardController {
 
     /* 게시글 검색 */
     @GetMapping("/{boardCode}/posts/search")
-    public ResponseEntity<ResponseDTO> searchPostList(@RequestParam(name = "q", defaultValue = "회사") String search, @PathVariable Long boardCode){
+    public ResponseEntity<ResponseDTO> searchPostList(@RequestParam(name = "q", defaultValue = "회사") String search,
+                                                      @PathVariable Long boardCode,
+                                                      @RequestParam(defaultValue = "1") String offset
+                                                      ){
 
 
         System.out.println("search = " + search);
         System.out.println("boardCode = " + boardCode);
-        List<PostDTO> postDTOList = boardService.searchPostList(search, boardCode);
 
-        return res("검색 성공", postDTOList);
+
+        /* 페이징 */
+        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
+
+        // 페이지 번호에 맞게 데이터 가져오기
+        Page<PostDTO> postDTOPages = boardService.searchPostListWithPaging(cri, search, boardCode);
+
+        // pageDTO 적용, 화면에서 페이징 버튼 처리
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO(new PageDTO(cri, (Long) postDTOPages.getTotalElements()),postDTOPages);
+
+        System.out.println("pagingResponseDTO = " + pagingResponseDTO);
+        log.info("BoardController >>> selectPostsOfBoard >>> end");
+
+
+        return res("검색한 게시글 조회", pagingResponseDTO);
 
     }
 
@@ -182,6 +231,9 @@ public class BoardController {
     public ResponseEntity<ResponseDTO> registComment(@RequestBody PostCommentDTO postCommentDTO ,@PathVariable Long postCode){
 
         System.out.println("postCode = " + postCode);
+
+        // 사용자 setter : commentDTO.setEmployeeCode
+
 
         PostCommentDTO commentDTO = boardService.insertComment(postCommentDTO, postCode);
 

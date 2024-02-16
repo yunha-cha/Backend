@@ -1,9 +1,45 @@
+### 회원가입
+POST http://localhost:1208/auth/signup
+Content-Type: application/json
+Accept: */*
+
+{
+  "employeeId": "user28",
+  "employeePassword": "pass28",
+  "employeeName": "차윤하",
+  "employeeEmail": "helena@gmail.com",
+  "employeeRetirementDate": "",
+  "employeeBirthDate": "2000-02-28",
+  "empAddress": "강서구 화곡동",
+  "empPhone": "010-9999-1044"
+
+}
+
+### 로그인
+POST http://localhost:1208/auth/login
+Content-Type: application/json
+Accept: */*
+Access-Control-Allow-Origin: *
+
+{
+  "employeeId": "user28",
+  "employeePassword": "pass28"
+}
+
+
 
 ### 최근 순서대로 게시글 조회
-GET http://localhost:1208/board/
+GET http://localhost:1208/board
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA3OTY2NTI0MTM3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJleHAiOjE3MDgwMDI1MjQsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIiLCJhdXRob3JpdHlEZXNjIjoi7J2867CY7IKs7JuQIn19XX0.QF-Xu4tSwpXiUcnNQWm6_qO957_iQ7k7zH72MTn1CuM
 
 ### 게시판에 따른 게시글 조회
-GET http://localhost:1208/board/6
+GET http://localhost:1208/board/3
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA4MDQ5Mzc0MzA0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJleHAiOjE3MDgwODUzNzQsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIiLCJhdXRob3JpdHlEZXNjIjoi7J2867CY7IKs7JuQIn19XX0.g3Kj0g3LduwzFxH06B-GMbppHTHNwPGNBLIVP5eUdLw
+
+
+
 
 
 
@@ -25,7 +61,10 @@ GET http://localhost:1208/board/posts/3
 
 
 ### 게시글 추천(좋아요)
-POST http://localhost:1208/board/posts/1/like
+POST http://localhost:1208/board/posts/3/like
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA4MDQ5Mzc0MzA0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJleHAiOjE3MDgwODUzNzQsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIiLCJhdXRob3JpdHlEZXNjIjoi7J2867CY7IKs7JuQIn19XX0.g3Kj0g3LduwzFxH06B-GMbppHTHNwPGNBLIVP5eUdLw
+
 
 
 ### 게시글 수정
@@ -48,6 +87,10 @@ PUT http://localhost:1208/board/posts/7/move?boardCode=2
 
 ### 게시글 검색 - 쿼리 스트링
 GET http://localhost:1208/board/1/posts/search?q=물
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA3OTAxOTQwOTIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJleHAiOjE3MDc5Mzc5NDAsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIiLCJhdXRob3JpdHlEZXNjIjoi7J2867CY7IKs7JuQIn19XX0.iaX1dINDOadFFrKMLxlLb_Q2MjBGwncX9U0SPL2xWuA
+
+
 
 
 ### 댓글 입력
@@ -69,7 +112,6 @@ Content-Type: application/json
 
 ### 댓글 삭제
 DELETE http://localhost:1208/board/posts/comment/1
-
 
 
 
