@@ -36,6 +36,9 @@ public class GroupEmp {
     @Column(name = "employee_retirement_date")
     private Date retirementDate;
 
+    @ManyToOne
+    @JoinColumn(name = "job_code")
+    private GroupJob job;
 
 }
 

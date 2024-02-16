@@ -25,4 +25,7 @@ public class GroupDept {
     @OneToMany(mappedBy = "department")
     private List<GroupEmp> employee;
 
+    @Column(name = "parent_department_code")
+    private Long parentDeptCode;
+
 }

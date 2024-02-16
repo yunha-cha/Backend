@@ -23,7 +23,7 @@ Access-Control-Allow-Origin: *
 
 {
   "employeeId": "user07",
-  "employeePassword": "wJkvJV0Zoic"
+  "employeePassword": "pass07"
 }
 
 ###비밀번호 찾기

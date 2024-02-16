@@ -37,6 +37,7 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
             // tokenDTO response
             TokenDTO tokenDTO = TokenDTO.builder()
                                 .employeeName(employee.getEmployeeName())
+
                                 .accessToken(token)
                                 .grantType(AuthConstants.TOKEN_TYPE)
                                 .build();
