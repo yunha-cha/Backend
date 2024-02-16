@@ -5,7 +5,10 @@ import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.common.dto.PageDTO;
 import com.wittypuppy.backend.common.dto.PagingResponseDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
-import com.wittypuppy.backend.project.dto.*;
+import com.wittypuppy.backend.project.dto.EmployeeDTO;
+import com.wittypuppy.backend.project.dto.ProjectDTO;
+import com.wittypuppy.backend.project.dto.ProjectOptionsDTO;
+import com.wittypuppy.backend.project.dto.ProjectPostDTO;
 import com.wittypuppy.backend.project.service.ProjectService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +47,7 @@ public class ProjectController {
                                                                    @RequestParam(name = "search", required = false) String searchValue,
                                                                    @RequestParam(name = "offset", defaultValue = "1") String offset,
                                                                    @AuthenticationPrincipal User principal) {
-        List<ProjectMainInterface> result = null;
+        Map<String, Object> result = null;
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
         if (projectType.equals("all")) {
@@ -67,8 +70,8 @@ public class ProjectController {
             }
         }
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
-        pagingResponseDTO.setData(result);
-        pagingResponseDTO.setPageInfo(new PageDTO(cri, (int) result.size()));
+        pagingResponseDTO.setData(result.get("projectMainDTOList"));
+        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("projectListSize")).intValue()));
         return res("프로젝트 검색 성공", pagingResponseDTO);
     }
 

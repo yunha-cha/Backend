@@ -5,8 +5,8 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "user07",
-  "employeePassword": "pass07"
+  "employeeId": "wnsrud0001",
+  "employeePassword": "wnsrud0001"
 }
 
 ### 프로젝트 리스트 조회
@@ -19,7 +19,7 @@ Authorization: Bearer eyJkYXRlIjoxNzA3MjA1OTM5MTQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 ### 프로젝트 생성
 POST http://localhost:1208/api/v1/project/projects
 Content-Type: application/json
-Authorization: Bearer eyJkYXRlIjoxNzA3MjA1OTM5MTQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDcyMDk1MzksImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIiwiYXV0aG9yaXR5RGVzYyI6Iuq0gOumrOyekCJ9fV19.EUEzO9EdasEVNAZKAqKRUApDP_jpRfrvuIVFtOURN0Q
+Authorization: Bearer eyJkYXRlIjoxNzA4MDM5MjM1NTkyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLsnKDsirnsnqwiLCJzdWIiOiJ3bnNydWQwMDAxIiwiZW1wQ29kZSI6MTcsImVtcGxveWVlRW1haWwiOiJjaGVycnlibG9zc29tMUBnbWFpbC5jb20iLCJlbXBsb3llZUlkIjoid25zcnVkMDAwMSIsImV4cCI6MTcwODA0MjgzNSwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZUNvZGUiOjE3LCJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfVVNFUiJ9fV19.aPoeZlkkcGybsWNtHl13UBhv_clgAjKJ5cxqtewbaIo
 
 {
   "projectTitle": "프로젝트 생성 데모 1",

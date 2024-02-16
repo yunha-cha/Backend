@@ -35,56 +35,79 @@ public class ProjectService {
     private final ModelMapper modelMapper;
 
     /* 전체 프로젝트 목록 확인 */
-    public List<ProjectMainInterface> selectProjectListWithPaging(Criteria cri) {
+    public Map<String, Object> selectProjectListWithPaging(Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
+        Long projectListSize = projectRepository.getCountAllProject();
         List<ProjectMainInterface> projectMainDTOList = projectRepository.findAllProjectInfoWithPaging(index * count, count);
-        return projectMainDTOList;
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectListSize", projectListSize);
+        returnMap.put("projectMainDTOList", projectMainDTOList);
+        return returnMap;
     }
 
     /* 내 프로젝트 목록 확인 */
-    public List<ProjectMainInterface> selectMyProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
+    public Map<String, Object> selectMyProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
+        Long projectListSize = projectRepository.getCountMyProject(userEmployeeCode);
         List<ProjectMainInterface> projectMainDTOList = projectRepository.findMyProjectInfoWithPaging(userEmployeeCode, index * count, count);
-        return projectMainDTOList;
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectListSize", projectListSize);
+        returnMap.put("projectMainDTOList", projectMainDTOList);
+        return returnMap;
     }
 
     /* 내 부서 프로젝트 목록 확인 */
-    public List<ProjectMainInterface> selectMyDeptProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
+    public Map<String, Object> selectMyDeptProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         Employee employee = employeeRepository.findById(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        System.out.println("<<>><<" + employee.getDepartment().getDepartmentCode());
-        List<ProjectMainInterface> projectMainDTOList = projectRepository.findMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), index * count, count);
-        return projectMainDTOList;
+        Long projectListSize = projectRepository.getCountMyDeptProject(employee.getDepartment().getDepartmentCode(), userEmployeeCode);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.findMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), userEmployeeCode, index * count, count);
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectListSize", projectListSize);
+        returnMap.put("projectMainDTOList", projectMainDTOList);
+        return returnMap;
     }
 
     /* 프로젝트 검색하기 */
-    public List<ProjectMainInterface> searchProjectListWithPaging(String searchValue, Criteria cri) {
+    public Map<String, Object> searchProjectListWithPaging(String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
+        Long projectListSize = projectRepository.getSearchCountAllProject(searchValue);
         List<ProjectMainInterface> projectMainDTOList = projectRepository.searchAllProjectInfoWithPaging(searchValue, index * count, count);
-        return projectMainDTOList;
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectListSize", projectListSize);
+        returnMap.put("projectMainDTOList", projectMainDTOList);
+        return returnMap;
     }
 
     /* 내 프로젝트 검색하기 */
-    public List<ProjectMainInterface> searchMyProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
+    public Map<String, Object> searchMyProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
+        Long projectListSize = projectRepository.getSearchCountMyProject(userEmployeeCode, searchValue);
         List<ProjectMainInterface> projectMainDTOList = projectRepository.searchMyProjectInfoWithPaging(userEmployeeCode, searchValue, index * count, count);
-        return projectMainDTOList;
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectListSize", projectListSize);
+        returnMap.put("projectMainDTOList", projectMainDTOList);
+        return returnMap;
     }
 
     /* 내 부서 프로젝트 검색하기 */
-    public List<ProjectMainInterface> searchMyDeptProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
+    public Map<String, Object> searchMyDeptProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         Employee employee = employeeRepository.findById(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), searchValue, index * count, count);
-        return projectMainDTOList;
+        Long projectListSize = projectRepository.getSearchCountMyDeptProject(employee.getDepartment().getDepartmentCode(), userEmployeeCode, searchValue);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchMyDeptProjectInfoWithPaging(employee.getDepartment().getDepartmentCode(), userEmployeeCode, searchValue, index * count, count);
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectListSize", projectListSize);
+        returnMap.put("projectMainDTOList", projectMainDTOList);
+        return returnMap;
     }
 
     /* 프로젝트 만들기 */
