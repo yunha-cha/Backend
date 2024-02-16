@@ -1,3 +1,14 @@
+### 로그인
+POST http://localhost:1208/auth/login
+Content-Type: application/json
+Accept: */*
+Access-Control-Allow-Origin: *
+
+{
+  "employeeId": "ap_first",
+  "employeePassword": "ap_first"
+}
+
 ### 결재 대기 문서 조회
 GET http://localhost:1208/approval/2
 Accept: */*
@@ -11,10 +22,10 @@ Content-Type: application/json
 Authorization: Bearer eyJkYXRlIjoxNzA3NjM3ODQ3NjU4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsrDsnqzsnpAxIiwic3ViIjoiYXBfc2Vjb25kIiwiZW1wQ29kZSI6MzEsImVtcGxveWVlRW1haWwiOiJhcF9zZWNvbmRAZ21haWwuY29tIiwiZXhwIjoxNzA3NjQxNDQ3LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlTm8iOjAsImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9BRE1JTiIsImF1dGhvcml0eURlc2MiOiLqtIDrpqzsnpAifX1dfQ.fV8mebgs4e2PTkqM6piEEvf0nrAT2eK9TAEfRsygZfg
 
 ### 상신 문서 조회
-GET http://localhost:1208/approval/outbox-approval
+GET http://localhost:1208/approval/outbox-approval?page=2
 Accept: */*
 Content-Type: application/json
-Authorization: Bearer eyJkYXRlIjoxNzA3OTgwOTk3OTk3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshpDtnaXrr7wiLCJzdWIiOiJhcF9maXJzdCIsImVtcENvZGUiOjMwLCJlbXBsb3llZUVtYWlsIjoiYXBfZmlyc3RAZ21haWwuY29tIiwiZW1wbG95ZWVJZCI6ImFwX2ZpcnN0IiwiZXhwIjoxNzA3OTg0NTk3LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzAsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.FUeHXzPNWyhMaCwg6xHeFNu4RITIkt60Ge7Jkdx6seE
+Authorization: Bearer eyJkYXRlIjoxNzA4MDY0MDEzMjM3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshpDtnaXrr7wiLCJzdWIiOiJhcF9maXJzdCIsImVtcENvZGUiOjMwLCJlbXBsb3llZUVtYWlsIjoiYXBfZmlyc3RAZ21haWwuY29tIiwiZW1wbG95ZWVJZCI6ImFwX2ZpcnN0IiwiZXhwIjoxNzA4MDY3NjEzLCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzAsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.1LLDcmRWIZe4slVYXkNE11fiohkS5OHrmhAQww91sRA
 
 ### 결재 대기 문서 조회
 GET http://localhost:1208/approval/inbox-approval
