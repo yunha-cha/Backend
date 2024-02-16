@@ -3,13 +3,15 @@ package com.wittypuppy.backend.approval.repository;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
 import com.wittypuppy.backend.approval.entity.ApprovalDoc;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface ApprovalDocRepository extends JpaRepository<ApprovalDoc, Long> {
-    List<ApprovalDoc> findByEmployeeCode(LoginEmployee loginEmployee);
+    Page<ApprovalDoc> findByEmployeeCode(LoginEmployee loginEmployee, Pageable pageable);
 
     @Query(value =
             "SELECT " +
