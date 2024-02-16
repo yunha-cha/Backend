@@ -36,15 +36,15 @@ public class ApprovalController {
 //        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalService.selectInboxDoc(approvalDocCode)));
 //    }
 
-//    @Tag(name = "문서 상신", description = "결재 문서 상신하기")
-//    @PostMapping("/submit-approval")
-//    public ResponseEntity<ResponseDTO> submitApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
-//        ApprovalDoc savedApprovalDoc = approvalService.saveApprovalDoc(approvalDocDTO, user);
-//        approvalService.saveOnLeaveDoc(savedApprovalDoc);
-//        approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
-//        approvalService.saveApprovalLines(savedApprovalDoc);
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
-//    }
+    @Tag(name = "문서 상신", description = "결재 문서 상신하기")
+    @PostMapping("/submit-approval")
+    public ResponseEntity<ResponseDTO> submitApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
+        ApprovalDoc savedApprovalDoc = approvalService.saveApprovalDoc(approvalDocDTO, user);
+        approvalService.saveOnLeaveDoc(savedApprovalDoc);
+        approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
+        approvalService.saveApprovalLines(savedApprovalDoc);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
+    }
 
     @Tag(name = "상신함 - 상신 문서 조회", description = "로그인한 사용자가 상신한 문서 목록 조회")
     @GetMapping("/outbox-approval")
@@ -60,41 +60,46 @@ public class ApprovalController {
     }
 
 
-//    @Tag(name = "수신함 - 결재 대기 문서 조회", description = "로그인한 사용자가 결재한 문서 중, 결재 상태가 '대기'인 문서 목록 조회")
-//    @GetMapping("/inbox-approval")
-//    public ResponseEntity<ResponseDTO> inboxApproval(@AuthenticationPrincipal User user) {
-//        List<ApprovalDoc> approvalDocs = approvalService.inboxDocListByEmployeeCode(user);
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
-//    }
-//
-//    @Tag(name = "결재", description = "로그인한 사용자가 결재자로 지정된 문서 결재하기")
-//    @PutMapping("/approvement/{approvalDocCode}")
-//    public ResponseEntity<String> approvement(@PathVariable Long approvalDocCode, @AuthenticationPrincipal User user){
-//        System.out.println("approvalDocCode = " + approvalDocCode);
-//        System.out.println("em = " + user.getEmployeeCode());
-//
-//        String result = approvalService.approvement(approvalDocCode, user);
-//        System.out.println("result ========== " + result);
-//        return ResponseEntity.ok(result);
-//    }
-//
-//    @Tag(name = "대리 결재 지정", description = "대리 결재자 지정하기")
-//    @PostMapping("/set-represent")
-//    public ResponseEntity<ResponseDTO> setRepresent(ApprovalRepresentDTO approvalRepresentDTO, @AuthenticationPrincipal User user) {
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "지정 성공", approvalService.setRepresent(approvalRepresentDTO, user)));
-//    }
-//
-//    @Tag(name = "반려", description = "로그인한 사용자가 결재자로 지정된 문서 반려하기")
-//    @PutMapping("/rejection/{approvalDocCode}")
-//    public ResponseEntity<String> rejection(@PathVariable Long approvalDocCode, @AuthenticationPrincipal User user){
-//        System.out.println("approvalDocCode = " + approvalDocCode);
-//        System.out.println("em = " + user.getEmployeeCode());
-//
-//        String result = approvalService.rejection(approvalDocCode, user);
-//        System.out.println("result ========== " + result);
-//        return ResponseEntity.ok(result);
-//    }
-//
+    @Tag(name = "수신함 - 결재 대기 문서 조회", description = "로그인한 사용자가 결재할 문서 목록 조회")
+    @GetMapping("/inbox-approval")
+    public ResponseEntity<ResponseDTO> inboxApproval(@AuthenticationPrincipal User user,
+                                                     @RequestParam(defaultValue = "1") int page) {
+
+        int size = 10;
+        log.info("[inboxApproval] 현재 페이지: {}", page);
+
+        Page<ApprovalDoc> approvalDocsPage  = approvalService.inboxDocListByEmployeeCode(user, page, size);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocsPage ));
+    }
+
+    @Tag(name = "결재", description = "로그인한 사용자가 결재자로 지정된 문서 결재하기")
+    @PutMapping("/approvement/{approvalDocCode}")
+    public ResponseEntity<String> approvement(@PathVariable Long approvalDocCode, @AuthenticationPrincipal User user){
+        System.out.println("approvalDocCode = " + approvalDocCode);
+        System.out.println("em = " + user.getEmployeeCode());
+
+        String result = approvalService.approvement(approvalDocCode, user);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok(result);
+    }
+
+    @Tag(name = "대리 결재 지정", description = "대리 결재자 지정하기")
+    @PostMapping("/set-represent")
+    public ResponseEntity<ResponseDTO> setRepresent(ApprovalRepresentDTO approvalRepresentDTO, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "지정 성공", approvalService.setRepresent(approvalRepresentDTO, user)));
+    }
+
+    @Tag(name = "반려", description = "로그인한 사용자가 결재자로 지정된 문서 반려하기")
+    @PutMapping("/rejection/{approvalDocCode}")
+    public ResponseEntity<String> rejection(@PathVariable Long approvalDocCode, @AuthenticationPrincipal User user){
+        System.out.println("approvalDocCode = " + approvalDocCode);
+        System.out.println("em = " + user.getEmployeeCode());
+
+        String result = approvalService.rejection(approvalDocCode, user);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok(result);
+    }
+
 //    @Tag(name = "상신 문서 회수", description = "로그인한 사용자가 상신한 문서 중, 첫 번째 결재자가 아직 결재하지 않은 문서 회수하기")
 //    @PutMapping("/retrieval/{approvalDocCode}")
 //    public ResponseEntity<String> retrieval(@PathVariable Long approvalDocCode, @AuthenticationPrincipal User user){

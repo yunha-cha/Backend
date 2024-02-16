@@ -9,6 +9,7 @@ import com.wittypuppy.backend.approval.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -77,101 +78,101 @@ public class ApprovalService {
 //    }
 
 
-//    // 기안 문서 정보 저장
-//    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
-//        log.info("[ApprovalService] saving doc info started =====");
-//
-//        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-//        approvalDoc.setApprovalForm("휴가신청서");
-//
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        approvalDoc.setEmployeeCode(loginEmployee);
-//
-//        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
-//        approvalDoc.setWhetherSavingApproval("N");
-//        saveFirstApprovalLine(approvalDoc, user);
-//
-//        return approvalDocRepository.save(approvalDoc);
-//    }
-//
-//    // 결재 문서 내용 추가 - 휴가 신청서
-//    public void saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
-//        OnLeave onLeave = new OnLeave();
-//        onLeave.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-//        onLeave.setKindOfOnLeave("연차");
-//        onLeave.setOnLeaveTitle("[개발1팀] 휴가 신청서");
-//        onLeave.setOnLeaveReason("개인 사유");
-//        onLeave.setOnLeaveStartDate(new Date(124,1,19));
-//        onLeave.setOnLeaveEndDate(new Date(124,1,21));
-//
-//        onLeaveRepository.save(onLeave);
-//    }
-//
-//    // 결재 문서 내용 추가 - 연장근로 신청서
-//    public void saveOverworkDoc(ApprovalDoc savedApprovalDoc){
-//        Overwork overwork = new Overwork();
-//        overwork.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-//        overwork.setKindOfOverwork("연장 근로");
-//        overwork.setOverworkTitle("[개발1팀] 연장 근로 신청서");
-//
-//
-//    }
-//
-//    // 결재 문서 내용 추가 - SW 사용 신청서
-//    // 결재 문서 내용 추가 - 외근/출장/재택근무 신청서
-//
-//    // 기안자 결재선 저장
-//    public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, User user) {
-//        log.info("[ApprovalService] saving first approval line started =====");
-//        ApprovalLine approvalLine = new ApprovalLine();
-//        approvalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-//
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        approvalLine.setEmployeeCode((long) loginEmployee.getEmployeeCode());
-//
-//        approvalLine.setApprovalProcessOrder(1L);
-//        approvalLine.setApprovalProcessStatus("기안");
-//        approvalLine.setApprovalProcessDate(LocalDateTime.now());
-//        approvalLine.setApprovalRejectedReason(null);
-//        approvalLineRepository.save(approvalLine);
-//    }
-//
-//    // 추가 결재선 저장
-//    public void saveApprovalLines(ApprovalDoc savedApprovalDoc){
-//        log.info("[ApprovalService] saving line info started =====");
-//        AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
-//        additionalApprovalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-//        additionalApprovalLine.setEmployeeCode(31L);
-//        additionalApprovalLine.setApprovalProcessOrder(2L);
-//        additionalApprovalLine.setApprovalProcessStatus("대기");
-//        additionalApprovalLine.setApprovalRejectedReason(null);
-//        additionalApprovalLineRepository.save(additionalApprovalLine);
-//    }
-//
-//    // 대리 결재 지정
-//    @Transactional
-//    public String setRepresent(ApprovalRepresentDTO approvalRepresentDTO, User user) {
-//        // 위임자, 결재자 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        ApprovalRepresent represent = modelMapper.map(approvalRepresentDTO, ApprovalRepresent.class);
-//
-//        System.out.println("loginEmployee = " + loginEmployee);
-//
-//        // 결재자 지정
-//        ApprovalRepresent approvalRepresent = new ApprovalRepresent();
-//        approvalRepresent.setAssignee(loginEmployee);
-//        approvalRepresent.setRepresentative(32L);
-//        approvalRepresent.setStartDate(new Date(124,1,14));
-//        approvalRepresent.setEndDate(new Date(124,1,17));
-//        approvalRepresent.setRepresentStatus("N");
-//
-//        System.out.println("approvalRepresent = " + approvalRepresent);
-//
-//        approvalRepresentRepository.save(approvalRepresent);
-//
-//        return "지정 성공";
-//    }
-//
+    // 기안 문서 정보 저장
+    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+        log.info("[ApprovalService] saving doc info started =====");
+
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("테스트");
+
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+        approvalDoc.setWhetherSavingApproval("N");
+        saveFirstApprovalLine(approvalDoc, user);
+
+        return approvalDocRepository.save(approvalDoc);
+    }
+
+    // 결재 문서 내용 추가 - 휴가 신청서
+    public void saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
+        OnLeave onLeave = new OnLeave();
+        onLeave.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        onLeave.setKindOfOnLeave("연차");
+        onLeave.setOnLeaveTitle("[개발1팀] 휴가 신청서");
+        onLeave.setOnLeaveReason("개인 사유");
+        onLeave.setOnLeaveStartDate(new Date(124,1,19));
+        onLeave.setOnLeaveEndDate(new Date(124,1,21));
+
+        onLeaveRepository.save(onLeave);
+    }
+
+    // 결재 문서 내용 추가 - 연장근로 신청서
+    public void saveOverworkDoc(ApprovalDoc savedApprovalDoc){
+        Overwork overwork = new Overwork();
+        overwork.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        overwork.setKindOfOverwork("연장 근로");
+        overwork.setOverworkTitle("[개발1팀] 연장 근로 신청서");
+
+
+    }
+
+    // 결재 문서 내용 추가 - SW 사용 신청서
+    // 결재 문서 내용 추가 - 외근/출장/재택근무 신청서
+
+    // 기안자 결재선 저장
+    public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, User user) {
+        log.info("[ApprovalService] saving first approval line started =====");
+        ApprovalLine approvalLine = new ApprovalLine();
+        approvalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        approvalLine.setEmployeeCode((long) loginEmployee.getEmployeeCode());
+
+        approvalLine.setApprovalProcessOrder(1L);
+        approvalLine.setApprovalProcessStatus("기안");
+        approvalLine.setApprovalProcessDate(LocalDateTime.now());
+        approvalLine.setApprovalRejectedReason(null);
+        approvalLineRepository.save(approvalLine);
+    }
+
+    // 추가 결재선 저장
+    public void saveApprovalLines(ApprovalDoc savedApprovalDoc){
+        log.info("[ApprovalService] saving line info started =====");
+        AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
+        additionalApprovalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        additionalApprovalLine.setEmployeeCode(31L);
+        additionalApprovalLine.setApprovalProcessOrder(2L);
+        additionalApprovalLine.setApprovalProcessStatus("대기");
+        additionalApprovalLine.setApprovalRejectedReason(null);
+        additionalApprovalLineRepository.save(additionalApprovalLine);
+    }
+
+    // 대리 결재 지정
+    @Transactional
+    public String setRepresent(ApprovalRepresentDTO approvalRepresentDTO, User user) {
+        // 위임자, 결재자 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        ApprovalRepresent represent = modelMapper.map(approvalRepresentDTO, ApprovalRepresent.class);
+
+        System.out.println("loginEmployee = " + loginEmployee);
+
+        // 결재자 지정
+        ApprovalRepresent approvalRepresent = new ApprovalRepresent();
+        approvalRepresent.setAssignee(loginEmployee);
+        approvalRepresent.setRepresentative(32L);
+        approvalRepresent.setStartDate(new Date(124,1,14));
+        approvalRepresent.setEndDate(new Date(124,1,17));
+        approvalRepresent.setRepresentStatus("N");
+
+        System.out.println("approvalRepresent = " + approvalRepresent);
+
+        approvalRepresentRepository.save(approvalRepresent);
+
+        return "지정 성공";
+    }
+
 //    // 상신한 문서 조회
 //    public Page<ApprovalDoc> findApprovalDocsByEmployeeCode(User user, Pageable pageable) {
 //        // 로그인한 사용자의 정보 가져오기
@@ -188,25 +189,31 @@ public class ApprovalService {
         return approvalDocRepository.findByEmployeeCode(loginEmployee, PageRequest.of(page - 1, size));
     }
 
-//    // 결재 대기 문서 조회
-//    public List<ApprovalDoc> inboxDocListByEmployeeCode(User user){
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 문서 코드 목록 가져오기
-//        List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
-//
-//        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
-//        List<ApprovalDoc> inboxDocs = new ArrayList<>();
-//        for (Long approvalDocCode : inboxDocCodeList) {
-//            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
-//            if(approvalDoc != null) {
-//                inboxDocs.add(approvalDoc);
-//            }
-//        }
-//        return inboxDocs;
-//    }
-//
+    // 결재 대기 문서 조회
+    public Page<ApprovalDoc> inboxDocListByEmployeeCode(User user, int page, int size){
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+
+        // 문서 코드 목록 가져오기
+        List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
+
+        // 페이지네이션을 위한 문서 코드 목록 분할
+        int start = (page - 1) * size;
+        int end = Math.min(start + size, inboxDocCodeList.size());
+        List<Long> pageInboxDocCodeList = inboxDocCodeList.subList(start, end);
+
+        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
+        List<ApprovalDoc> inboxDocs = new ArrayList<>();
+        for (Long approvalDocCode : pageInboxDocCodeList) {
+            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
+            if(approvalDoc != null) {
+                inboxDocs.add(approvalDoc);
+            }
+        }
+
+        return new PageImpl<>(inboxDocs, PageRequest.of(page - 1, size), inboxDocCodeList.size());
+    }
+
 //    // 수신함 - 결재 완료함
 //    public List<ApprovalDoc> inboxFinishedListByEmployeeCode(User user){
 //
@@ -229,103 +236,125 @@ public class ApprovalService {
 //
 //        return finishedDocs;
 //    }
-//
-//    // 결재하기
-//    @Transactional
-//    public String approvement(Long approvalDocCode, User user) {
-//
-//        // 결재 대상 조회
-//        Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
-//
-//        System.out.println("approvalSubject ========== " + approvalSubject);
-//        System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        Long employeeCode = (long) loginEmployee.getEmployeeCode();
-//
-//        System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
-//        System.out.println("loginEmployee.getClass() = " + loginEmployee.getClass());
-//
-//        System.out.println("employeeCode ======== " + employeeCode);
-//
-//        // 대리 결재 여부 확인
-//        ApprovalRepresent approvalRepresent = approvalRepresentRepository.findByRepresentative(employeeCode);
-//
-//        System.out.println("approvalRepresent = " + approvalRepresent);
-//        System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
-//        System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
-//
-//        if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
-//            AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
-//
-//            if (representApprovalLine != null) {
-//                // 결재 상태 업데이트
-//                representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
-//                representApprovalLine.setApprovalProcessStatus("결재");
-//                representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
-//                additionalApprovalLineRepository.save(representApprovalLine);
-//                return "결재 성공";
-//            }
-//        }
-//
-//        if (!approvalSubject.equals(employeeCode)) {
-//            return "결재 대상이 아닙니다.";
-//        }
-//
-//        AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, employeeCode, "대기");
-//
-//        if (additionalApprovalLine != null) {
-//            // 결재 상태 업데이트
-//            additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
-//            additionalApprovalLine.setApprovalProcessStatus("결재");
-//            additionalApprovalLineRepository.save(additionalApprovalLine);
-//            return "결재 성공";
-//        }
-//
-//        return "결재 대상이 아닙니다.";
-//
-//    }
-//
-//    // 반려하기
-//    public String rejection(Long approvalDocCode, User user) {
-//
-//        // 반려 대상 조회
-//        Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
-//
-//        System.out.println("approvalSubject ========== " + approvalSubject);
-//        System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        Long employeeCode = (long) loginEmployee.getEmployeeCode();
-//
-//        System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
-//        System.out.println("loginEmployee.getClass() = " + loginEmployee.getClass());
-//
-//        System.out.println("employeeCode ======== " + employeeCode);
-//
-//        // 반려 대상과 로그인한 사용자 employeeCode 비교
-//        if (!approvalSubject.equals(employeeCode)) {
-//            return "반려 대상이 아닙니다.";
-//        }
-//
-//        // 대기 상태인 모든 approvalLine 조회
-//        List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDocCode);
-//
-//        // 각 approvalLine의 상태를 반려로 변경
-//        for (Long approvalLineCode : pendingApprovalLines) {
-//            Optional<AdditionalApprovalLine> optionalApprovalLine = additionalApprovalLineRepository.findById(approvalLineCode);
-//            optionalApprovalLine.ifPresent(approvalLine -> {
-//                approvalLine.setApprovalProcessDate(LocalDateTime.now());
-//                approvalLine.setApprovalProcessStatus("반려");
-//                additionalApprovalLineRepository.save(approvalLine);
-//            });
-//        }
-//
-//        return "반려 성공";
-//    }
-//
+
+    // 결재하기
+    @Transactional
+    public String approvement(Long approvalDocCode, User user) {
+
+        // 결재 대상 조회
+        Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
+
+        System.out.println("approvalSubject ========== " + approvalSubject);
+        System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        Long employeeCode = (long) loginEmployee.getEmployeeCode();
+
+        System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
+        System.out.println("loginEmployee.getClass() = " + loginEmployee.getClass());
+
+        System.out.println("employeeCode ======== " + employeeCode);
+
+        // 대리 결재 여부 확인
+        ApprovalRepresent approvalRepresent = approvalRepresentRepository.findByRepresentative(employeeCode);
+
+
+        if(approvalRepresent != null) {
+            if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
+                AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
+                System.out.println("approvalRepresent = " + approvalRepresent);
+                System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
+                System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
+                if (representApprovalLine != null) {
+                    // 결재 상태 업데이트
+                    representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+                    representApprovalLine.setApprovalProcessStatus("결재");
+                    representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
+                    additionalApprovalLineRepository.save(representApprovalLine);
+                    return "결재 성공";
+                }
+            }
+        } else if(approvalRepresent == null) {
+            if (!approvalSubject.equals(employeeCode)) {
+                return "결재 대상이 아닙니다.";
+            }
+
+            AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, employeeCode, "대기");
+
+            if (additionalApprovalLine != null) {
+                // 결재 상태 업데이트
+                additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+                additionalApprovalLine.setApprovalProcessStatus("결재");
+                additionalApprovalLineRepository.save(additionalApprovalLine);
+                return "결재 성공";
+            }
+
+            return "결재 대상이 아닙니다.";
+        }
+        return "대리 결재 대상 아님";
+    }
+
+    // 반려하기
+    public String rejection(Long approvalDocCode, User user) {
+
+        // 반려 대상 조회
+        Long approvalSubject = additionalApprovalLineRepository.approvalSubjectEmployeeCode(approvalDocCode);
+
+        System.out.println("approvalSubject ========== " + approvalSubject);
+        System.out.println("approvalSubject.getClass() = " + approvalSubject.getClass());
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        Long employeeCode = (long) loginEmployee.getEmployeeCode();
+
+        System.out.println("loginEmployee.getEmployeeCode() = " + loginEmployee.getEmployeeCode());
+        System.out.println("loginEmployee.getClass() = " + loginEmployee.getClass());
+
+        System.out.println("employeeCode ======== " + employeeCode);
+
+        // 대리 결재 여부 확인
+        ApprovalRepresent approvalRepresent = approvalRepresentRepository.findByRepresentative(employeeCode);
+
+
+        if(approvalRepresent != null) {
+            if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
+                AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
+                System.out.println("approvalRepresent = " + approvalRepresent);
+                System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
+                System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
+                if (representApprovalLine != null) {
+                    // 결재 상태 업데이트
+                    representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+                    representApprovalLine.setApprovalProcessStatus("반려");
+                    representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
+                    additionalApprovalLineRepository.save(representApprovalLine);
+                    return "반려 성공";
+                }
+            }
+        } else if(approvalRepresent == null) {
+            // 반려 대상과 로그인한 사용자 employeeCode 비교
+            if (!approvalSubject.equals(employeeCode)) {
+                return "반려 대상이 아닙니다.";
+            }
+
+            // 대기 상태인 모든 approvalLine 조회
+            List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDocCode);
+
+            // 각 approvalLine의 상태를 반려로 변경
+            for (Long approvalLineCode : pendingApprovalLines) {
+                Optional<AdditionalApprovalLine> optionalApprovalLine = additionalApprovalLineRepository.findById(approvalLineCode);
+                optionalApprovalLine.ifPresent(approvalLine -> {
+                    approvalLine.setApprovalProcessDate(LocalDateTime.now());
+                    approvalLine.setApprovalProcessStatus("반려");
+                    additionalApprovalLineRepository.save(approvalLine);
+                });
+            }
+
+            return "반려 성공";
+        } return "대리 결재 대상 아님";
+    }
+
 //    // 상신 문서 회수
 //    public String retrieval(Long approvalDocCode, User user) {
 //        // 문서 정보 가져오기
