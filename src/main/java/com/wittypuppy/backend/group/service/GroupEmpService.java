@@ -184,6 +184,7 @@ public class GroupEmpService {
                 ChartData parent = nodeMap.get(department.getParentDeptCode());
                 if (parent != null) {
                     ChartData departmentNode = createDepartmentNode(department);
+                    departmentNode.setState(new ChartState(false));
                     nodeMap.put(department.getDeptCode(), departmentNode);
                     departmentNode.setParent(parent.getId());
                     orgChartData.add(departmentNode);
@@ -195,6 +196,7 @@ public class GroupEmpService {
         // 사원을 추가
         for (GroupEmp employee : employeeList) {
             ChartData employeeNode = createEmployeeNode(employee);
+            employeeNode.setState(new ChartState(false));
             // 부서의 아이디를 찾아서 부모로 설정
             ChartData parent = nodeMap.get(employee.getDepartment().getDeptCode());
             if (parent != null) {
