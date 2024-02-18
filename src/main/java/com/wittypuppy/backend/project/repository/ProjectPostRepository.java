@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.project.repository;
 
 import com.wittypuppy.backend.project.dto.ProjectPostDTO;
+import com.wittypuppy.backend.project.dto.ProjectPostInterface;
 import com.wittypuppy.backend.project.entity.ProjectPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,8 +31,21 @@ public interface ProjectPostRepository extends JpaRepository<ProjectPost, Long> 
                     "LEFT JOIN tbl_employee te ON te.employee_code = tpm.employee_code " +
                     "LEFT JOIN tbl_department td ON td.department_code = te.department_code " +
                     "WHERE tpm.project_code=:projectCode " +
+                    "AND tpp.project_post_title LIKE concat('%',:searchValue,'%') " +
                     "ORDER BY tpp.project_code DESC " +
                     "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectPostDTO> selectProjectPostListWithPaging(Long projectCode, Integer startCount, Integer searchCount);
+    List<ProjectPostInterface> selectProjectPostListWithPaging(String searchValue, Long projectCode, Integer startCount, Integer searchCount);
+
+    @Query(value =
+            "SELECT count(*) " +
+                    "FROM tbl_project_post tpp " +
+                    "LEFT JOIN tbl_project_post_member tppm ON tppm.project_post_code = tpp.project_post_code " +
+                    "LEFT JOIN tbl_project_member tpm ON tpm.project_member_code=tppm.project_member_code " +
+                    "LEFT JOIN tbl_employee te ON te.employee_code = tpm.employee_code " +
+                    "LEFT JOIN tbl_department td ON td.department_code = te.department_code " +
+                    "WHERE tpm.project_code=:projectCode " +
+                    "AND tpp.project_post_title LIKE concat('%',:searchValue,'%') " ,
+            nativeQuery = true)
+    Long getCountAllProjectPost(String searchValue, Long projectCode);
 }

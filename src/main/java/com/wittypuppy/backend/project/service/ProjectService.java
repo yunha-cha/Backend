@@ -112,7 +112,7 @@ public class ProjectService {
 
     /* 프로젝트 만들기 */
     @Transactional
-    public String createProject(ProjectDTO projectDTO, Long userEmployeeCode) {
+    public Long createProject(ProjectDTO projectDTO, Long userEmployeeCode) {
         Employee employee = employeeRepository.findById(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("로그인한 계정의 정보를 찾을 수 없습니다."));
         try {
@@ -131,10 +131,12 @@ public class ProjectService {
                     .builder();
 
             projectRepository.save(project);
+
+            Long resultProjectCode = project.getProjectCode();
+            return resultProjectCode;
         } catch (Exception e) {
             throw new DataInsertionException("프로젝트 생성 실패");
         }
-        return "프로젝트 생성 성공";
     }
 
     /* 프로젝트 열기 */
@@ -157,6 +159,7 @@ public class ProjectService {
                 .setProjectDescription(project.getProjectDescription())
                 .setProjectDeadline(project.getProjectDeadline())
                 .setProjectLockedStatus(project.getProjectLockedStatus())
+                .setProjectProgressStatus(project.getProjectProgressStatus())
                 .builder();
         resultMap.put("project", projectDTO);
         Employee projectManager = project.getProjectManager();
@@ -170,7 +173,7 @@ public class ProjectService {
     }
 
     /* 프로젝트를 열게 되는데. 거기서 게시글들을 따로 읽어온다.*/
-    public List<ProjectPostDTO> selectProjectPostListWithPaging(Long projectCode, Criteria cri, Long userEmployeeCode) {
+    public Map<String, Object> selectProjectPostListWithPaging(String searchValue, Long projectCode, Criteria cri, Long userEmployeeCode) {
         ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
                 .orElse(null); // 현재 프로젝트의 멤버가 아니면 null
         Project project = projectRepository.findById(projectCode)
@@ -180,29 +183,34 @@ public class ProjectService {
         }
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        List<ProjectPostDTO> projectPostList = projectPostRepository.selectProjectPostListWithPaging(projectCode, index * count, count);
-        return projectPostList;
+
+        Long projectPostListSize = projectPostRepository.getCountAllProjectPost(searchValue, projectCode);
+        List<ProjectPostInterface> projectPostList = projectPostRepository.selectProjectPostListWithPaging(searchValue, projectCode, index * count, count);
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("projectPostListSize", projectPostListSize);
+        returnMap.put("projectPostList", projectPostList);
+        return returnMap;
     }
 
     /* 프로젝트 수정 */
     @Transactional
-    public String modifyProject(Long projectCode, ProjectOptionsDTO projectOptionsDTO, Long userEmployeeCode) {
+    public String modifyProject(Long projectCode, ProjectOptionsDTO projectOptions, Long userEmployeeCode) {
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
         if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
             return "해당 프로젝트의 관리자가 아닙니다.";
         }
         try {
-            project = project.setProjectTitle(projectOptionsDTO.getProjectTitle())
-                    .setProjectDescription(projectOptionsDTO.getProjectDescription())
-                    .setProjectProgressStatus(projectOptionsDTO.getProgressStatus())
-                    .setProjectDeadline(projectOptionsDTO.getProjectDeadline())
-                    .setProjectLockedStatus(projectOptionsDTO.getProjectLockedStatus())
+            project = project.setProjectTitle(projectOptions.getProjectTitle())
+                    .setProjectDescription(projectOptions.getProjectDescription())
+                    .setProjectProgressStatus(projectOptions.getProjectProgressStatus())
+                    .setProjectDeadline(projectOptions.getProjectDeadline())
+                    .setProjectLockedStatus(projectOptions.getProjectLockedStatus())
                     .builder();
+            return "프로젝트 수정 성공";
         } catch (Exception e) {
             throw new DataUpdateException("프로젝트 수정 실패");
         }
-        return "프로젝트 수정 성공";
     }
 
     /* 프로젝트 초대를 위한 사원 목록 가져오기 */
