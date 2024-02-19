@@ -17,6 +17,7 @@ import java.util.List;
 public class Chatroom {
     @Id
     @Column(name = "chatroom_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatroomCode;
 
     @Column(name = "chatroom_title")
@@ -26,7 +27,7 @@ public class Chatroom {
     private String chatroomFixedStatus;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ChatroomMember> chatroomMemberList;
 
     @JoinColumn(name = "chatroom_code")

@@ -1,8 +1,9 @@
 package com.wittypuppy.backend.messenger.dto;
 
+
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,5 +13,5 @@ import java.time.LocalDateTime;
 public class ChatFileDTO {
     private String chatFileOgFile;
     private String chatFileChangedFile;
-    private LocalDateTime chatFileUpdateDate;
+    private Date chatFileUpdateDate;
 }

@@ -2,7 +2,7 @@ package com.wittypuppy.backend.messenger.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -13,9 +13,8 @@ import java.util.List;
 public class ChatDTO {
     private Long chatCode;
     private Long chatroomCode;
-    private Long chatroomMemberCode;
-    private LocalDateTime chatWriteDate;
+    private ChatroomMemberDTO chatroomMember;
+    private Date chatWriteDate;
     private String chatContent;
     private List<ChatFileDTO> chatFileList;
-    private ChatroomMemberDTO chatroomMember;
 }

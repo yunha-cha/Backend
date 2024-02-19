@@ -3,7 +3,7 @@ package com.wittypuppy.backend.messenger.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class Chat {
     private ChatroomMember chatroomMember;
 
     @Column(name = "chat_write_date")
-    private LocalDateTime chatWriteDate;
+    private Date chatWriteDate;
 
     @Column(name = "chat_content")
     private String chatContent;
@@ -54,7 +54,7 @@ public class Chat {
         return this;
     }
 
-    public Chat setChatWriteDate(LocalDateTime chatWriteDate) {
+    public Chat setChatWriteDate(Date chatWriteDate) {
         this.chatWriteDate = chatWriteDate;
         return this;
     }

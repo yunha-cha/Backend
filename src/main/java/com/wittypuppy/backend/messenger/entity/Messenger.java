@@ -17,6 +17,7 @@ import java.util.List;
 public class Messenger {
     @Id
     @Column(name = "messenger_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long messengerCode;
 
     @JoinColumn(name = "employee_code")

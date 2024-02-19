@@ -36,13 +36,19 @@ public class MessengerConfig {
         Map<Long, Set<Long>> oldChatMemberMap = new HashMap<>();
         // 여기서 위의 repository를 통해 최초의 oldChatMemberMap을 구해야 한다.
         // 최초의 oldChatMemberMap을 읽어 왔다면.
-        List<Chatroom> chatroomList = chatroomRepository.findAllByChatroomMemberList_ChatroomMemberTypeNot("삭제");
-        chatroomList.forEach(chatroom -> oldChatMemberMap.put(
-                chatroom.getChatroomCode(),
-                chatroom.getChatroomMemberList().stream()
-                        .map(ChatroomMember::getChatroomMemberCode)
-                        .collect(Collectors.toSet())
-        ));
+        List<Chatroom> chatroomList = null;
+        try {
+            chatroomList = chatroomRepository.findAllByChatroomMemberList_ChatroomMemberTypeNot("삭제");
+
+            chatroomList.forEach(chatroom -> oldChatMemberMap.put(
+                    chatroom.getChatroomCode(),
+                    chatroom.getChatroomMemberList().stream()
+                            .map(ChatroomMember::getChatroomMemberCode)
+                            .collect(Collectors.toSet())
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         log.info(oldChatMemberMap.toString());
         return oldChatMemberMap;
     }
@@ -51,6 +57,7 @@ public class MessengerConfig {
      * 채팅방에 멤버가 추가 될 경우 이 bean값에 추가된다.
      * 만약 그 상황에서 해당 채팅방에서 채팅이 발생할 경우 해당 사람을 강제로 구독시키고
      * 여기 있던 값을 위에 있는 값으로 이동시킨다.
+     *
      * @return key가 채팅방 식별 코드이고 value가 그 채팅방의 멤버의 식별코드들의 Set 인 Map
      */
     @Bean

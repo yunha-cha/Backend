@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -19,6 +19,7 @@ import java.util.List;
 public class ChatroomMember {
     @Id
     @Column(name = "chatroom_member_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatroomMemberCode;
 
     @Column(name = "chatroom_code")
@@ -32,7 +33,7 @@ public class ChatroomMember {
     private String chatroomMemberType;
 
     @Column(name = "chatroom_member_invite_time")
-    private LocalDateTime chatroomMemberInviteTime;
+    private Date chatroomMemberInviteTime;
 
     @Column(name = "chatroom_member_pinned_status")
     private String chatroomMemberPinnedStatus;
@@ -64,7 +65,7 @@ public class ChatroomMember {
         return this;
     }
 
-    public ChatroomMember setChatroomMemberInviteTime(LocalDateTime chatroomMemberInviteTime) {
+    public ChatroomMember setChatroomMemberInviteTime(Date chatroomMemberInviteTime) {
         this.chatroomMemberInviteTime = chatroomMemberInviteTime;
         return this;
     }
@@ -79,10 +80,10 @@ public class ChatroomMember {
         return this;
     }
 
-    public ChatroomMember setChatList(List<Chat> chatList) {
-        this.chatList = chatList;
-        return this;
-    }
+//    public ChatroomMember setChatList(List<Chat> chatList) {
+//        this.chatList = chatList;
+//        return this;
+//    }
 
     public ChatroomMember builder() {
         return new ChatroomMember(chatroomMemberCode, chatroomCode, employee, chatroomMemberType, chatroomMemberInviteTime, chatroomMemberPinnedStatus, chatReadStatusList, chatList);

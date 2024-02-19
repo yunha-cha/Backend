@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.messenger.repository;
 
+import com.wittypuppy.backend.messenger.dto.chatroomMainElseChatInterface;
 import com.wittypuppy.backend.messenger.entity.Chatroom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,11 +15,11 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
 
     @Query(value =
             "SELECT " +
-                    "cr.chatroom_code," +
-                    "cr.chatroom_title," +
-                    "crpf.chatroom_profile_changed_file," +
-                    "crs.chatroom_code," +
-                    "crm.chatroom_member_pinned_status " +
+                    "cr.chatroom_code chatroomCode," +
+                    "cr.chatroom_title chatroomTitle," +
+                    "crpf.chatroom_profile_changed_file chatroomProfileFileURL," +
+                    "crs.chatroom_code lastReadChatCode," +
+                    "crm.chatroom_member_pinned_status pinnedStatus " +
                     "FROM tbl_chatroom cr " +
                     "LEFT JOIN tbl_chatroom_profile crpf ON cr.chatroom_code = crpf.chatroom_code " +
                     "LEFT JOIN tbl_chatroom_member crm ON cr.chatroom_code = crm.chatroom_code " +
@@ -28,7 +29,7 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
                     "AND e.employee_code = :employeeCode " +
                     "AND cr.chatroom_code = :chatroomCode"
             , nativeQuery = true)
-    Optional<Object[]> findByChatroomCodeAndEmployeeCode(Long chatroomCode, Long employeeCode);
+    Optional<chatroomMainElseChatInterface> findByChatroomCodeAndEmployeeCode(Long chatroomCode, Long employeeCode);
 
     List<Chatroom> findAllByChatroomMemberList_ChatroomMemberTypeNot(String chatroomMemberType);
 

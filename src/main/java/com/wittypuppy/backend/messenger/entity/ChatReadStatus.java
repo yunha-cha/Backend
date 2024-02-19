@@ -1,9 +1,6 @@
 package com.wittypuppy.backend.messenger.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +15,7 @@ import lombok.ToString;
 public class ChatReadStatus {
     @Id
     @Column(name = "chat_read_status_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatReadStatusCode;
 
     @Column(name = "chatroom_member_code")
