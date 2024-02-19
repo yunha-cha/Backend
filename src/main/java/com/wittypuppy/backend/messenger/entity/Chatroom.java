@@ -26,7 +26,7 @@ public class Chatroom {
     private String chatroomFixedStatus;
 
     @JoinColumn(name = "chatroom_code")
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ChatroomMember> chatroomMemberList;
 
     @JoinColumn(name = "chatroom_code")

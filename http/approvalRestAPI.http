@@ -5,8 +5,8 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "ap_second",
-  "employeePassword": "ap_second"
+  "employeeId": "ap_first",
+  "employeePassword": "ap_first"
 }
 
 ### 결재 대기 문서 조회
@@ -55,7 +55,7 @@ Authorization: Bearer eyJkYXRlIjoxNzA3NTcwNDkwMTUxLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 GET http://localhost:1208/approval/outbox-on-process
 Accept: */*
 Content-Type: application/json
-Authorization: Bearer eyJkYXRlIjoxNzA4MDc2MTA5MjczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLquYDrr7zsnqwiLCJzdWIiOiJhcF9zZWNvbmQiLCJlbXBDb2RlIjozMSwiZW1wbG95ZWVFbWFpbCI6ImFwX3NlY29uZEBnbWFpbC5jb20iLCJlbXBsb3llZUlkIjoiYXBfc2Vjb25kIiwiZXhwIjoxNzA4MDc5NzA5LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzEsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.VsV6l2Vbr_MU-atyRMB6uxWMqYrtriSp7gPJ5f2N0t8
+Authorization: Bearer eyJkYXRlIjoxNzA4MzQyNjgwODE3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshpDtnaXrr7wiLCJzdWIiOiJhcF9maXJzdCIsImVtcENvZGUiOjMwLCJlbXBsb3llZUVtYWlsIjoiYXBfZmlyc3RAZ21haWwuY29tIiwiZW1wbG95ZWVJZCI6ImFwX2ZpcnN0IiwiZXhwIjoxNzA4MzQ2MjgwLCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzAsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.HcAosYehlZfa5crWAPTQD87-G3Nv-DIJ_F2cnM5ssD4
 
 ### 결재 완료 문서 조회
 GET http://localhost:1208/approval/outbox-finished

@@ -107,14 +107,14 @@ public class ApprovalController {
 //        System.out.println("result ========== " + result);
 //        return ResponseEntity.ok(result);
 //    }
-//
-//    @Tag(name = "결재 진행 중인 문서 조회", description = "로그인한 사용자가 결재자로 지정된 문서 중, 결재 프로세스가 완료되지 않은 문서 목록 조회")
-//    @GetMapping("/outbox-on-process")
-//    public ResponseEntity<ResponseDTO> onProcessInOutbox(@AuthenticationPrincipal User user) {
-//        List<ApprovalDoc> approvalDocs = approvalService.onProcessInOutbox(user);
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
-//    }
-//
+
+    @Tag(name = "결재 진행 중인 문서 조회", description = "로그인한 사용자가 결재자로 지정된 문서 중, 결재 프로세스가 완료되지 않은 문서 목록 조회")
+    @GetMapping("/outbox-on-process")
+    public ResponseEntity<ResponseDTO> onProcessInOutbox(@AuthenticationPrincipal User user) {
+        List<ApprovalDoc> approvalDocs = approvalService.onProcessInOutbox(user);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", approvalDocs));
+    }
+
 //    @Tag(name = "수신함 - 결재 완료 문서 조회", description = "로그인한 사용자가 결재자로 지정된 문서 중, 결재 프로세스가 '결재'로 완료된 문서 목록 조회")
 //    @GetMapping("/outbox-finished")
 //    public ResponseEntity<ResponseDTO> finishedInOutbox(@AuthenticationPrincipal User user) {

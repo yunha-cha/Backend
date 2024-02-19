@@ -413,7 +413,41 @@ public class ApprovalService {
 //        }
 //        return onProcessDocList;
 //    }
+        // 결재 진행 중인 문서 조회
+    public List<ApprovalDoc> onProcessInOutbox(User user) {
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+
+        // 결재 상태 중에 대기가 존재하는 문서 코드 가져오기
+        List<Long> outboxOnprocessList = approvalDocRepository.outboxDocListOnprocess(Long.valueOf(loginEmployee.getEmployeeCode()));
+
+        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
+        List<ApprovalDoc> outboxOnprocessDocs = new ArrayList<>();
+        for (Long approvalDocCode : outboxOnprocessList) {
+            ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).orElse(null);
+            if (approvalDoc != null) {
+                outboxOnprocessDocs.add(approvalDoc);
+            }
+        }
+
+        return outboxOnprocessDocs;
+    }
+
+//        // 문서 코드 목록 가져오기
+//        List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
+     // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
+//        List<ApprovalDoc> inboxDocs = new ArrayList<>();
+//        for (Long approvalDocCode : pageInboxDocCodeList) {
+//            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
+//            if(approvalDoc != null) {
+//                inboxDocs.add(approvalDoc);
+//            }
+//        }
 //
+//        return new PageImpl<>(inboxDocs, PageRequest.of(page - 1, size), inboxDocCodeList.size());
+//    }
+
 //    // 결재 완료 문서 조회
 //    public List<ApprovalDoc> finishedInOutbox(User user) {
 //

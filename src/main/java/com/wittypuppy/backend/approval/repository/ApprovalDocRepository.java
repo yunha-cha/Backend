@@ -15,6 +15,17 @@ public interface ApprovalDocRepository extends JpaRepository<ApprovalDoc, Long> 
 
     @Query(value =
             "SELECT " +
+                    "a.approval_document_code " +
+                    "FROM tbl_approval_line a INNER JOIN tbl_approval_line b on a.approval_document_code = b.approval_document_code " +
+                    "WHERE a.employee_code = :employeeCode " +
+                    "AND a.approval_process_status = '기안' " +
+                    "AND b.approval_process_status = '대기' " +
+                    "AND a.approval_document_code = b.approval_document_code",
+            nativeQuery = true)
+    List<Long> outboxDocListOnprocess(Long employeeCode);
+
+    @Query(value =
+            "SELECT " +
                     "approval_document_code " +
             "FROM tbl_approval_line a " +
             "WHERE employee_code = :employeeCode " +
