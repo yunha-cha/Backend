@@ -8,10 +8,6 @@ import com.wittypuppy.backend.approval.entity.*;
 import com.wittypuppy.backend.approval.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +79,7 @@ public class ApprovalService {
         log.info("[ApprovalService] saving doc info started =====");
 
         ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-        approvalDoc.setApprovalForm("테스트");
+        approvalDoc.setApprovalForm("휴가신청서");
 
         LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
         approvalDoc.setEmployeeCode(loginEmployee);
@@ -173,69 +169,58 @@ public class ApprovalService {
         return "지정 성공";
     }
 
-//    // 상신한 문서 조회
-//    public Page<ApprovalDoc> findApprovalDocsByEmployeeCode(User user, Pageable pageable) {
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 해당 사용자의 결재 상신 문서 리스트 조회
-//        return approvalDocRepository.findByEmployeeCode(loginEmployee, pageable);
-//    }
-
-    public Page<ApprovalDoc> findApprovalDocsWithPaging(User user, int page, int size) {
-        log.info("[findApprovalDocsWithPaging] 현재 페이지: {}", page);
-
+    // 상신한 문서 조회
+    public List<ApprovalDoc> findApprovalDocsByEmployeeCode(User user) {
+        // 로그인한 사용자의 정보 가져오기
         LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-        return approvalDocRepository.findByEmployeeCode(loginEmployee, PageRequest.of(page - 1, size));
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        return outboxDocList;
     }
 
     // 결재 대기 문서 조회
-    public Page<ApprovalDoc> inboxDocListByEmployeeCode(User user, int page, int size){
+    public List<ApprovalDoc> inboxDocListByEmployeeCode(User user){
         // 로그인한 사용자의 정보 가져오기
         LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
         // 문서 코드 목록 가져오기
         List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
 
-        // 페이지네이션을 위한 문서 코드 목록 분할
-        int start = (page - 1) * size;
-        int end = Math.min(start + size, inboxDocCodeList.size());
-        List<Long> pageInboxDocCodeList = inboxDocCodeList.subList(start, end);
-
         // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
         List<ApprovalDoc> inboxDocs = new ArrayList<>();
-        for (Long approvalDocCode : pageInboxDocCodeList) {
+        for (Long approvalDocCode : inboxDocCodeList) {
             ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
             if(approvalDoc != null) {
                 inboxDocs.add(approvalDoc);
             }
         }
-
-        return new PageImpl<>(inboxDocs, PageRequest.of(page - 1, size), inboxDocCodeList.size());
+        return inboxDocs;
     }
 
-//    // 수신함 - 결재 완료함
-//    public List<ApprovalDoc> inboxFinishedListByEmployeeCode(User user){
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        System.out.println("loginEmployee = " + loginEmployee);
-//
-//        // 해당 사용자가 지정된 결재선의 문서 코드 목록 가져오기
-//        List<Long> inboxFinishedCodeList = approvalDocRepository.inboxFinishedListbyEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
-//        System.out.println("inboxFinishedCodeList = " + inboxFinishedCodeList);
-//
-//        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
-//        List<ApprovalDoc> finishedDocs = new ArrayList<>();
-//        for (Long approvalDocCode : inboxFinishedCodeList) {
-//            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
-//            if(approvalDoc != null) {
-//                finishedDocs.add(approvalDoc);
-//            }
-//        }
-//
-//        return finishedDocs;
-//    }
+    // 수신함 - 결재 완료함
+    public List<ApprovalDoc> inboxFinishedListByEmployeeCode(User user){
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        System.out.println("loginEmployee = " + loginEmployee);
+
+        // 해당 사용자가 지정된 결재선의 문서 코드 목록 가져오기
+        List<Long> inboxFinishedCodeList = approvalDocRepository.inboxFinishedListbyEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
+        System.out.println("inboxFinishedCodeList = " + inboxFinishedCodeList);
+
+        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
+        List<ApprovalDoc> finishedDocs = new ArrayList<>();
+        for (Long approvalDocCode : inboxFinishedCodeList) {
+            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
+            if(approvalDoc != null) {
+                finishedDocs.add(approvalDoc);
+            }
+        }
+
+        return finishedDocs;
+    }
 
     // 결재하기
     @Transactional
@@ -259,40 +244,39 @@ public class ApprovalService {
         // 대리 결재 여부 확인
         ApprovalRepresent approvalRepresent = approvalRepresentRepository.findByRepresentative(employeeCode);
 
+        System.out.println("approvalRepresent = " + approvalRepresent);
+        System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
+        System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
 
-        if(approvalRepresent != null) {
-            if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
-                AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
-                System.out.println("approvalRepresent = " + approvalRepresent);
-                System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
-                System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
-                if (representApprovalLine != null) {
-                    // 결재 상태 업데이트
-                    representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
-                    representApprovalLine.setApprovalProcessStatus("결재");
-                    representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
-                    additionalApprovalLineRepository.save(representApprovalLine);
-                    return "결재 성공";
-                }
-            }
-        } else if(approvalRepresent == null) {
-            if (!approvalSubject.equals(employeeCode)) {
-                return "결재 대상이 아닙니다.";
-            }
+        if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
+            AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
 
-            AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, employeeCode, "대기");
-
-            if (additionalApprovalLine != null) {
+            if (representApprovalLine != null) {
                 // 결재 상태 업데이트
-                additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
-                additionalApprovalLine.setApprovalProcessStatus("결재");
-                additionalApprovalLineRepository.save(additionalApprovalLine);
+                representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+                representApprovalLine.setApprovalProcessStatus("결재");
+                representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
+                additionalApprovalLineRepository.save(representApprovalLine);
                 return "결재 성공";
             }
+        }
 
+        if (!approvalSubject.equals(employeeCode)) {
             return "결재 대상이 아닙니다.";
         }
-        return "대리 결재 대상 아님";
+
+        AdditionalApprovalLine additionalApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, employeeCode, "대기");
+
+        if (additionalApprovalLine != null) {
+            // 결재 상태 업데이트
+            additionalApprovalLine.setApprovalProcessDate(LocalDateTime.now());
+            additionalApprovalLine.setApprovalProcessStatus("결재");
+            additionalApprovalLineRepository.save(additionalApprovalLine);
+            return "결재 성공";
+        }
+
+        return "결재 대상이 아닙니다.";
+
     }
 
     // 반려하기
@@ -313,229 +297,174 @@ public class ApprovalService {
 
         System.out.println("employeeCode ======== " + employeeCode);
 
-        // 대리 결재 여부 확인
-        ApprovalRepresent approvalRepresent = approvalRepresentRepository.findByRepresentative(employeeCode);
+        // 반려 대상과 로그인한 사용자 employeeCode 비교
+        if (!approvalSubject.equals(employeeCode)) {
+            return "반려 대상이 아닙니다.";
+        }
 
+        // 대기 상태인 모든 approvalLine 조회
+        List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDocCode);
 
-        if(approvalRepresent != null) {
-            if (approvalRepresent.getRepresentStatus().equals("Y") && approvalRepresent.getRepresentative() == loginEmployee.getEmployeeCode()) {
-                AdditionalApprovalLine representApprovalLine = additionalApprovalLineRepository.findByApprovalDocCodeAndEmployeeCodeAndApprovalProcessStatus(approvalDocCode, (long) approvalRepresent.getAssignee().getEmployeeCode(), "대기");
-                System.out.println("approvalRepresent = " + approvalRepresent);
-                System.out.println("approvalRepresent.getRepresentStatus() = " + approvalRepresent.getRepresentStatus());
-                System.out.println("approvalRepresent.getAssignee() = " + approvalRepresent.getAssignee());
-                if (representApprovalLine != null) {
-                    // 결재 상태 업데이트
-                    representApprovalLine.setApprovalProcessDate(LocalDateTime.now());
-                    representApprovalLine.setApprovalProcessStatus("반려");
-                    representApprovalLine.setEmployeeCode(approvalRepresent.getRepresentative());
-                    additionalApprovalLineRepository.save(representApprovalLine);
-                    return "반려 성공";
-                }
-            }
-        } else if(approvalRepresent == null) {
-            // 반려 대상과 로그인한 사용자 employeeCode 비교
-            if (!approvalSubject.equals(employeeCode)) {
-                return "반려 대상이 아닙니다.";
-            }
+        // 각 approvalLine의 상태를 반려로 변경
+        for (Long approvalLineCode : pendingApprovalLines) {
+            Optional<AdditionalApprovalLine> optionalApprovalLine = additionalApprovalLineRepository.findById(approvalLineCode);
+            optionalApprovalLine.ifPresent(approvalLine -> {
+                approvalLine.setApprovalProcessDate(LocalDateTime.now());
+                approvalLine.setApprovalProcessStatus("반려");
+                additionalApprovalLineRepository.save(approvalLine);
+            });
+        }
 
-            // 대기 상태인 모든 approvalLine 조회
-            List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDocCode);
-
-            // 각 approvalLine의 상태를 반려로 변경
-            for (Long approvalLineCode : pendingApprovalLines) {
-                Optional<AdditionalApprovalLine> optionalApprovalLine = additionalApprovalLineRepository.findById(approvalLineCode);
-                optionalApprovalLine.ifPresent(approvalLine -> {
-                    approvalLine.setApprovalProcessDate(LocalDateTime.now());
-                    approvalLine.setApprovalProcessStatus("반려");
-                    additionalApprovalLineRepository.save(approvalLine);
-                });
-            }
-
-            return "반려 성공";
-        } return "대리 결재 대상 아님";
+        return "반려 성공";
     }
 
-//    // 상신 문서 회수
-//    public String retrieval(Long approvalDocCode, User user) {
-//        // 문서 정보 가져오기
-//        ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).get();
-//        System.out.println("approvalDoc.getEmployeeCode().getEmployeeCode() = " + approvalDoc.getEmployeeCode().getEmployeeCode());
-//        Long employeeCode = (long) approvalDoc.getEmployeeCode().getEmployeeCode();
-//        System.out.println("employeeCode = " + employeeCode);
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        Long loginemployeeCode = (long) loginEmployee.getEmployeeCode();
-//        System.out.println("loginemployeeCode = " + loginemployeeCode);
-//
-//        // 해당 문서 employeeCode가 로그인한 사용자와 일치하는지 확인
-//        if (!employeeCode.equals(loginemployeeCode)) {
-//            return "회수 대상이 아닙니다.";
-//        }
-//
-//        // 해당 문서의 모든 approvalLine 가져오기
-//        List<AdditionalApprovalLine> approvalLines = additionalApprovalLineRepository.findByApprovalDocCode(approvalDocCode);
-//
-//        // 모든 approvalLine의 상태가 "기안" 또는 "대기"인지 확인
-//        for (AdditionalApprovalLine approvalLine : approvalLines) {
-//            String status = approvalLine.getApprovalProcessStatus();
-//            if (!status.equals("기안") && !status.equals("대기")) {
-//                return "미결 문서가 아닙니다.";
-//            }
-//        }
-//
-//        // approvalLine의 상태를 회수로 변경
-//        for (AdditionalApprovalLine approvalLine : approvalLines) {
-//            approvalLine.setApprovalProcessStatus("회수");
-//            approvalLine.setApprovalProcessDate(LocalDateTime.now());
-//            additionalApprovalLineRepository.save(approvalLine);
-//        }
-//
-//        return "회수 성공";
-//    }
-//
-//    // 결재 진행 중인 문서 조회
-//    public List<ApprovalDoc> onProcessInOutbox(User user) {
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 해당 사용자의 결재 상신 문서 리스트 조회
-//        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
-//
-//        // 결재 상태 중에 대기가 존재하는 문서 리스트 조회
-//        List<ApprovalDoc> onProcessDocList = new ArrayList<>();
-//        for(ApprovalDoc approvalDoc : outboxDocList) {
-//            List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDoc.getApprovalDocCode());
-//            if(!pendingApprovalLines.isEmpty()) {
-//                onProcessDocList.add(approvalDoc);
-//            }
-//        }
-//        return onProcessDocList;
-//    }
-        // 결재 진행 중인 문서 조회
+    // 상신 문서 회수
+    public String retrieval(Long approvalDocCode, User user) {
+        // 문서 정보 가져오기
+        ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).get();
+        System.out.println("approvalDoc.getEmployeeCode().getEmployeeCode() = " + approvalDoc.getEmployeeCode().getEmployeeCode());
+        Long employeeCode = (long) approvalDoc.getEmployeeCode().getEmployeeCode();
+        System.out.println("employeeCode = " + employeeCode);
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        Long loginemployeeCode = (long) loginEmployee.getEmployeeCode();
+        System.out.println("loginemployeeCode = " + loginemployeeCode);
+
+        // 해당 문서 employeeCode가 로그인한 사용자와 일치하는지 확인
+        if (!employeeCode.equals(loginemployeeCode)) {
+            return "회수 대상이 아닙니다.";
+        }
+
+        // 해당 문서의 모든 approvalLine 가져오기
+        List<AdditionalApprovalLine> approvalLines = additionalApprovalLineRepository.findByApprovalDocCode(approvalDocCode);
+
+        // 모든 approvalLine의 상태가 "기안" 또는 "대기"인지 확인
+        for (AdditionalApprovalLine approvalLine : approvalLines) {
+            String status = approvalLine.getApprovalProcessStatus();
+            if (!status.equals("기안") && !status.equals("대기")) {
+                return "미결 문서가 아닙니다.";
+            }
+        }
+
+        // approvalLine의 상태를 회수로 변경
+        for (AdditionalApprovalLine approvalLine : approvalLines) {
+            approvalLine.setApprovalProcessStatus("회수");
+            approvalLine.setApprovalProcessDate(LocalDateTime.now());
+            additionalApprovalLineRepository.save(approvalLine);
+        }
+
+        return "회수 성공";
+    }
+
+    // 결재 진행 중인 문서 조회
     public List<ApprovalDoc> onProcessInOutbox(User user) {
 
         // 로그인한 사용자의 정보 가져오기
         LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
 
-        // 결재 상태 중에 대기가 존재하는 문서 코드 가져오기
-        List<Long> outboxOnprocessList = approvalDocRepository.outboxDocListOnprocess(Long.valueOf(loginEmployee.getEmployeeCode()));
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
 
-        // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
-        List<ApprovalDoc> outboxOnprocessDocs = new ArrayList<>();
-        for (Long approvalDocCode : outboxOnprocessList) {
-            ApprovalDoc approvalDoc = approvalDocRepository.findById(approvalDocCode).orElse(null);
-            if (approvalDoc != null) {
-                outboxOnprocessDocs.add(approvalDoc);
+        // 결재 상태 중에 대기가 존재하는 문서 리스트 조회
+        List<ApprovalDoc> onProcessDocList = new ArrayList<>();
+        for(ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> pendingApprovalLines = additionalApprovalLineRepository.findPendingApprovalLines(approvalDoc.getApprovalDocCode());
+            if(!pendingApprovalLines.isEmpty()) {
+                onProcessDocList.add(approvalDoc);
+            }
+        }
+        return onProcessDocList;
+    }
+
+    // 결재 완료 문서 조회
+    public List<ApprovalDoc> finishedInOutbox(User user) {
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        // 결재 순서가 가장 큰 결재선의 상태가 '결재'인 문서 리스트 조회
+        List<ApprovalDoc> finishedDocListInOutbox = new ArrayList<>();
+
+        // 해당 사용자의 결재 상신 문서 리스트를 순회하며 쿼리를 통해 검색한 결과와 비교하여 결과 리스트에 추가
+        for (ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> finishedDocCodes = additionalApprovalLineRepository.finishedInOutboxDocCode((long) loginEmployee.getEmployeeCode());
+            if (finishedDocCodes.contains(approvalDoc.getApprovalDocCode())) {
+                finishedDocListInOutbox.add(approvalDoc);
             }
         }
 
-        return outboxOnprocessDocs;
+        return finishedDocListInOutbox;
     }
 
-//        // 문서 코드 목록 가져오기
-//        List<Long> inboxDocCodeList = approvalDocRepository.inboxDocListByEmployeeCode(Long.valueOf(loginEmployee.getEmployeeCode()));
-     // 문서 코드 목록으로 ApprovalDoc 정보 가져오기
-//        List<ApprovalDoc> inboxDocs = new ArrayList<>();
-//        for (Long approvalDocCode : pageInboxDocCodeList) {
-//            ApprovalDoc approvalDoc = approvalDocRepository.findByApprovalDocCode(approvalDocCode);
-//            if(approvalDoc != null) {
-//                inboxDocs.add(approvalDoc);
-//            }
-//        }
-//
-//        return new PageImpl<>(inboxDocs, PageRequest.of(page - 1, size), inboxDocCodeList.size());
-//    }
+    // 반려 문서 조회
+    public List<ApprovalDoc> rejectedInOutbox(User user) {
 
-//    // 결재 완료 문서 조회
-//    public List<ApprovalDoc> finishedInOutbox(User user) {
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 해당 사용자의 결재 상신 문서 리스트 조회
-//        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
-//
-//        // 결재 순서가 가장 큰 결재선의 상태가 '결재'인 문서 리스트 조회
-//        List<ApprovalDoc> finishedDocListInOutbox = new ArrayList<>();
-//
-//        // 해당 사용자의 결재 상신 문서 리스트를 순회하며 쿼리를 통해 검색한 결과와 비교하여 결과 리스트에 추가
-//        for (ApprovalDoc approvalDoc : outboxDocList) {
-//            List<Long> finishedDocCodes = additionalApprovalLineRepository.finishedInOutboxDocCode((long) loginEmployee.getEmployeeCode());
-//            if (finishedDocCodes.contains(approvalDoc.getApprovalDocCode())) {
-//                finishedDocListInOutbox.add(approvalDoc);
-//            }
-//        }
-//
-//        return finishedDocListInOutbox;
-//    }
-//
-//    // 반려 문서 조회
-//    public List<ApprovalDoc> rejectedInOutbox(User user) {
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 해당 사용자의 결재 상신 문서 리스트 조회
-//        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
-//
-//        // 결재 상태 중에 반려가 존재하는 문서 리스트 조회
-//        List<ApprovalDoc> rejectedDocList = new ArrayList<>();
-//        for(ApprovalDoc approvalDoc : outboxDocList) {
-//            List<Long> rejectedApprovalLines = additionalApprovalLineRepository.findRejectedApprovalLines(approvalDoc.getApprovalDocCode());
-//            if(!rejectedApprovalLines.isEmpty()) {
-//                rejectedDocList.add(approvalDoc);
-//            }
-//        }
-//        return rejectedDocList;
-//    }
-//
-//    // 회수 문서 조회
-//    public List<ApprovalDoc> retrievedInOutbox(User user) {
-//
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 해당 사용자의 결재 상신 문서 리스트 조회
-//        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
-//
-//        // 결재 상태 중에 회수가 존재하는 문서 리스트 조회
-//        List<ApprovalDoc> retrievedDocList = new ArrayList<>();
-//        for(ApprovalDoc approvalDoc : outboxDocList) {
-//            List<Long> retrievedApprovalLines = additionalApprovalLineRepository.findRetrievedApprovalLines(approvalDoc.getApprovalDocCode());
-//            if(!retrievedApprovalLines.isEmpty()) {
-//                retrievedDocList.add(approvalDoc);
-//            }
-//        }
-//        return retrievedDocList;
-//    }
-//
-//    // 임시 저장
-//    public ApprovalDoc temporarySaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
-//
-//        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-//        approvalDoc.setApprovalForm("임시저장문서");
-//
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//        approvalDoc.setEmployeeCode(loginEmployee);
-//
-//        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
-//        approvalDoc.setWhetherSavingApproval("Y");
-//
-//        return approvalDocRepository.save(approvalDoc);
-//    }
-//
-//    // 임시 저장 리스트 조회
-//    public List<ApprovalDoc> findSavedDocsByEmployeeCode(User user) {
-//        // 로그인한 사용자의 정보 가져오기
-//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-//
-//        // 해당 사용자의 결재 문서 중 임시 저장이 'Y'인 문서 조회
-//        return approvalDocRepository.findByEmployeeCodeAndWhetherSavingApproval(loginEmployee, "Y");
-//    }
-//
-//    // 결재 문서 내용 추가 - 휴가 신청서
-//
-//    // 휴가 일수 차감
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        // 결재 상태 중에 반려가 존재하는 문서 리스트 조회
+        List<ApprovalDoc> rejectedDocList = new ArrayList<>();
+        for(ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> rejectedApprovalLines = additionalApprovalLineRepository.findRejectedApprovalLines(approvalDoc.getApprovalDocCode());
+            if(!rejectedApprovalLines.isEmpty()) {
+                rejectedDocList.add(approvalDoc);
+            }
+        }
+        return rejectedDocList;
+    }
+
+    // 회수 문서 조회
+    public List<ApprovalDoc> retrievedInOutbox(User user) {
+
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+
+        // 해당 사용자의 결재 상신 문서 리스트 조회
+        List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
+
+        // 결재 상태 중에 회수가 존재하는 문서 리스트 조회
+        List<ApprovalDoc> retrievedDocList = new ArrayList<>();
+        for(ApprovalDoc approvalDoc : outboxDocList) {
+            List<Long> retrievedApprovalLines = additionalApprovalLineRepository.findRetrievedApprovalLines(approvalDoc.getApprovalDocCode());
+            if(!retrievedApprovalLines.isEmpty()) {
+                retrievedDocList.add(approvalDoc);
+            }
+        }
+        return retrievedDocList;
+    }
+
+    // 임시 저장
+    public ApprovalDoc temporarySaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("임시저장문서");
+
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+        approvalDoc.setWhetherSavingApproval("Y");
+
+        return approvalDocRepository.save(approvalDoc);
+    }
+
+    // 임시 저장 리스트 조회
+    public List<ApprovalDoc> findSavedDocsByEmployeeCode(User user) {
+        // 로그인한 사용자의 정보 가져오기
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+
+        // 해당 사용자의 결재 문서 중 임시 저장이 'Y'인 문서 조회
+        return approvalDocRepository.findByEmployeeCodeAndWhetherSavingApproval(loginEmployee, "Y");
+    }
+
+    // 결재 문서 내용 추가 - 휴가 신청서
+
+    // 휴가 일수 차감
 }
