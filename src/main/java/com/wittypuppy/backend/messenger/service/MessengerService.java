@@ -9,6 +9,7 @@ import com.wittypuppy.backend.messenger.entity.*;
 import com.wittypuppy.backend.messenger.repository.*;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -63,19 +64,24 @@ public class MessengerService {
         ChatroomInfo chatroomInfo = new ChatroomInfo();
 
         List<Chatroom> chatroomList = chatroomRepository.findAllChatroomByEmployeeCodeAndDeleteStatus(userEmployeeCode);
-
+        System.out.println("chatroomList>>>" + chatroomList);
         List<Long> chatroomCodeList = chatroomList.stream().map(chatroom -> chatroom.getChatroomCode()).toList();
         chatroomInfo.setChatroomCodeList(chatroomCodeList);
         for (Long chatroomCode : chatroomCodeList) {
             System.out.println("chatroomCode>>" + chatroomCode);
             RecentChatInterface recentChatInterface = chatRepository.findChatCodesInChatAndChatReadStatus(chatroomCode, userEmployeeCode);
             //            System.out.println("1 >>" + recentChatDTO);
-            if ((recentChatInterface != null && recentChatInterface.getChatCode() != null && recentChatInterface.getUserChatCode() != null) && (recentChatInterface.getChatCode()) > (recentChatInterface.getUserChatCode())) {
+            System.out.println("<<<>>>" + chatroomCode);
+            System.out.println("recentChatInterface.getChatCode " + recentChatInterface.getChatCode());
+            System.out.println("recentChatInterface.getUserChatCode " + recentChatInterface.getUserChatCode());
+            chatroomInfo.setIsRemainingChat("N");
+            // NN NY YN
+            if ((recentChatInterface.getChatCode() != null && recentChatInterface.getUserChatCode() == null)
+                    || (recentChatInterface.getUserChatCode() != null && (recentChatInterface.getChatCode() > recentChatInterface.getUserChatCode()))) {
                 chatroomInfo.setIsRemainingChat("Y");
-                return chatroomInfo;
+                break;
             }
         }
-        chatroomInfo.setIsRemainingChat("N");
         return chatroomInfo;
     }
 

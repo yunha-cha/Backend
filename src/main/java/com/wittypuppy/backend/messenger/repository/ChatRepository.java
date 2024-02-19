@@ -21,13 +21,14 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
                     "FROM tbl_chatroom tcr " +
                     "JOIN tbl_chat tc ON tcr.chatroom_code = tc.chatroom_code " +
                     "LEFT JOIN tbl_chatroom_member tcrm ON tcr.chatroom_code = tcrm.chatroom_code " +
-                    "LEFT JOIN tbl_chat_read_status tcrs ON tcrm.chatroom_member_code = tcrs.chatroom_member_code " +
+                    "RIGHT JOIN tbl_chat_read_status tcrs ON tcrm.chatroom_member_code = tcrs.chatroom_member_code " +
                     "LEFT JOIN tbl_employee te ON tcrm.employee_code = te.employee_code " +
-                    "WHERE ((te.employee_code = :userEmployeeCode " +
+                    "WHERE te.employee_code = :userEmployeeCode " +
                     "AND tc.chat_code = (SELECT MAX(chat_code) FROM tbl_chat tc2 WHERE tc2.chat_code = tc.chat_code) " +
-                    "OR tc.chat_code is null) " +
-                    ") " + // 두 값이 모두 null인 경우
-                    "AND tcrs.chatroom_code = :chatroomCode"
+                    "OR tc.chat_code is null " +
+                    "AND tcrs.chatroom_code = :chatroomCode " +
+                    "ORDER BY tc.chat_code is not null " +
+                    "LIMIT 1"
             , nativeQuery = true)
     RecentChatInterface findChatCodesInChatAndChatReadStatus(Long chatroomCode, Long userEmployeeCode);
 

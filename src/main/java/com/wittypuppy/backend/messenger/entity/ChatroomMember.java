@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@ToString
 @Entity(name = "MESSENGER_CHATROOM_MEMBER")
 @Table(name = "tbl_chatroom_member")
 public class ChatroomMember {
@@ -44,6 +43,19 @@ public class ChatroomMember {
 
     @OneToMany(mappedBy = "chatroomMember", cascade = CascadeType.ALL)
     private List<Chat> chatList;
+
+    @Override
+    public String toString() {
+        return "ChatroomMember{" +
+                "chatroomMemberCode=" + chatroomMemberCode +
+                ", chatroomCode=" + chatroomCode +
+                ", employee=" + employee +
+                ", chatroomMemberType='" + chatroomMemberType + '\'' +
+                ", chatroomMemberInviteTime=" + chatroomMemberInviteTime +
+                ", chatroomMemberPinnedStatus='" + chatroomMemberPinnedStatus + '\'' +
+                ", chatReadStatusList=" + chatReadStatusList +
+                '}';
+    }
 
     public ChatroomMember setChatroomMemberCode(Long chatroomMemberCode) {
         this.chatroomMemberCode = chatroomMemberCode;
