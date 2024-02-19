@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.board.controller;
 
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.board.dto.*;
 import com.wittypuppy.backend.board.paging.Criteria;
 import com.wittypuppy.backend.board.paging.PageDTO;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,21 +35,6 @@ public class BoardController {
         this.simp = simpMessagingTemplate;
     }
 
-
-    // 게시판에서 게시글 최신순대로 정렬
-//    @GetMapping("")
-//    public ResponseEntity<ResponseDTO> selectPostList() {
-//        log.info("BoardController >>> selectPostList >>> start");
-//
-//        List<PostDTO> postDTOList = boardService.selectPostList();
-//
-//        log.info("BoardController >>> selectPostList >>> end");
-//
-//        System.out.println("postDTOList = " + postDTOList);
-//
-//        return res("성공", postDTOList);
-//
-//    }
 
 
     /* 게시판 카테고리 조회 */
@@ -98,7 +85,7 @@ public class BoardController {
 
     // 게시글 등록
     @PostMapping("/posts/regist")
-    public ResponseEntity<ResponseDTO> insertPost(@RequestBody PostDTO postDTO){
+    public ResponseEntity<ResponseDTO> insertPost(@RequestBody PostDTO postDTO, @AuthenticationPrincipal User principal){
 
         log.info("BoardController >> insertPost >> start");
         System.out.println("postDTO = " + postDTO);
@@ -228,14 +215,18 @@ public class BoardController {
 
     /* 댓글 등록 */
     @PostMapping("/posts/{postCode}/comment/regist")
-    public ResponseEntity<ResponseDTO> registComment(@RequestBody PostCommentDTO postCommentDTO ,@PathVariable Long postCode){
+    public ResponseEntity<ResponseDTO> registComment(@RequestBody PostCommentDTO postCommentDTO,
+                                                     @PathVariable Long postCode,
+                                                     @AuthenticationPrincipal User principal
+                                                     ){
 
         System.out.println("postCode = " + postCode);
 
         // 사용자 setter : commentDTO.setEmployeeCode
+        System.out.println("principal = " + (long) principal.getEmployeeCode());
+        Long employeeCode = (long) principal.getEmployeeCode();
 
-
-        PostCommentDTO commentDTO = boardService.insertComment(postCommentDTO, postCode);
+        PostCommentDTO commentDTO = boardService.insertComment(postCommentDTO, postCode, employeeCode);
 
         return res("댓글 등록 성공", commentDTO);
 

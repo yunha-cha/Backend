@@ -221,17 +221,33 @@ public class BoardService {
 
 
     @Transactional
-    public PostCommentDTO insertComment(PostCommentDTO postCommentDTO, Long postCode) {
+    public PostCommentDTO insertComment(PostCommentDTO postCommentDTO, Long postCode, Long employeeCode) {
+        Employee employee = new Employee();
+        employee.setEmployeeCode(employeeCode);
+
+        // employee 객체로 boardMember 찾는게 되나?
+        BoardMember boardMember = boardMemberRepository.findByEmployee(employee);
 
         PostComment newPostComment = modelMapper.map(postCommentDTO, PostComment.class);
-        newPostComment.setPostCode(postCode);
+        System.out.println("newPostComment : " + newPostComment); // 값 serivce에 잘 전달되는지 확인
+
+        newPostComment.setBoardMember(boardMember);
         newPostComment.setPostCommentDate(LocalDateTime.now());
+        newPostComment.setPostCode(postCode);
+        newPostComment.setPostCommentDeleteStatus("N");
 
-        postCommentRepository.save(newPostComment);
+        return modelMapper.map(postCommentRepository.save(newPostComment),PostCommentDTO.class);
 
-        System.out.println("newPostComment = " + newPostComment);
-
-        return modelMapper.map(newPostComment, PostCommentDTO.class);
+//        PostComment newPostComment = modelMapper.map(postCommentDTO, PostComment.class);
+//        newPostComment.setPostCode(postCode);
+//        newPostComment.setBoardMember(boardMember);
+//        newPostComment.setPostCommentDate(LocalDateTime.now());
+//
+//        postCommentRepository.save(newPostComment);
+//
+//        System.out.println("newPostComment = " + newPostComment);
+//
+//        return modelMapper.map(newPostComment, PostCommentDTO.class);
 
     }
 

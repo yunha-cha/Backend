@@ -16,8 +16,6 @@ public class BoardMemberDTO {
 
     private Long boardMemberCode;
 
-//    private Long employeeCode;
-
     private Employee employee;
 
     private Long boardCode;
