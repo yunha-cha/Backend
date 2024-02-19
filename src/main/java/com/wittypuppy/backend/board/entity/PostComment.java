@@ -22,8 +22,9 @@ public class PostComment {
     @Column(name = "post_code",columnDefinition = "BIGINT")
     private Long postCode;
 
-    @Column(name = "board_member_code",columnDefinition = "BIGINT")
-    private Long boardMemberCode;
+    @JoinColumn(name = "board_member_code")
+    @ManyToOne
+    private BoardMember boardMember;
 
     @Column(name = "post_comment_context",columnDefinition = "VARCHAR(500)")
     private String postCommentContext;

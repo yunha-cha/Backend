@@ -1,0 +1,217 @@
+### 회원가입
+POST http://localhost:1208/auth/signup
+Content-Type: application/json
+Accept: */*
+
+{
+  "employeeId": "user28",
+  "employeePassword": "pass28",
+  "employeeName": "차윤하",
+  "employeeEmail": "helena@gmail.com",
+  "employeeRetirementDate": "",
+  "employeeBirthDate": "2000-02-28",
+  "empAddress": "강서구 화곡동",
+  "empPhone": "010-9999-1044"
+
+}
+
+### 로그인
+POST http://localhost:1208/auth/login
+Content-Type: application/json
+Accept: */*
+Access-Control-Allow-Origin: *
+
+{
+  "employeeId": "user28",
+  "employeePassword": "pass28"
+}
+
+
+
+### 최근 순서대로 게시글 조회
+GET http://localhost:1208/board
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA3OTY2NTI0MTM3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJleHAiOjE3MDgwMDI1MjQsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIiLCJhdXRob3JpdHlEZXNjIjoi7J2867CY7IKs7JuQIn19XX0.QF-Xu4tSwpXiUcnNQWm6_qO957_iQ7k7zH72MTn1CuM
+
+### 게시판에 따른 게시글 조회
+GET http://localhost:1208/board/3
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA4MDQ5Mzc0MzA0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJleHAiOjE3MDgwODUzNzQsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVObyI6MCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIiLCJhdXRob3JpdHlEZXNjIjoi7J2867CY7IKs7JuQIn19XX0.g3Kj0g3LduwzFxH06B-GMbppHTHNwPGNBLIVP5eUdLw
+
+
+
+
+
+
+### 게시글 작성
+POST http://localhost:1208/board/posts/regist
+Content-Type: application/json
+
+{
+  "boardCode": 1,
+  "postTitle": "첫번째 게시물",
+  "postContext": "5시 00분에 쓴 첫번째 게시물",
+  "postNoticeStatus": "Y"
+
+}
+
+
+### 게시글 열람
+GET http://localhost:1208/board/posts/3
+
+
+### 게시글 추천(좋아요)
+POST http://localhost:1208/board/posts/3/like
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA4MDgwODM5NjUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJlbXBsb3llZUlkIjoidXNlcjI4IiwiZXhwIjoxNzA4MDg0NDM5LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzMsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.zeHuZtPpawib0eDKqV3zHnQtkikuFKez4uO-vMMGgiI
+
+
+
+### 게시글 수정
+PUT http://localhost:1208/board/posts/2
+Content-Type: application/json
+
+{
+  "postTitle": "[수정수정수정] 2번째 게시물",
+  "postContext": "1월 31일 3시 46분에 게시물을 수정했습니다. 확인해주세요."
+}
+
+
+### 게시글 삭제
+DELETE http://localhost:1208/board/posts/6
+
+
+### 게시글 이동 - requestParam, url에 쿼리스트링 사용
+PUT http://localhost:1208/board/posts/7/move?boardCode=2
+
+
+### 게시글 검색 - 쿼리 스트링
+GET http://localhost:1208/board/1/posts/search?q=물
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA4MDY5OTM1ODA1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJlbXBsb3llZUlkIjoidXNlcjI4IiwiZXhwIjoxNzA4MDczNTM1LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzMsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.AmazAGQcSVIsqSoTz9Y2Q815gqHBJLg-RZ0dhlNovYQ
+
+
+
+
+### 댓글 입력
+POST http://localhost:1208/board/posts/4/comment/regist
+Content-Type: application/json
+Accept: */*
+Authorization: Bearer eyJkYXRlIjoxNzA4MDY5OTM1ODA1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLssKjsnKTtlZgiLCJzdWIiOiJ1c2VyMjgiLCJlbXBDb2RlIjozMywiZW1wbG95ZWVFbWFpbCI6ImhlbGVuYUBnbWFpbC5jb20iLCJlbXBsb3llZUlkIjoidXNlcjI4IiwiZXhwIjoxNzA4MDczNTM1LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MzMsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.AmazAGQcSVIsqSoTz9Y2Q815gqHBJLg-RZ0dhlNovYQ
+
+{
+  "postCommentContext" : "1번 게시물을 2월16일 4시53분에 확인하였습니다."
+}
+
+
+### 댓글 수정
+PUT http://localhost:1208/board/posts/comment/3
+Content-Type: application/json
+
+{
+  "postCommentContext" : "3번 게시물을 2월1일 오후 3시 35분에 수정하였습니다."
+}
+
+### 댓글 삭제
+DELETE http://localhost:1208/board/posts/comment/1
+
+
+
+### 게시판 생성
+POST http://localhost:1208/board/boards/create
+Content-Type: application/json
+
+{
+  "board": {
+    "boardGroupCode": 1,
+    "boardTitle": "IT 소식",
+    "boardDescription": "IT 최신 트렌드를 작성합니다."
+  },
+
+  "memberList": [
+    {
+      "employeeCode": 1,
+      "createPostStatus": "Y"
+    },
+    {
+      "employeeCode": 2,
+      "createPostStatus": "N"
+    }
+
+  ]
+
+}
+
+
+
+### 게시판 수정
+PUT http://localhost:1208/board/boards/2
+Content-Type: application/json
+
+{
+  "board": {
+
+    "boardDescription": "IT 최신 트렌드를 작성합니다."
+  },
+
+  "memberList": [
+    {
+      "employeeCode": 1,
+      "createPostStatus": "Y"
+    },
+    {
+      "employeeCode": 2,
+      "createPostStatus": "N"
+    }
+
+  ]
+
+}
+
+
+### 게시판 삭제
+DELETE http://localhost:1208/board/boards/7
+
+
+
+## 게시판 관리
+### 게시글 여러 개 삭제
+DELETE http://localhost:1208/board/boards/remove-posts
+Content-Type: application/json
+
+[
+  {
+    "postCode": 5
+  },
+
+  {
+    "postCode": 7
+  }
+]
+
+
+### 게시글 여러 개 공지 설정
+PUT http://localhost:1208/board/boards/notice-posts
+Content-Type: application/json
+
+[
+  {
+    "postCode": 1
+  },
+
+  {
+    "postCode": 2
+  }
+]
+
+
+
+
+
+### Employee 조회
+GET http://localhost:1208/board/test
+Content-Type: application/json
+
+{
+  "employeeCode": 1
+}
