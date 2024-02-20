@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.messenger.controller;
 
-import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.messenger.dto.ChatDTO;
 import com.wittypuppy.backend.messenger.dto.SendDTO;
 import com.wittypuppy.backend.messenger.service.MessengerService;
@@ -13,7 +12,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,23 +25,25 @@ public class MessengerWebsocketController {
 
     @MessageMapping("/messenger/chatrooms/{chatroomCode}/send")
     public void sendChat(
-            @DestinationVariable Long chatroomCode,
-            @Payload SendDTO sendDTO,
+            @DestinationVariable String chatroomCode,
+            @Payload SendDTO send,
             SimpMessageHeaderAccessor accessor) {
         String token = accessor.getFirstNativeHeader("Authorization");
         TokenUtils tokenUtils = new TokenUtils();
-
+        System.out.println("chatroomCode>>>" + chatroomCode);
+        System.out.println("send>>>" + send);
         if (token != null) {
-            System.out.println(tokenUtils.getUserEmployeeCode(token));
+            send.setEmployeeCode(tokenUtils.getUserEmployeeCode(token));
         } else {
             System.out.println("토큰이 없다.");
         }
         /* 2. 데이터베이스 저장 + 보낸 채팅을 return.(적절한 형식의 반환값을 얻기 위해) */
-//        ChatDTO chatDTO = messengerService.sendChat(chatroomCode, sendDTO);
+        ChatDTO chatDTO = messengerService.sendChat(Long.parseLong(chatroomCode), send);
 
         // 3. 구독한 대상자에게 데이터 전달
-//        String destination = "/topic/messenger/chatrooms/" + chatroomCode;
-//        messagingTemplate.convertAndSend(destination, chatDTO);
+        String destination = "/topic/messenger/chatrooms/" + chatroomCode;
+        System.out.println("destination>>>" + destination);
+        messagingTemplate.convertAndSend(destination, chatDTO);
 
         /* 4. 만약 초대한 사람이 있다면 구독하게 설정 */
 //        Set<Long> newChatroomMemberCodeSet = newChatMemberMap.get(chatroomCode);

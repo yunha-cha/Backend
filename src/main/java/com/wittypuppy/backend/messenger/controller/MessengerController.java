@@ -226,10 +226,10 @@ public class MessengerController {
     @PutMapping("/chatrooms/{chatroomCode}/read-status-update")
     public ResponseEntity<ResponseDTO> updateChatReadStatus(
             @PathVariable Long chatroomCode,
-            @RequestParam Long chatCode,
+            @RequestParam(name="chat") Long chatCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(messengerService.updateChatReadStatus(chatCode, chatroomCode, userEmployeeCode));
+        return res("최근 채팅 관찰 시점 갱신 성공",messengerService.updateChatReadStatus(chatCode, chatroomCode, userEmployeeCode));
     }
 
     /**

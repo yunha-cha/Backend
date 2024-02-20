@@ -9,7 +9,6 @@ import com.wittypuppy.backend.messenger.entity.*;
 import com.wittypuppy.backend.messenger.repository.*;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -242,6 +241,8 @@ public class MessengerService {
         Long chatCount = chatRepository.getChatCount(chatroomCode); // 현재 채팅방 전체 채팅 개수
         // 그러면 이제 페이지가 얼추 계산된다.
         List<Chat> chatList = null;
+
+        System.out.println("lastReadChatCode>>>" + lastReadChatCode);
         if (lastReadChatCode == null) {
             // 맨 처음 접속한 경우
             // 1. 내 채팅을 기준으로 아래로 무한개 즉, 다 들고온다.
@@ -250,8 +251,8 @@ public class MessengerService {
             // 나중에 접속한 경우
             // 1. 내 채팅을 기준으로 아래로 무한개 (내꺼는 제외)
             chatList = chatRepository.findAllByChatroomCodeAndChatCodeIsGreaterThan(chatroomCode, lastReadChatCode);
-            // 2. 위로는 10개만 (내꺼 포함)
-            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "chatCode"));
+            // 2. 위로는 3개만 (내꺼 포함)
+            PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "chatCode"));
             List<Chat> nextChatList = chatRepository.findAllByChatroomCodeAndChatCodeIsLessThanEqual(chatroomCode, lastReadChatCode, pageRequest);
             Collections.reverse(nextChatList);
             chatList = Stream.concat(nextChatList.stream(), chatList.stream())
@@ -471,45 +472,25 @@ public class MessengerService {
     @Transactional
     public ChatDTO sendChat(Long chatroomCode, SendDTO sendDTO) {
         try {
-            Long chatroomMemberCode = sendDTO.getChatroomMemberCode();
-            Date chatWriteDate = sendDTO.getChatWriteDate();
+            Long emplyoeeCode = Long.valueOf(sendDTO.getEmployeeCode());
+            LocalDateTime now = LocalDateTime.now();
             String chatContent = sendDTO.getChatContent();
-            List<MultipartFile> chatFileList = sendDTO.getChatFileList();
+//            List<MultipartFile> chatFileList = sendDTO.getChatFileList();
 
-            ChatroomMember chatroomMember = chatroomMemberRepository.findById(chatroomMemberCode)
+            ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, emplyoeeCode)
                     .orElseThrow(() -> new DataNotFoundException("현재 데이터베이스에 계정 정보가 없습니다."));
 
             Chat chat = new Chat()
                     .setChatroomCode(chatroomCode)
                     .setChatroomMember(chatroomMember)
-                    .setChatWriteDate(chatWriteDate)
+                    .setChatWriteDate(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                     .setChatContent(chatContent)
                     .builder();
-            if (chatFileList != null && !chatFileList.isEmpty()) {
-                LocalDateTime now = LocalDateTime.now();
-                List<ChatFile> chatFileEntityList = new ArrayList<>();
-                for (MultipartFile chatFile : chatFileList) {
-                    String imageName = UUID.randomUUID().toString().replace("-", "");
-                    String replaceFileName = null;
-                    try {
-                        replaceFileName = FileUploadUtils.saveFile(IMAGE_DIR, imageName, chatFile);
-                        ChatFile chatFileEntity = new ChatFile()
-                                .setChatFileOgFile(chatFile.getOriginalFilename())
-                                .setChatFileChangedFile(replaceFileName)
-                                .setChatFileUpdateDate(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
-                                .builder();
-                        chatFileEntityList.add(chatFileEntity);
-                    } catch (IOException e) {
-                        FileUploadUtils.deleteFile(IMAGE_DIR, replaceFileName);
-                        throw new DataInsertionException("채팅 사진 저장 실패");
-                    }
-                }
-                chat = chat.setChatFileList(chatFileEntityList);
-                chatRepository.save(chat);
-            }
+            chatRepository.save(chat);
             ChatDTO chatDTO = modelMapper.map(chat, ChatDTO.class);
             return chatDTO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new DataInsertionException("채팅메시지 전송 실패");
         }
     }
@@ -522,13 +503,19 @@ public class MessengerService {
 
     /* 채팅 관찰 시점 업데이트*/
     @Transactional
-    public String updateChatReadStatus(Long chatCode, Long chatroomCode, Long userEmployeeCode) {
-        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
-        ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, chatroomMember.getChatroomMemberCode())
-                .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
-        chatReadStatus.setChatCode(chatCode);
-
-        return "최근 채팅 관찰 시점 갱신 성공";
+    public ChatroomMessengerMainInterface updateChatReadStatus(Long chatCode, Long chatroomCode, Long userEmployeeCode) {
+        try {
+            ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCode(chatroomCode, userEmployeeCode)
+                    .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
+            ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, chatroomMember.getChatroomMemberCode())
+                    .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
+            chatReadStatus.setChatCode(chatCode);
+            ChatroomMessengerMainInterface chatroomMessengerMainInterface = messengerRepository.getMessengerStatisticByChatroomCode(userEmployeeCode, chatroomCode)
+                    .orElseThrow(() -> new DataNotFoundException("메신저 메인화면에 갱신되는 정보를 가져올 수 없습니다."));
+            return chatroomMessengerMainInterface;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DataUpdateException("채팅 관찰 시점에 대한 갱신에 실패");
+        }
     }
 }
