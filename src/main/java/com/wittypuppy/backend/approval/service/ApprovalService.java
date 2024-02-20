@@ -7,11 +7,14 @@ import com.wittypuppy.backend.approval.dto.ApprovalRepresentDTO;
 import com.wittypuppy.backend.approval.entity.*;
 import com.wittypuppy.backend.approval.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.jdbc.Work;
+import org.hibernate.sql.ast.tree.expression.Over;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -143,6 +146,69 @@ public ApprovalDoc saveOnLeaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User us
     return approvalDocRepository.save(approvalDoc);
 }
 
+    // 기안 문서 정보 저장 - 연장근로 신청서
+    public ApprovalDoc saveOverworkApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("연장근로신청서");
+
+        String overworkTitle = saveOverworkDoc(approvalDoc);
+
+        approvalDoc.setApprovalTitle(overworkTitle);
+
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+
+        approvalDoc.setWhetherSavingApproval("N");
+
+        saveFirstApprovalLine(approvalDoc, user);
+
+        return approvalDocRepository.save(approvalDoc);
+    }
+
+    // 기안 문서 정보 저장 - SW 사용 신청서
+    public ApprovalDoc saveSWUseveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("SW사용신청서");
+
+        String SWUseTitle = saveSWDoc(approvalDoc);
+
+        approvalDoc.setApprovalTitle(SWUseTitle);
+
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+
+        approvalDoc.setWhetherSavingApproval("N");
+
+        saveFirstApprovalLine(approvalDoc, user);
+
+        return approvalDocRepository.save(approvalDoc);
+    }
+
+    // 기안 문서 정보 저장 - 외근/출장/재택근무 신청서
+    public ApprovalDoc saveWorkTypeApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+        approvalDoc.setApprovalForm("근무형태신청서");
+
+        String workTypeTitle = saveWorkTypeDoc(approvalDoc);
+
+        approvalDoc.setApprovalTitle(workTypeTitle);
+
+        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+        approvalDoc.setEmployeeCode(loginEmployee);
+
+        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+
+        approvalDoc.setWhetherSavingApproval("N");
+
+        saveFirstApprovalLine(approvalDoc, user);
+
+        return approvalDocRepository.save(approvalDoc);
+    }
+
     // 결재 문서 내용 추가 - 휴가 신청서
     public String saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
         // OnLeave 객체 생성 및 정보 설정
@@ -161,8 +227,50 @@ public ApprovalDoc saveOnLeaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User us
         return onLeave.getOnLeaveTitle();
     }
     // 결재 문서 내용 추가 - 연장근로 신청서
+    public String saveOverworkDoc(ApprovalDoc savedApprovalDoc){
+        Overwork overwork = new Overwork();
+        overwork.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        overwork.setOverworkTitle("[개발1팀] 20240221 연장 근무 신청서");
+        overwork.setKindOfOverwork("연장 근무");
+        overwork.setOverworkDate(new Date(124,1,21));
+        overwork.setOverworkStartTime(new Time(18,00,00));
+        overwork.setOverworkEndTime(new Time(19,30,00));
+        overwork.setOverworkReason("신규 버전 배포 ");
+
+        overworkRepository.save(overwork);
+
+        return overwork.getOverworkTitle();
+    }
+
     // 결재 문서 내용 추가 - SW 사용 신청서
+    public String saveSWDoc(ApprovalDoc savedApprovalDoc){
+        SoftwareUse softwareUse = new SoftwareUse();
+        softwareUse.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        softwareUse.setSoftwareTitle("[개발1팀] 신규 입사자 SW 요청");
+        softwareUse.setKindOfSoftware("MS Office");
+        softwareUse.setSoftwareReason("신규 입사자 업무 세팅");
+        softwareUse.setSoftwareStartDate(new Date(124,2,1));
+
+        softwareUseRepository.save(softwareUse);
+
+        return softwareUse.getSoftwareTitle();
+    }
+
     // 결재 문서 내용 추가 - 외근/출장/재택근무 신청서
+    public String saveWorkTypeDoc(ApprovalDoc savedApprovalDoc){
+        WorkType workType = new WorkType();
+        workType.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+        workType.setWorkTypeForm("재택근무");
+        workType.setWorkTypeTitle("[개발1팀] 차주 재택근무 신청서");
+        workType.setWorkTypeStartDate(new Date(124,2,4));
+        workType.setWorkTypeEndDate(new Date(124,2,8));
+        workType.setWorkTypePlace("WFH");
+        workType.setWorkTypeReason("팀 재택근무 기간");
+
+        workTypeRepository.save(workType);
+
+        return workType.getWorkTypeTitle();
+    }
 
     // 기안자 결재선 저장
     public void saveFirstApprovalLine(ApprovalDoc savedApprovalDoc, User user) {
@@ -185,7 +293,7 @@ public ApprovalDoc saveOnLeaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User us
         log.info("[ApprovalService] saving line info started =====");
         AdditionalApprovalLine additionalApprovalLine = new AdditionalApprovalLine();
         additionalApprovalLine.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-        additionalApprovalLine.setEmployeeCode(31L);
+        additionalApprovalLine.setEmployeeCode(32L);
         additionalApprovalLine.setApprovalProcessOrder(2L);
         additionalApprovalLine.setApprovalProcessStatus("대기");
         additionalApprovalLine.setApprovalRejectedReason(null);

@@ -3,6 +3,7 @@ package com.wittypuppy.backend.approval.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +16,6 @@ public class SoftwareUseDTO {
     private String softwareTitle;
     private String kindOfSoftware;
     private String softwareReason;
-    private LocalDateTime softwareStartDate;
+    private Date softwareStartDate;
     private String approvalTitle;
 }

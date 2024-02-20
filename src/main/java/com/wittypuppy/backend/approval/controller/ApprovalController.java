@@ -34,7 +34,7 @@ public class ApprovalController {
 
     @Tag(name = "문서 상신", description = "결재 문서 상신하기")
     @PostMapping("/submit-on-leave")
-    public ResponseEntity<ResponseDTO> submitApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
+    public ResponseEntity<ResponseDTO> submitOnLeaveApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
         ApprovalDoc savedApprovalDoc = approvalService.saveOnLeaveApprovalDoc(approvalDocDTO, user);
         approvalService.saveOnLeaveDoc(savedApprovalDoc);
         approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
@@ -42,6 +42,32 @@ public class ApprovalController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
     }
 
+    @PostMapping("/submit-overwork")
+    public ResponseEntity<ResponseDTO> submitOverworkApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
+        ApprovalDoc savedApprovalDoc = approvalService.saveOverworkApprovalDoc(approvalDocDTO, user);
+        approvalService.saveOverworkDoc(savedApprovalDoc);
+        approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
+        approvalService.saveApprovalLines(savedApprovalDoc);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
+    }
+
+    @PostMapping("/submit-sw-use")
+    public ResponseEntity<ResponseDTO> submitSWUseApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
+        ApprovalDoc savedApprovalDoc = approvalService.saveSWUseveApprovalDoc(approvalDocDTO, user);
+        approvalService.saveSWDoc(savedApprovalDoc);
+        approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
+        approvalService.saveApprovalLines(savedApprovalDoc);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
+    }
+
+    @PostMapping("/submit-work-type")
+    public ResponseEntity<ResponseDTO> submitWorkTypeApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
+        ApprovalDoc savedApprovalDoc = approvalService.saveWorkTypeApprovalDoc(approvalDocDTO, user);
+        approvalService.saveWorkTypeDoc(savedApprovalDoc);
+        approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
+        approvalService.saveApprovalLines(savedApprovalDoc);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상신 성공"));
+    }
     @Tag(name = "상신함 - 상신 문서 조회", description = "로그인한 사용자가 상신한 문서 목록 조회")
     @GetMapping("/outbox-approval")
     public ResponseEntity<ResponseDTO> outboxApproval(@AuthenticationPrincipal User user) {
