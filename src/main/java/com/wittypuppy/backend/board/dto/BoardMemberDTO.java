@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.board.dto;
 
+import com.wittypuppy.backend.board.entity.Employee;
 import com.wittypuppy.backend.common.entity.PostAlert;
 import com.wittypuppy.backend.common.entity.PostComment;
 import lombok.*;
@@ -15,7 +16,7 @@ public class BoardMemberDTO {
 
     private Long boardMemberCode;
 
-    private Long employeeCode;
+    private Employee employee;
 
     private Long boardCode;
 

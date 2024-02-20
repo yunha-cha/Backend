@@ -22,8 +22,10 @@ public class Post {
     @Column(name = "board_code",columnDefinition = "BIGINT")
     private Long boardCode;
 
-    @Column(name = "employee_code",columnDefinition = "BIGINT")
-    private Long employeeCode;
+
+    @JoinColumn(name = "employee_code")
+    @ManyToOne
+    private Employee employee;
 
     @Column(name = "post_notice_status",columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String postNoticeStatus;
@@ -44,22 +46,23 @@ public class Post {
     private String postStorageStatus;
 
 
-//    @JoinColumn(name = "post_code")
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<PostAlert> postAlertList;
-
-//    @JoinColumn(name = "post_code")
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<PostLike> postLikeList;
+    @JoinColumn(name = "post_code")
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<PostLike> postLikeList;
 
     @JoinColumn(name = "post_code")
     @OneToMany(fetch = FetchType.LAZY)
     private List<PostAttachment> postAttachmentList;
 
     // 댓글 필요한데 헷갈려서
-//    @JoinColumn(name = "post_code")
+    @JoinColumn(name = "post_code")
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<PostComment> postCommentList;
+
+
+    //    @JoinColumn(name = "post_code")
 //    @OneToMany(fetch = FetchType.LAZY)
-//    private List<PostComment> postCommentList;
+//    private List<PostAlert> postAlertList;
 
 
 }

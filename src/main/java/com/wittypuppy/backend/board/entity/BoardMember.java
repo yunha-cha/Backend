@@ -20,8 +20,9 @@ public class BoardMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardMemberCode;
 
-    @Column(name = "employee_code", columnDefinition = "BIGINT")
-    private Long employeeCode;
+    @JoinColumn(name = "employee_code")
+    @ManyToOne
+    private Employee employee;
 
     @Column(name = "board_code", columnDefinition = "BIGINT")
     private Long boardCode;

@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.board.dto;
 
+import com.wittypuppy.backend.board.entity.BoardMember;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -16,7 +17,7 @@ public class PostCommentDTO {
 
     private Long postCode;
 
-    private Long boardMemberCode;
+    private BoardMember boardMember;
 
     private String postCommentContext;
 
