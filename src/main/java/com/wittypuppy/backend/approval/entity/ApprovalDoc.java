@@ -3,6 +3,7 @@ package com.wittypuppy.backend.approval.entity;
 import com.wittypuppy.backend.Employee.entity.LoginEmployee;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.sql.ast.tree.expression.Over;
 
 import java.time.LocalDateTime;
 
@@ -32,4 +33,6 @@ public class ApprovalDoc {
     @Column(name = "whether_saving_approval")
     private String whetherSavingApproval;
 
+    @Column(name = "approval_title")
+    private String approvalTitle;
 }

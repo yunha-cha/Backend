@@ -18,4 +18,5 @@ public class WorkTypeDTO {
     private LocalDateTime workTypeEndDate;
     private String workTypePlace;
     private String workTypeReason;
+    private String approvalTitle;
 }

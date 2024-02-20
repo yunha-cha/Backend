@@ -18,4 +18,5 @@ public class OverworkDTO {
     private LocalDateTime overworkStartTime;
     private LocalDateTime overworkEndTime;
     private String overworkReason;
+    private String approvalTitle;
 }

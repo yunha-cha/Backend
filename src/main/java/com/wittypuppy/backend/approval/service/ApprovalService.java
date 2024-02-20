@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -74,46 +75,92 @@ public class ApprovalService {
 //    }
 
 
-    // 기안 문서 정보 저장
-    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
-        log.info("[ApprovalService] saving doc info started =====");
+//    // 기안 문서 정보 저장
+//    public ApprovalDoc saveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+//        log.info("[ApprovalService] saving doc info started =====");
+//
+//        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+//        approvalDoc.setApprovalForm("휴가신청서");
+//
+//        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+//        approvalDoc.setEmployeeCode(loginEmployee);
+//
+//        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+//        approvalDoc.setWhetherSavingApproval("N");
+//        saveFirstApprovalLine(approvalDoc, user);
+//
+//        return approvalDocRepository.save(approvalDoc);
+//    }
 
-        ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
-        approvalDoc.setApprovalForm("휴가신청서");
+//    // 결재 문서 내용 추가 - 휴가 신청서
+//    public void saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
+//        OnLeave onLeave = new OnLeave();
+//        onLeave.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+//        onLeave.setKindOfOnLeave("연차");
+//        onLeave.setOnLeaveTitle("타이틀 테스트");
+//        onLeave.setOnLeaveReason("개인 사유");
+//        onLeave.setOnLeaveStartDate(new Date(124,1,19));
+//        onLeave.setOnLeaveEndDate(new Date(124,1,21));
+//
+//        onLeaveRepository.save(onLeave);
+//    }
+//
+//    // 결재 문서 내용 추가 - 연장근로 신청서
+//    public void saveOverworkDoc(ApprovalDoc savedApprovalDoc){
+//        Overwork overwork = new Overwork();
+//        overwork.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
+//        overwork.setKindOfOverwork("연장 근로");
+//        overwork.setOverworkTitle("[개발1팀] 연장 근로 신청서");
+//    }
+// 기안 문서 정보 저장 - 휴가 신청서
+public ApprovalDoc saveOnLeaveApprovalDoc(ApprovalDocDTO approvalDocDTO, User user) {
+    log.info("[ApprovalService] saving doc info started =====");
 
-        LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
-        approvalDoc.setEmployeeCode(loginEmployee);
+    // 저장할 ApprovalDoc 객체 생성
+    ApprovalDoc approvalDoc = modelMapper.map(approvalDocDTO, ApprovalDoc.class);
+    approvalDoc.setApprovalForm("휴가신청서");
 
-        approvalDoc.setApprovalRequestDate(LocalDateTime.now());
-        approvalDoc.setWhetherSavingApproval("N");
-        saveFirstApprovalLine(approvalDoc, user);
+    // OnLeave 문서 저장 및 해당 문서의 제목 반환
+    String onLeaveTitle = saveOnLeaveDoc(approvalDoc);
 
-        return approvalDocRepository.save(approvalDoc);
-    }
+    // OnLeave 문서의 제목을 ApprovalDoc에 설정
+    approvalDoc.setApprovalTitle(onLeaveTitle);
+
+    // 사용자 정보 설정
+    LoginEmployee loginEmployee = modelMapper.map(user, LoginEmployee.class);
+    approvalDoc.setEmployeeCode(loginEmployee);
+
+    // 결재 요청일 설정
+    approvalDoc.setApprovalRequestDate(LocalDateTime.now());
+
+    // 결재 여부 설정
+    approvalDoc.setWhetherSavingApproval("N");
+
+    // 첫 번째 결재 라인 저장
+    saveFirstApprovalLine(approvalDoc, user);
+
+    // ApprovalDoc 저장 후 반환
+    return approvalDocRepository.save(approvalDoc);
+}
 
     // 결재 문서 내용 추가 - 휴가 신청서
-    public void saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
+    public String saveOnLeaveDoc(ApprovalDoc savedApprovalDoc){
+        // OnLeave 객체 생성 및 정보 설정
         OnLeave onLeave = new OnLeave();
         onLeave.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
         onLeave.setKindOfOnLeave("연차");
-        onLeave.setOnLeaveTitle("[개발1팀] 휴가 신청서");
+        onLeave.setOnLeaveTitle("타이틀 테스트");
         onLeave.setOnLeaveReason("개인 사유");
         onLeave.setOnLeaveStartDate(new Date(124,1,19));
         onLeave.setOnLeaveEndDate(new Date(124,1,21));
 
+        // OnLeave 저장
         onLeaveRepository.save(onLeave);
-    }
 
+        // 저장한 OnLeave 문서의 제목 반환
+        return onLeave.getOnLeaveTitle();
+    }
     // 결재 문서 내용 추가 - 연장근로 신청서
-    public void saveOverworkDoc(ApprovalDoc savedApprovalDoc){
-        Overwork overwork = new Overwork();
-        overwork.setApprovalDocCode(savedApprovalDoc.getApprovalDocCode());
-        overwork.setKindOfOverwork("연장 근로");
-        overwork.setOverworkTitle("[개발1팀] 연장 근로 신청서");
-
-
-    }
-
     // 결재 문서 내용 추가 - SW 사용 신청서
     // 결재 문서 내용 추가 - 외근/출장/재택근무 신청서
 
@@ -356,6 +403,41 @@ public class ApprovalService {
 
         return "회수 성공";
     }
+//
+//    public void saveApprovalInfo(ApprovalDoc approvalDoc) {
+//        switch (approvalDoc.getApprovalForm()) {
+//            case "휴가신청서":
+//                List<OnLeave> onLeaveInfo = onLeaveRepository.findByApprovalDocCode(approvalDoc);
+//                if (!onLeaveInfo.isEmpty()) {
+//                    OnLeave onLeave = onLeaveInfo.get(0);
+//                    approvalDoc.setApprovalTitle(onLeave.getApprovalTitle());
+//                }
+//                break;
+//            case "sw사용신청서":
+//                List<SoftwareUse> softwareInfo = softwareUseRepository.findByApprovalDocCode(approvalDoc);
+//                if (!softwareInfo.isEmpty()) {
+//                    SoftwareUse softwareUse = softwareInfo.get(0);
+//                    approvalDoc.setApprovalTitle(softwareUse.getApprovalTitle());
+//                }
+//                break;
+//            case "근무형태신고서":
+//                List<WorkType> workTypeInfo = workTypeRepository.findByApprovalDocCode(approvalDoc);
+//                if (!workTypeInfo.isEmpty()) {
+//                    WorkType workType = workTypeInfo.get(0);
+//                    approvalDoc.setApprovalTitle(workType.getApprovalTitle());
+//                }
+//                break;
+//            case "추가근무신청서":
+//                List<Overwork> overworkInfo = overworkRepository.findByApprovalDocCode(approvalDoc);
+//                if (!overworkInfo.isEmpty()) {
+//                    Overwork overwork = overworkInfo.get(0);
+//                    approvalDoc.setApprovalTitle(overwork.getApprovalTitle());
+//                }
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 
     // 결재 진행 중인 문서 조회
     public List<ApprovalDoc> onProcessInOutbox(User user) {
@@ -386,7 +468,6 @@ public class ApprovalService {
         // 해당 사용자의 결재 상신 문서 리스트 조회
         List<ApprovalDoc> outboxDocList = approvalDocRepository.findByEmployeeCode(loginEmployee);
 
-        // 결재 순서가 가장 큰 결재선의 상태가 '결재'인 문서 리스트 조회
         List<ApprovalDoc> finishedDocListInOutbox = new ArrayList<>();
 
         // 해당 사용자의 결재 상신 문서 리스트를 순회하며 쿼리를 통해 검색한 결과와 비교하여 결과 리스트에 추가

@@ -33,9 +33,9 @@ public class ApprovalController {
 //    }
 
     @Tag(name = "문서 상신", description = "결재 문서 상신하기")
-    @PostMapping("/submit-approval")
+    @PostMapping("/submit-on-leave")
     public ResponseEntity<ResponseDTO> submitApproval(ApprovalDocDTO approvalDocDTO, @AuthenticationPrincipal User user){
-        ApprovalDoc savedApprovalDoc = approvalService.saveApprovalDoc(approvalDocDTO, user);
+        ApprovalDoc savedApprovalDoc = approvalService.saveOnLeaveApprovalDoc(approvalDocDTO, user);
         approvalService.saveOnLeaveDoc(savedApprovalDoc);
         approvalService.saveFirstApprovalLine(savedApprovalDoc, user);
         approvalService.saveApprovalLines(savedApprovalDoc);
