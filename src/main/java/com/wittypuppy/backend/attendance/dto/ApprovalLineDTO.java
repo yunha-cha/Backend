@@ -19,7 +19,7 @@ public class ApprovalLineDTO {
 
     private ApprovalDocumentDTO approvalLineDocumentCode;
 
-    private User lineEmployeeCode;
+    private EmployeeDTO lineEmployeeCode;
 
     private Long approvalProcessOrder;
 

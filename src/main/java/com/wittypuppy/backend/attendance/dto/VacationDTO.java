@@ -16,7 +16,7 @@ public class VacationDTO {
 
     private Long vacationCode;
 
-    private User vacationEmployeeCode;
+    private EmployeeDTO vacationEmployeeCode;
 
     private LocalDateTime vacationCreationDate;
 

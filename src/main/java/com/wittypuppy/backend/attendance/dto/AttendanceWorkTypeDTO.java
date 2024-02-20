@@ -15,7 +15,7 @@ public class AttendanceWorkTypeDTO {
 
     private Long attendanceWorkTypeCode;
 
-    private User employeeCode;
+    private EmployeeDTO employeeCode;
 
     private String attendanceWorkTypeStatus;
 

@@ -2,6 +2,9 @@ package com.wittypuppy.backend.attendance.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.*;
+import com.wittypuppy.backend.attendance.entity.ApprovalDocument;
+import com.wittypuppy.backend.attendance.entity.Employee;
+import com.wittypuppy.backend.attendance.entity.Vacation;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
 import com.wittypuppy.backend.attendance.paging.PagingResponseDTO;
@@ -42,7 +45,6 @@ public class AttendanceController {
 
         int employeeCode = employeeInFo.getEmployeeCode();
 
-
         System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== attendanceMainControllerStart ============");
 
@@ -52,7 +54,7 @@ public class AttendanceController {
         * 결재 대기건 보여주기 수량 -->
         * 오늘 출근한 시간 보여주기 )
         * 오늘 퇴근한 시간 보여주기
-        *
+        * 로그인한 사용자 이름 보여 주기
         * */
 
 
@@ -65,12 +67,15 @@ public class AttendanceController {
         // 오늘 출퇴근 보여 주기
         AttendanceManagementDTO commute = attendanceService.attendanceMain(employeeCode);
 
+        //로그인한 사용자 이름 보여주기
+        EmployeeDTO userName = attendanceService.showName(employeeCode);
 
-        return ResponseEntity.ok().body(new AttendanceResponseDTO(HttpStatus.OK, "근태 메인 화면 조회 성공", commute, vacation, approvalWaiting));
+        return ResponseEntity.ok().body(new AttendanceResponseDTO(HttpStatus.OK, "근태 메인 화면 조회 성공", commute, vacation, approvalWaiting, userName));
 
     }
 
 
+    //출퇴근 인서트
     @Operation(summary = "근태 메인 화면 출근 인서트", description = "출퇴근 시간을 인서트 합니다")
     @PostMapping("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteInput(
@@ -78,6 +83,10 @@ public class AttendanceController {
             @RequestBody Map<String, Object> requestBody
             ){
 
+        /*
+         *로그인 하면 출근을 찍고 -> 출근 정보를 인서트 (퇴근 00:00:00) 같이 인서트
+         * -> 오늘 날짜 출근 9시 지나면 지각, 9까지 오면 정상:래액트 기능으로 조건 설정
+         * */
         System.out.println("========== employeeCode =========> " + employeeCode);
         System.out.println("=========== commuteInput ControllerStart ============");
 
@@ -90,17 +99,33 @@ public class AttendanceController {
         LocalDateTime now = LocalDateTime.now(); // 현재 날짜와 시간 가져오기
         LocalDateTime departureTime = now.toLocalDate().atStartOfDay(); // 현재 날짜의 자정 시간 구하기
 
-        /*
-        *
-        *로그인 하면 출근을 찍고 -> 출근 정보를 인서트 (퇴근 00:00:00) 같이 인서트
-        * -> 오늘 날짜 출근 9시 지나면 지각, 9까지 오면 정상:래액트 기능으로 조건 설정
-* */
-
         // 로그인 해서 출근 인서트
         String login = attendanceService.insertArrival(employeeCode, arrivalTime, departureTime, status);
 
+
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
+
+
+    //연차 인서트
+    @PostMapping ("/attendances/main/vacation")
+    public ResponseEntity<ResponseDTO> insertVacation(
+            @AuthenticationPrincipal User employeeCode
+    ){
+
+
+        /*입사일 기준으로 1년 미만이면 매달 1개 연차 인서트
+         * 입사일 기준으로 1년 이상이면 매월 1월 1일 15개 연차 인서트
+         * 2년마다 연차 1개씩 증가*/
+
+
+        System.out.println("======= 연차 인서트 ===== ");
+        VacationDTO vacation = attendanceService.insertVacation(employeeCode);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "연차 등록 성공", vacation));
+
+    }
+
 
     //퇴근 시간 업데이트
     @Operation(summary = "근태 메인 화면 퇴근 수정", description = "퇴근 시간을 업데이트 합니다")
@@ -285,6 +310,7 @@ public class AttendanceController {
     }
 
 
+
     //내가 결재한 문서- 반려함
     @Operation(summary = "내 결재 문서" , description = "내가 반려한 문서를 조회 합니다")
     @GetMapping("/attendances/payment/rejection")
@@ -338,4 +364,23 @@ public class AttendanceController {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "대기 문서 조회 성공", pagingResponse));
     }
+
+
+    //결재할 문서 -대기 상세보기
+    @Operation(summary = "내 결재 문서" , description = "내가 결재 할 문서를 상세보기 합니다")
+    @GetMapping("/attendances/payment/waiting/{approvalDocumentCode}")
+    public ResponseEntity<ResponseDTO> PaymentWaiting (
+            @PathVariable Long approvalDocumentCode) {
+        System.out.println("==== 상세 문서 start");
+
+        System.out.println("====controller======PaymentWaiting==========");
+        System.out.println("========== approvalDocumentCode = " + approvalDocumentCode);
+
+        Object result = attendanceService.approvalWaitingDetail(approvalDocumentCode);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "대기 문서 조회 성공", result));
+
+    }
+
+
 }

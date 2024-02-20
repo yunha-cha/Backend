@@ -62,10 +62,6 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
     Long attendanceUseHalfVacation(int employeeCode);
 
 
-    AttendanceManagement findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(int employeeNum);
-
-
-
 
     @Query(value = "SELECT " +
             "A.attendance_management_arrival_time, " +

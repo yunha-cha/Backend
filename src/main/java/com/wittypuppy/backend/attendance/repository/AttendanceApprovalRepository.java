@@ -1,7 +1,11 @@
 package com.wittypuppy.backend.attendance.repository;
 
 
+import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
+import com.wittypuppy.backend.attendance.entity.OnLeave;
+import com.wittypuppy.backend.attendance.entity.Overwork;
+import com.wittypuppy.backend.attendance.entity.WorkType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
