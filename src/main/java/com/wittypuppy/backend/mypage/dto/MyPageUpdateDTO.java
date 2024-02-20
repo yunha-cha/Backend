@@ -10,7 +10,6 @@ import lombok.*;
 import java.util.Date;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -38,4 +37,17 @@ public class MyPageUpdateDTO {
 
     private String newEmpPwd;
 
+    public MyPageUpdateDTO(Long empCode, String empName, GroupDept department, String empEmail, String phone, Date retirementDate, Date empBirth, String address, String empPwd, String empId, String newEmpPwd) {
+        this.empCode = empCode;
+        this.empName = empName;
+        this.department = department;
+        this.empEmail = empEmail;
+        this.phone = phone;
+        this.retirementDate = retirementDate;
+        this.empBirth = empBirth;
+        this.address = address;
+        this.empPwd = empPwd;
+        this.empId = empId;
+        this.newEmpPwd = newEmpPwd;
+    }
 }

@@ -26,6 +26,4 @@ public class MyPageProfileDTO {
 
     private String profileDeleteStatus;
 
-
-
 }

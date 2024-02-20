@@ -24,7 +24,7 @@ Page<GroupEmp> findByRetirementDateWithDepartment(Pageable paging);
 
 //    GroupEmp findByEmpNameOrDeptName(String employeeName, String departmentName);
 
-    List<GroupEmp> findAllByEmpNameOrDepartment_DeptName(String employeeName, String departmentName);
+    List<GroupEmp> findAllByEmpNameAndRetirementDateIsNullOrDepartment_DeptNameAndRetirementDateIsNull(String employeeName, String departmentName);
 
     List<GroupEmp> findByDepartment(GroupDept parentDepartment);
 

@@ -25,6 +25,10 @@ private String phone;
 
 private Date empBirth;
 
+private Date empJoinDate;
+
+private String empAddress;
+
 
 }
 

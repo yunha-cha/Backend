@@ -69,6 +69,8 @@ public class MyPageService {
                    .address(myPageUpdateDTO.getAddress());
            log.info("Mypaservice >>> mypageupdateemp>>>> end");
 
+
+
            return myPageUpdateEmp;
        }catch (Exception e){
            log.error("MyPageService 에서 myPageUpdateEmp로 가는중에 에러");
@@ -141,4 +143,7 @@ public class MyPageService {
 //            throw new RuntimeException("파일 변경 실", e);
 //        }
 //    }
+
+
+
 }

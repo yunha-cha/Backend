@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 @Tag(name = "마이페이지 스웨거 연동")
 @RestController
@@ -33,7 +34,7 @@ public class MyPageController {
     public ResponseEntity<ResponseDTO> selectSearchMyPageEmp( @RequestParam(name = "c", defaultValue = "") Long search ){
         MyPageEmpDTO myPageEmpDTO = myPageService.selectEmpByEmpCode(search);
 
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "마이페에지 성공 테스트", myPageEmpDTO));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "마이페에지 사원번호 조회 성공 ", myPageEmpDTO));
 
     }
 
@@ -44,7 +45,7 @@ public class MyPageController {
         String data = String.valueOf(myPageService.updateMyPageByEmpCode(myPageUpdateDTO, empCode));
 
         log.info("마이페이지 컨트롤러 기능 끝");
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "상품 수정 성공", data));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "내 정보 수정 성공"));
 
     }
 

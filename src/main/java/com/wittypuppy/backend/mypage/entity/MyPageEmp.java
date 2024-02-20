@@ -41,9 +41,17 @@ public class MyPageEmp {
     @Column(name = "employee_birth_date")
     private Date empBirth;
 
+    @Column(name = "employee_join_date")
+    private Date empJoinDate;
+
+    @Column(name = "employee_address")
+    private String empAddress;
+
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MyPageProfile> profiles;
+
+
 
 
 }
