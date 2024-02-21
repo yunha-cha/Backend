@@ -32,9 +32,6 @@ public class BoardController {
     @GetMapping("main-board")
     public ResponseEntity<ResponseDTO> selectMainPagePost(@AuthenticationPrincipal User user){
         List<PostDTO> postList = boardService.findByEmployeeCodeMain((long)user.getEmployeeCode());
-        for(PostDTO post : postList){
-            System.out.println(post);
-        }
         return res("메인페이지 post 조회 성공", postList);
     }
 
