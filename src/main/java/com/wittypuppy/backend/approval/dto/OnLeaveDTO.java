@@ -19,4 +19,5 @@ public class OnLeaveDTO {
     private Date onLeaveStartDate;
     private Date onLeaveEndDate;
     private String onLeaveReason;
+    private String approvalTitle;
 }

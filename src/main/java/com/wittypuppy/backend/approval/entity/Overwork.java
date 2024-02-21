@@ -3,7 +3,9 @@ package com.wittypuppy.backend.approval.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,13 +30,13 @@ public class Overwork {
     private String kindOfOverwork;
 
     @Column(name = "overwork_date")
-    private LocalDateTime overworkDate;
+    private Date overworkDate;
 
     @Column(name = "overwork_start_time")
-    private LocalDateTime overworkStartTime;
+    private Time overworkStartTime;
 
     @Column(name = "overwork_end_time")
-    private LocalDateTime overworkEndTime;
+    private Time overworkEndTime;
 
     @Column(name = "overwork_reason")
     private String overworkReason;
