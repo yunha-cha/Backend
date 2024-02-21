@@ -9,11 +9,14 @@ import com.wittypuppy.backend.util.TokenUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 @Tag(name = "마이페이지 스웨거 연동")
 @RestController
 @RequestMapping("/api/v1/mypage")
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class MyPageController {
 
     private final MyPageService myPageService;
+
 
     private final TokenUtils tokenUtils;
 
@@ -81,12 +85,53 @@ public class MyPageController {
 
     }
 
-//    @PostMapping("/update-profile")
-//    public ResponseEntity<ResponseDTO> updateProfile(@RequestParam("file") MultipartFile file,
-//                                                     @RequestParam("employeeCode") Long employeeCode) {
-//        String imageUrl = String.valueOf(myPageService.updateProfile(employeeCode, file));
-//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "imageUrl", "프로필사진 변경 성공"));
+
+
+//프로필가져오기 채팅방에성
+//    @GetMapping("/chatrooms/{chatroomCode}/profile")
+//    public ResponseEntity<ResponseDTO> findProfileImage(
+//            @PathVariable Long chatroomCode,
+//            @AuthenticationPrincipal User principal) {
+//        Long userEmployeeCode = 12L;
+//        return res("프로필사진 이미지 url 가져오기 성공", messengerService.findProfileImage(chatroomCode, userEmployeeCode));
 //    }
+//
+
+    //프로필사진 가져오기
+    @GetMapping("/find/profile")
+    public ResponseEntity<ResponseDTO> findMyPageProfileImg(
+            @AuthenticationPrincipal User principal){
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "imageUrl", myPageService.findMyPageProfileImage(userEmployeeCode)));
+    }
+
+
+
+//
+//    @PutMapping("/chatrooms/{chatroomCode}/profile")
+//    public ResponseEntity<ResponseDTO> updateProfileImage(
+//            @PathVariable Long chatroomCode,
+//            MultipartFile chatroomProfileImage,
+//            @AuthenticationPrincipal User principal) {
+//        if (chatroomProfileImage.isEmpty()) {
+//            return res("해당 파일이 존재하지 않습니다.");
+//        }
+//        Long userEmployeeCode = 12L;
+//        return res(messengerService.updateProfileImage(chatroomCode, chatroomProfileImage, userEmployeeCode));
+//    }
+
+
+    @PutMapping("/updateprofile")
+    public ResponseEntity<ResponseDTO> updateMyPageProfileImg(
+            MultipartFile ProfileImage,Long empCode, @AuthenticationPrincipal User principal){
+
+        if (ProfileImage.isEmpty()) {
+            return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로필변경 실패","프로필 변경 실패"));
+        }
+//        Long userEmpCode = (long) principal.getEmployeeCode();
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로필변경 성공",myPageService.updateMyPageProfileImage(ProfileImage,empCode,principal)));
+    }
+
 
 
 

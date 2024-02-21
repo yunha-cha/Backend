@@ -48,8 +48,8 @@ public class MyPageEmp {
     private String empAddress;
 
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MyPageProfile> profiles;
+//    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<MyPageProfile> profiles;
 
 
 

@@ -16,7 +16,7 @@ public class MyPageProfileDTO {
 
     private Long profileCode;
 
-    private Long employeeCode;
+    private Long enpCode;
 
     private String profileOgFile;
 
