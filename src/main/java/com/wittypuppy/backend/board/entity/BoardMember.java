@@ -34,7 +34,7 @@ public class BoardMember {
 //    @OneToMany
 //    private List<PostComment> postCommentList;
 
-    @JoinColumn(name = "board_member_code")
-    @OneToMany
-    private List<PostAlert> postAlertList;
+//    @JoinColumn(name = "board_member_code")
+//    @OneToMany
+//    private List<PostAlert> postAlertList;
 }

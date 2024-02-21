@@ -22,7 +22,6 @@ public class Post {
     @Column(name = "board_code",columnDefinition = "BIGINT")
     private Long boardCode;
 
-
     @JoinColumn(name = "employee_code")
     @ManyToOne
     private Employee employee;
