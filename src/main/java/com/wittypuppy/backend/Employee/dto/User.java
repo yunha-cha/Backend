@@ -31,6 +31,7 @@ public class User implements UserDetails {
     private Collection<GrantedAuthority> authorities; //컬렉션을 반환하는데, 이는 사용자의 역할을 나타낸다.
 
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>(); //이 리스트는 나중에 반환될 사용자 권한의 컬렉션을 저장합니다.

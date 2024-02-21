@@ -30,12 +30,13 @@ Access-Control-Allow-Origin: *
 POST http://localhost:1208/api/v1/employee/searchpwd
 Content-Type: application/json
 Accept: */*
-Authorization: Bearer eyJkYXRlIjoxNzA4MzA3MjE4MjcwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImthbmdoYWVyaW5AZ21haWwuY29tIiwiZW1wbG95ZWVJZCI6InVzZXIwNyIsImV4cCI6MTcwODMxMDgxOCwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZUNvZGUiOjEyLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4ifX1dfQ.cOLHJjc1NwkEZQFfx8RyFNdN2hzYcuhMhw7MyMr9Zfo
+
 
 {
-  "employeeId": "user08",
-  "employeeEmail": "kkkrrr12@gmail.com"
+  "employeeId": "user07",
+  "employeeEmail": "kimmin699@gmail.com"
 }
+
 
 #### 로그아웃
 #POST http://localhost:1208/api/v1/employee/logout

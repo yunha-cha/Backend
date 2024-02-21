@@ -76,7 +76,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
                     authentication.setEmployeeId((String) claims.get("employeeId"));
-//                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
+//
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
                     // List<EmployeeRoleDTO> 설정 dto타입이라서 한 번 더 설정해줘야됨
