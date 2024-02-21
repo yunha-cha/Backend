@@ -21,4 +21,11 @@ public class EmployeeDTO  {
 
     private Long employeeAssignedCode;
 
+    private LocalDateTime vacationCreationDate;
+
+    private LocalDateTime vacationExpirationDate;
+
+    private String vacationCreationReason;
+
+
 }

@@ -1,10 +1,8 @@
 package com.wittypuppy.backend.attendance.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.attendance.adminAttend.AdminEmployeeDTO;
 import com.wittypuppy.backend.attendance.dto.*;
-import com.wittypuppy.backend.attendance.entity.ApprovalDocument;
-import com.wittypuppy.backend.attendance.entity.Employee;
-import com.wittypuppy.backend.attendance.entity.Vacation;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
 import com.wittypuppy.backend.attendance.paging.PagingResponseDTO;
@@ -13,14 +11,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @Tag(name = "근태 스웨거 연동")
@@ -107,24 +103,7 @@ public class AttendanceController {
     }
 
 
-    //연차 인서트
-    @PostMapping ("/attendances/main/vacation")
-    public ResponseEntity<ResponseDTO> insertVacation(
-            @AuthenticationPrincipal User employeeCode
-    ){
 
-
-        /*입사일 기준으로 1년 미만이면 매달 1개 연차 인서트
-         * 입사일 기준으로 1년 이상이면 매월 1월 1일 15개 연차 인서트
-         * 2년마다 연차 1개씩 증가*/
-
-
-        System.out.println("======= 연차 인서트 ===== ");
-        VacationDTO vacation = attendanceService.insertVacation(employeeCode);
-
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "연차 등록 성공", vacation));
-
-    }
 
 
     //퇴근 시간 업데이트
@@ -190,6 +169,21 @@ public class AttendanceController {
             AttendanceManagementDTO normal = attendanceService.countNormal(employeeCode,yearMonth);
 
         return ResponseEntity.ok().body(new WorkTypeResponseDTO(HttpStatus.OK, "출퇴근 목록 조회 성공", pagingResponse,normal));
+    }
+
+
+    //연차 인서트
+    @PostMapping("/attendances/admin/vacation")
+    public ResponseEntity<ResponseDTO> insertVacation(
+            @AuthenticationPrincipal User employeeCode
+    ){
+        /*입사일 기준으로 1년 미만이면 매달 1개 연차 인서트
+         * 입사일 기준으로 1년 이상이면 매월 1월 1일 15개 연차 인서트
+         * 2년마다 연차 1개씩 증가*/
+        System.out.println("======= 연차 인서트 ===== ");
+        VacationDTO vacation = attendanceService.insertVacation(employeeCode);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "연차 등록 성공", vacation));
     }
 
 

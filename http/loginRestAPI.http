@@ -34,8 +34,8 @@ Accept: */*
 Authorization: Bearer eyJkYXRlIjoxNzA3ODExMzg1MzIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDc4MTQ5ODUsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVDb2RlIjoxMiwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIn19XX0.cRE79iCiO-UN2jE0yqYUWmkN7UH6lJPQi7nPbV2ZXC8
 
 {
-  "employeeId": "user08",
-  "employeeEmail": "kkkrrr12@gmail.com"
+  "employeeId": "user07",
+  "employeeEmail": "kanghaerin@gmail.com"
 }
 
 #### 로그아웃
