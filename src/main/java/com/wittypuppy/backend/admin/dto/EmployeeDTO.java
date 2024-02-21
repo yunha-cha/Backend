@@ -28,4 +28,7 @@ public class EmployeeDTO {
     private String employeeOnLeaveCount;
     private String employeeExternalEmail;
     private String employeeRole;
+    public EmployeeDTO (Long employeeCode){
+        this.employeeCode = employeeCode;
+    }
 }

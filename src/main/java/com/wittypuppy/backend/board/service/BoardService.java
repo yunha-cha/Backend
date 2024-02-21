@@ -520,6 +520,11 @@ public class BoardService {
 
     }
 
+    public List<PostDTO> findByEmployeeCodeMain(long employeeCode) {
+        List<Post> postEntity = postRepository.findByEmployeeCode(employeeCode);
+        return convert(postEntity, PostDTO.class);
+    }
+
 
     /* 페이징된 게시글 조회 */
     @Transactional

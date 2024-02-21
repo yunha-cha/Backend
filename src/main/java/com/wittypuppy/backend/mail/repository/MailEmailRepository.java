@@ -2,6 +2,8 @@ package com.wittypuppy.backend.mail.repository;
 
 import com.wittypuppy.backend.mail.entity.Email;
 import com.wittypuppy.backend.mail.entity.Employee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,20 +34,23 @@ public interface MailEmailRepository extends JpaRepository<Email,Long> {
     List<Email> findAllByEmailSendTime(LocalDateTime word);
     List<Email> findAllByEmailContentLike(String word);
 
-    List<Email> findAllByEmailTitleContainingAndEmailReceiver(String word,Employee me);
+    Page<Email> findAllByEmailTitleContainingAndEmailReceiver(String word, Employee me, Pageable pageable);
     @Query(nativeQuery = true,
             value = "SELECT * FROM tbl_email WHERE email_receiver_employee_code = :receiver AND email_sender_employee_code IN :sender ORDER BY email_send_time desc")
-    List<Email> findAllByEmailReceiverMail(@Param("receiver") Long receiver, @Param("sender") List<Long> sender);
+    Page<Email> findAllByEmailReceiverMail(@Param("receiver") Long receiver, @Param("sender") List<Long> sender, Pageable pageable);
 
     List<Email> findByEmailReceiverAndEmailStatusIn(Employee employee, List<String> strings);
 
 
     Long countByEmailReadStatusAndEmailReceiver(String readStatus, Employee employee);
 
-    List<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatusIn(String n, Employee map, List<String> send);
+    Page<Email> findAllByEmailReadStatusAndEmailReceiverAndEmailStatusIn(String n, Employee map, List<String> send, Pageable pageable);
 
-    List<Email> findByEmailReceiverAndEmailStatusInOrderByEmailSendTimeDesc(Employee employee, List<String> send);
+    Page<Email> findByEmailReceiverAndEmailStatusInOrderByEmailSendTimeDesc(Employee employee, List<String> send, Pageable pageable);
 
-    List<Email> findAllByEmailSenderOrderByEmailSendTimeDesc(Employee employee);
+    Page<Email> findAllByEmailSenderOrderByEmailSendTimeDesc(Employee employee,Pageable pageable);
 
+    Page<Email> findAllByEmailReceiverAndEmailStatusOrderByEmailSendTimeDesc(Employee employeeCode, String emailStatus, Pageable pageable);
+
+    Page<Email> findAllByEmailSenderAndEmailReceiver(Employee sender, Employee receiver,Pageable pageable);
 }

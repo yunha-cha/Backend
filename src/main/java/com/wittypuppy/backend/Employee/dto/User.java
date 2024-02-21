@@ -27,6 +27,7 @@ public class User implements UserDetails {
     private Date joinDate;
     private String empAddress;
     private String empPhone;
+    private DepartmentDTO department;
     private Collection<GrantedAuthority> authorities; //컬렉션을 반환하는데, 이는 사용자의 역할을 나타낸다.
 
 

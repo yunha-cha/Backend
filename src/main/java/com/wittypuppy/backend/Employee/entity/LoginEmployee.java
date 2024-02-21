@@ -51,10 +51,18 @@ public class LoginEmployee {
     @Column(name = "employee_phone")
     private String empPhone;
 
+    @JoinColumn(name = "department_code")
+    @ManyToOne
+    private LoginDepartment empDepartment;
+
     protected LoginEmployee(int employeeCode, String employeeId, String employeePassword, String employeeName, String employeeEmail, List<LoginEmployeeRole> employeeRole, String employeeRetireDate, Date employeeBirthDate) {}
 
     public LoginEmployee() {
 
+    }
+
+    public void setEmpDepartment(LoginDepartment empDepartment) {
+        this.empDepartment = empDepartment;
     }
 
     public LoginEmployee employeeCode(int employeeCode) {
@@ -99,7 +107,7 @@ public class LoginEmployee {
 
     //builder생성
     public LoginEmployee build(){
-        return new LoginEmployee(employeeCode, employeeId, employeePassword, employeeName, employeeEmail, employeeRole, employeeRetireDate, employeeBirthDate, joinDate, empAddress, empPhone );
+        return new LoginEmployee(employeeCode, employeeId, employeePassword, employeeName, employeeEmail, employeeRole, employeeRetireDate, employeeBirthDate, joinDate, empAddress, empPhone, empDepartment );
     }
 
 

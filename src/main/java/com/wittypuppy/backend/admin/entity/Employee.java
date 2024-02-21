@@ -26,11 +26,11 @@ public class Employee {
     @JoinColumn(name="job_code")
     private Job job;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "education_code")
     private List<Education> educations;
 //
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "career_code")
     private List<Career> careers;
 
