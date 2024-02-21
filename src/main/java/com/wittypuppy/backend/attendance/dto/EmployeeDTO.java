@@ -1,6 +1,5 @@
 package com.wittypuppy.backend.attendance.dto;
 
-import com.wittypuppy.backend.Employee.dto.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,9 +9,9 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 
-public class EmployeeDTO {
+public class EmployeeDTO  {
 
-    private Long employeeCode;
+    private int employeeCode;
 
     private DepartmentDTO departmentCode;
 
@@ -21,5 +20,12 @@ public class EmployeeDTO {
     private LocalDateTime employeeJoinDate;
 
     private Long employeeAssignedCode;
+
+    private LocalDateTime vacationCreationDate;
+
+    private LocalDateTime vacationExpirationDate;
+
+    private String vacationCreationReason;
+
 
 }

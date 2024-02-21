@@ -181,4 +181,8 @@ public class AdminController {
     private ResponseEntity<ResponseDTO> res(String msg,Object data){
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK,msg,data));
     }
+
+    //연차 인서트
+
+
 }

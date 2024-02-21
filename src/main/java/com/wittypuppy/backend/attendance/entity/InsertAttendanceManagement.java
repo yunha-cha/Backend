@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Entity(name ="ATTENDANCE_ATTENDANCE_AND_WORK_TYPE")
+@Entity(name ="ATTENDANCE_ATTENDANCE_INSERT")
 @Table(name = "tbl_attendance_management")
-public class AttendanceManagement {
+public class InsertAttendanceManagement {
     @Id
     @Column(name = "attendance_management_code", columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +35,5 @@ public class AttendanceManagement {
     @Column(name = "attendance_management_work_day", columnDefinition = "DATE")
     private LocalDate attendanceManagementWorkDay;
 
-    @Column(name = "attendance_work_type_status")
-    private String attendanceWorkTypeStatus;
 
 }

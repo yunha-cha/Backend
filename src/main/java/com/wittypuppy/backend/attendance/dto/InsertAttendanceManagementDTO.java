@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 
 @NoArgsConstructor
@@ -13,11 +12,11 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @ToString
-public class AttendanceManagementDTO{
+public class InsertAttendanceManagementDTO {
 
     private Long attendanceManagementCode;
 
-    private EmployeeDTO attendanceEmployeeCode;
+    private User attendanceEmployeeCode;
 
     private LocalDateTime attendanceManagementArrivalTime;
 
@@ -26,14 +25,6 @@ public class AttendanceManagementDTO{
     private String attendanceManagementState;
 
     private LocalDate attendanceManagementWorkDay;
-
-    private String attendanceWorkTypeStatus;
-
-    private int normal; //정상 출퇴근 횟수
-
-    private int late; //지각 횟수
-
-    private int early; //조퇴 횟수
 
 
 

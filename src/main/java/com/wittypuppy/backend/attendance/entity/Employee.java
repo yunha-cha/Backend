@@ -16,7 +16,7 @@ public class Employee {
     @Id
     @Column(name = "employee_code", columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeCode;
+    private int employeeCode;
 
     @JoinColumn(name = "department_code")
     @ManyToOne
@@ -33,6 +33,5 @@ public class Employee {
 
     @Column(name="employee_assigned_code", columnDefinition = "BIGINT")
     private Long employeeAssignedCode;
-
 
 }
