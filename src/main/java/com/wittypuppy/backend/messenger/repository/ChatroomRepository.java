@@ -26,6 +26,7 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
                     "LEFT JOIN tbl_chat_read_status crs ON cr.chatroom_code = crs.chatroom_code AND crm.chatroom_member_code = crs.chatroom_member_code " +
                     "LEFT JOIN tbl_employee e ON crm.employee_code = e.employee_code " +
                     "WHERE e.employee_code = :employeeCode " +
+                    "AND crm.chatroom_member_type <> '삭제' " +
                     "AND cr.chatroom_code = :chatroomCode"
             , nativeQuery = true)
     Optional<chatroomMainElseChatInterface> findByChatroomCodeAndEmployeeCode(Long chatroomCode, Long employeeCode);

@@ -96,7 +96,7 @@ public class MessengerController {
             @PathVariable Long chatroomCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res("메신저 옵션 수정 성공", messengerService.pinnedChatroom(chatroomCode, userEmployeeCode));
+        return res("메신저 고정여부 수정 성공", messengerService.pinnedChatroom(chatroomCode, userEmployeeCode));
     }
 
     /**
@@ -172,7 +172,7 @@ public class MessengerController {
             @PathVariable Long inviteEmployeeCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res("채팅방 초대 성공", messengerService.inviteEmployees(chatroomCode, inviteEmployeeCode, userEmployeeCode));
+        return res("채팅방 초대 성공", messengerService.inviteEmployee(chatroomCode, inviteEmployeeCode, userEmployeeCode));
     }
 
     @PutMapping("/chatrooms/{chatroomCode}/delegate-admin")
@@ -215,12 +215,12 @@ public class MessengerController {
         return res(messengerService.kickChatroomMember(kickChatroomMemberCode, chatroomCode, userEmployeeCode));
     }
 
-    @PutMapping("/chatrooms/{chatroomCode}/exit")
-    public ResponseEntity<ResponseDTO> exitChatroomMember(
+    @DeleteMapping("/chatrooms/{chatroomCode}/leave")
+    public ResponseEntity<ResponseDTO> leaveChatroomMember(
             @PathVariable Long chatroomCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res(messengerService.exitChatroomMember(chatroomCode, userEmployeeCode));
+        return res("채팅방 나가기 성공",messengerService.leaveChatroomMember(chatroomCode, userEmployeeCode));
     }
 
     @PutMapping("/chatrooms/{chatroomCode}/read-status-update")

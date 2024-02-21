@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.messenger.controller;
 
 import com.wittypuppy.backend.messenger.dto.ChatDTO;
+import com.wittypuppy.backend.messenger.dto.ChatroomMessengerMainInterface;
 import com.wittypuppy.backend.messenger.dto.SendDTO;
 import com.wittypuppy.backend.messenger.service.MessengerService;
 import com.wittypuppy.backend.util.TokenUtils;
@@ -13,15 +14,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
-import java.util.Set;
 
 @Controller
 @AllArgsConstructor
 public class MessengerWebsocketController {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessengerService messengerService;
-    private final Map<Long, Set<Long>> oldChatMemberMap;
-    private final Map<Long, Set<Long>> newChatMemberMap;
 
     @MessageMapping("/messenger/chatrooms/{chatroomCode}/send")
     public void sendChat(
@@ -44,19 +42,31 @@ public class MessengerWebsocketController {
         String destination = "/topic/messenger/chatrooms/" + chatroomCode;
         System.out.println("destination>>>" + destination);
         messagingTemplate.convertAndSend(destination, chatDTO);
+    }
 
-        /* 4. 만약 초대한 사람이 있다면 구독하게 설정 */
-//        Set<Long> newChatroomMemberCodeSet = newChatMemberMap.get(chatroomCode);
-//        if (newChatroomMemberCodeSet != null && !newChatroomMemberCodeSet.isEmpty()) {
-//            for (Long newChatroomMemberCode : newChatroomMemberCodeSet) {
-//                // 초대된 사용자에게 알림 전송
-//                Long employeeCode = messengerService.getEmployeeCode(newChatroomMemberCode);
-//
-//                destination = "/topic/alert/" + employeeCode; // 계정마다 열려있는 /topic/alert를 기준으로 하는 websocket
-//                Map<String, Object> returnMessenger = new HashMap<>();
-//                returnMessenger.put("MessengerSubscribe", chatDTO); // 해당 alert를 인식하기 위한 Map. 객체에 이름을 추가했다고 생각하면 된다.
-//                messagingTemplate.convertAndSend(destination, returnMessenger); // 그 계정에게 전달. 받으면 내부에 chatroomCode를 확인하고 위의 구독방식을 진행
-//            }
-//        }
+    @MessageMapping("/messenger/chatrooms/{chatroomCode}/invite")
+    public void inviteChatroom(
+            @DestinationVariable String chatroomCode,
+            @Payload Map<String, Object> employeeMap,
+            SimpMessageHeaderAccessor accessor) {
+        String token = accessor.getFirstNativeHeader("Authorization");
+        TokenUtils tokenUtils = new TokenUtils();
+        System.out.println("chatroomCode>>>" + chatroomCode);
+        System.out.println("employeeCode>>>" + employeeMap.get("employeeCode"));
+        int userEmployeeCode = 0;
+        if (token != null) {
+            userEmployeeCode = tokenUtils.getUserEmployeeCode(token);
+        } else {
+            System.out.println("토큰이 없다.");
+        }
+
+        // 2. 초대는 이미 진행했고. Messenger 메인화면에 들어가는 채팅방 정보를 반환해서 전달한다.
+        ChatroomMessengerMainInterface result =
+                messengerService.newChatroom(Long.valueOf(String.valueOf(userEmployeeCode)), Long.parseLong(chatroomCode));
+
+        // 3. 구독한 대상자에게 데이터 전달
+        String destination = "/topic/messenger/" + employeeMap.get("employeeCode");
+        System.out.println("destination>>>" + destination);
+        messagingTemplate.convertAndSend(destination, result);
     }
 }

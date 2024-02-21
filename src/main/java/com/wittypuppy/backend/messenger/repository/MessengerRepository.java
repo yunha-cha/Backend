@@ -30,6 +30,7 @@ public interface MessengerRepository extends JpaRepository<Messenger, Long> {
                     "LEFT JOIN tbl_chatroom_profile cp ON cp.chatroom_code = cr.chatroom_code " +
                     "LEFT JOIN tbl_employee e ON crm.employee_code = e.employee_code " +
                     "WHERE e.employee_code = :employeeCode " +
+                    "AND crm.chatroom_member_type <> '삭제' " +
                     "AND (c.chat_write_date = (SELECT MAX(chat_write_date) FROM tbl_chat WHERE chatroom_code=cr.chatroom_code) OR c.chatroom_code IS null)",
             nativeQuery = true)
     List<ChatroomMessengerMainInterface> getMessengerStatistics(Long employeeCode);
@@ -51,6 +52,7 @@ public interface MessengerRepository extends JpaRepository<Messenger, Long> {
                     "LEFT JOIN tbl_chatroom_profile cp ON cp.chatroom_code = cr.chatroom_code " +
                     "LEFT JOIN tbl_employee e ON crm.employee_code = e.employee_code " +
                     "WHERE e.employee_code = :employeeCode " +
+                    "AND crm.chatroom_member_type <> '삭제' " +
                     "AND (c.chat_write_date = (SELECT MAX(chat_write_date) FROM tbl_chat WHERE chatroom_code=cr.chatroom_code) OR c.chatroom_code IS null) " +
                     "AND cr.chatroom_code = :chatroomCode",
             nativeQuery = true)
