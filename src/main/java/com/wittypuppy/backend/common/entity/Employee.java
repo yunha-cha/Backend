@@ -114,14 +114,6 @@ public class Employee {
     @OneToMany
     private List<Post> postList;
 
-    @JoinColumn(name = "employee_code")
-    @OneToMany
-    private List<ProjectMember> projectMemberList;
-
-    @JoinColumn(name = "project_manager_code")
-    @OneToMany
-    private List<Project> projectList;
-
     @OneToMany(mappedBy = "emailReceiverEmployee")
     private List<Email> emailReceiverList;
     @OneToMany(mappedBy = "emailSenderEmployee")

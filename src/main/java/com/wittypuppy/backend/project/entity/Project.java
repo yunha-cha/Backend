@@ -44,9 +44,9 @@ public class Project {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<ProjectMember> projectMemberList;
 
-    @JoinColumn(name = "project_code")
-    @OneToMany
-    private List<ProjectPost> projectPostList;
+//    @JoinColumn(name = "project_code")
+//    @OneToMany
+//    private List<ProjectPost> projectPostList;
 
     public Project setProjectCode(Long projectCode) {
         this.projectCode = projectCode;
@@ -88,12 +88,13 @@ public class Project {
         return this;
     }
 
-    public Project setProjectPostList(List<ProjectPost> projectPostList) {
-        this.projectPostList = projectPostList;
-        return this;
-    }
+//    public Project setProjectPostList(List<ProjectPost> projectPostList) {
+//        this.projectPostList = projectPostList;
+//        return this;
+//    }
 
     public Project builder() {
-        return new Project(projectCode, projectManager, projectTitle, projectDescription, projectProgressStatus, projectDeadline, projectLockedStatus, projectMemberList, projectPostList);
+//        return new Project(projectCode, projectManager, projectTitle, projectDescription, projectProgressStatus, projectDeadline, projectLockedStatus, projectMemberList, projectPostList);
+        return new Project(projectCode, projectManager, projectTitle, projectDescription, projectProgressStatus, projectDeadline, projectLockedStatus, projectMemberList);
     }
 }

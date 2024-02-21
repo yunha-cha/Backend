@@ -113,23 +113,23 @@ public class ProjectController {
         return res("프로젝트 열기 성공", result);
     }
 
-    @GetMapping("/projects/{projectCode}/paging")
-    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
-            @PathVariable Long projectCode,
-            @RequestParam(name = "search", required = false) String searchValue,
-            @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @AuthenticationPrincipal User principal) {
-        Long userEmployeeCode = (long) principal.getEmployeeCode();
-        Map<String, Object> result = null;
-        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
-
-        result = projectService.selectProjectPostListWithPaging(searchValue, projectCode, cri, userEmployeeCode);
-
-        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
-        pagingResponseDTO.setData(result.get("projectPostList"));
-        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("projectPostListSize")).intValue()));
-        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
-    }
+//    @GetMapping("/projects/{projectCode}/paging")
+//    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
+//            @PathVariable Long projectCode,
+//            @RequestParam(name = "search", required = false) String searchValue,
+//            @RequestParam(name = "offset", defaultValue = "1") String offset,
+//            @AuthenticationPrincipal User principal) {
+//        Long userEmployeeCode = (long) principal.getEmployeeCode();
+//        Map<String, Object> result = null;
+//        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
+//
+//        result = projectService.selectProjectPostListWithPaging(searchValue, projectCode, cri, userEmployeeCode);
+//
+//        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+//        pagingResponseDTO.setData(result.get("projectPostList"));
+//        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("projectPostListSize")).intValue()));
+//        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
+//    }
 
     /**
      * 프로젝트 코드와 프로젝트 정보 값을 전달하면 프로젝트를 수정한다.
