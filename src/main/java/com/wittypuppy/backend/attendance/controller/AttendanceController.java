@@ -115,7 +115,7 @@ public class AttendanceController {
     ){
 
 
-        //출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
+        // 출근, 퇴근 시간 인서트 -> 퇴근시간은 업데이트(직원코드기준 출근시간이 마지막인거에 퇴근 업데이트 )
 
         LocalDateTime departureTime = LocalDateTime.parse((String) requestBody.get("departureTime"));
         String status = (boolean) requestBody.get("early") ? "조퇴" : "";
