@@ -2,7 +2,7 @@ package com.wittypuppy.backend.messenger.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class EmployeeDTO {
 
     private String employeeName;
 
-    private LocalDateTime employeeRetirementDate;
+    private Date employeeRetirementDate;
 
     private List<ProfileDTO> profileList;
 }

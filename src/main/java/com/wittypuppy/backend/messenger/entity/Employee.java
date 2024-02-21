@@ -3,7 +3,7 @@ package com.wittypuppy.backend.messenger.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -31,7 +31,7 @@ public class Employee {
     private String employeeName;
 
     @Column(name="employee_retirement_date")
-    private LocalDateTime employeeRetirementDate;
+    private Date employeeRetirementDate;
 
     @JoinColumn(name = "employee_code")
     @OneToMany

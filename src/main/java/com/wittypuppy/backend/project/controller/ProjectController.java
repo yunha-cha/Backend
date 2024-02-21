@@ -85,49 +85,51 @@ public class ProjectController {
      * <p>
      * 생성한 대상자가 프로젝트 관리자가 된다.
      *
-     * @param projectDTO 입력한 프로젝트 정보 값
-     * @param object     계정 정보
+     * @param project   입력한 프로젝트 정보 값
+     * @param principal 계정 정보
      * @return 200, 메시지 반환
      */
     @PostMapping("/projects")
-    public ResponseEntity<ResponseDTO> createProject(@RequestBody ProjectDTO projectDTO,
-                                                     @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        String result = projectService.createProject(projectDTO, userEmployeeCode);
+    public ResponseEntity<ResponseDTO> createProject(@RequestBody ProjectDTO project,
+                                                     @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        Long result = projectService.createProject(project, userEmployeeCode);
 
-        return res(result);
+        return res("프로젝트 생성 성공", result);
     }
 
     /**
      * 프로젝트에 접속한다.
      *
      * @param projectCode 전달받은 프로젝트 식별 코드 값
-     * @param object      계정 정보
+     * @param principal   계정 정보
      * @return 200, 메시지, 보낼데이터 반환
      */
     @GetMapping("/projects/{projectCode}")
     public ResponseEntity<ResponseDTO> openProject(@PathVariable Long projectCode,
-                                                   @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
+                                                   @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         Map<String, Object> result = projectService.openProject(projectCode, userEmployeeCode);
         return res("프로젝트 열기 성공", result);
     }
 
-    @GetMapping("/projects/{projectCode}/paging")
-    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
-            @PathVariable Long projectCode,
-            @RequestParam(name = "offset", defaultValue = "1") String offset) {
-        Long userEmployeeCode = 12L;
-        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
-
-        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
-        List<ProjectPostDTO> projectPostList = projectService.selectProjectPostListWithPaging(projectCode, cri, userEmployeeCode);
-        pagingResponseDTO.setData(projectPostList);
-
-        pagingResponseDTO.setPageInfo(new PageDTO(cri, (int) projectPostList.size()));
-
-        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
-    }
+//    @GetMapping("/projects/{projectCode}/paging")
+//    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
+//            @PathVariable Long projectCode,
+//            @RequestParam(name = "search", required = false) String searchValue,
+//            @RequestParam(name = "offset", defaultValue = "1") String offset,
+//            @AuthenticationPrincipal User principal) {
+//        Long userEmployeeCode = (long) principal.getEmployeeCode();
+//        Map<String, Object> result = null;
+//        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
+//
+//        result = projectService.selectProjectPostListWithPaging(searchValue, projectCode, cri, userEmployeeCode);
+//
+//        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+//        pagingResponseDTO.setData(result.get("projectPostList"));
+//        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("projectPostListSize")).intValue()));
+//        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
+//    }
 
     /**
      * 프로젝트 코드와 프로젝트 정보 값을 전달하면 프로젝트를 수정한다.
@@ -139,29 +141,29 @@ public class ProjectController {
      * 5. 프로젝트 잠금 여부
      *
      * @param projectCode       전달받은 프로젝트 식별 코드 값
-     * @param projectOptionsDTO 입력한 프로젝트 정보 값
-     * @param object            계정 정보
+     * @param projectOptions 입력한 프로젝트 정보 값
+     * @param principal         계정 정보
      * @return 200, 메시지 반환
      */
     @PutMapping("/projects/{projectCode}")
     public ResponseEntity<ResponseDTO> modifyProject(@PathVariable Long projectCode,
-                                                     @RequestBody ProjectOptionsDTO projectOptionsDTO,
-                                                     @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        String result = projectService.modifyProject(projectCode, projectOptionsDTO, userEmployeeCode);
+                                                     @RequestBody ProjectOptionsDTO projectOptions,
+                                                     @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        String result = projectService.modifyProject(projectCode, projectOptions, userEmployeeCode);
         return res(result);
     }
 
     /**
      * 프로젝트 멤버로 초대하기 전에 사원 목록 출력을 위해 사원들의 정보를 가져온다.
      *
-     * @param object 계정 정보
+     * @param principal 계정 정보
      * @return 200, 메시지, 사원 리스트 반환
      */
     @GetMapping("/employees")
-    public ResponseEntity<ResponseDTO> selectEmployeeList(@AuthenticationPrincipal Object object
-    ) {
-        Long userEmployeeCode = 12L;
+    public ResponseEntity<ResponseDTO> selectEmployeeList(
+            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
         List<EmployeeDTO> result = projectService.selectEmployeeList();
         return res("프로젝트에 사원 초대를 위한 사원 목록 조회", result);
     }

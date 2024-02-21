@@ -32,6 +32,7 @@ public class PageDTO {
 
         /* 전체 마지막 페이지 번호 */
         this.realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
+
         /* 페이지 끝 번호 유효성 체크 */
         if (realEnd < pageEnd) {
             this.pageEnd = this.realEnd;

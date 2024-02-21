@@ -13,18 +13,18 @@ import java.util.List;
 @ToString
 public class MessengerMainDTO {
     private Long messengerCode;
-    private String messengerOption;
+    private String messengerPositionOption;
     private String messengerMiniAlarmOption;
     private String messengerTheme;
-    private List<ChatroomMessengerMainDTO> chatroomList;
+    private List<ChatroomMessengerMainInterface> chatroomList;
 
     public MessengerMainDTO setMessengerCode(Long messengerCode) {
         this.messengerCode = messengerCode;
         return this;
     }
 
-    public MessengerMainDTO setMessengerOption(String messengerOption) {
-        this.messengerOption = messengerOption;
+    public MessengerMainDTO setMessengerPositionOption(String messengerPositionOption) {
+        this.messengerPositionOption = messengerPositionOption;
         return this;
     }
 
@@ -38,12 +38,12 @@ public class MessengerMainDTO {
         return this;
     }
 
-    public MessengerMainDTO setChatroomList(List<ChatroomMessengerMainDTO> chatroomList) {
+    public MessengerMainDTO setChatroomList(List<ChatroomMessengerMainInterface> chatroomList) {
         this.chatroomList = chatroomList;
         return this;
     }
 
     public MessengerMainDTO builder() {
-        return new MessengerMainDTO(messengerCode, messengerOption, messengerMiniAlarmOption, messengerTheme, chatroomList);
+        return new MessengerMainDTO(messengerCode, messengerPositionOption, messengerMiniAlarmOption, messengerTheme, chatroomList);
     }
 }

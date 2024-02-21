@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +32,7 @@ public class ChatFile {
     private String chatFileChangedFile;
 
     @Column(name = "upload_date")
-    private LocalDateTime chatFileUpdateDate;
+    private Date chatFileUpdateDate;
 
     public ChatFile setChatFileCode(Long chatFileCode) {
         this.chatFileCode = chatFileCode;
@@ -54,7 +54,7 @@ public class ChatFile {
         return this;
     }
 
-    public ChatFile setChatFileUpdateDate(LocalDateTime chatFileUpdateDate) {
+    public ChatFile setChatFileUpdateDate(Date chatFileUpdateDate) {
         this.chatFileUpdateDate = chatFileUpdateDate;
         return this;
     }

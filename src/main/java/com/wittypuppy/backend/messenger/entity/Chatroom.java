@@ -17,6 +17,7 @@ import java.util.List;
 public class Chatroom {
     @Id
     @Column(name = "chatroom_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatroomCode;
 
     @Column(name = "chatroom_title")

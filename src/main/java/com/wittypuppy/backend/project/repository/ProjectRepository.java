@@ -11,15 +11,15 @@ import java.util.Optional;
 
 @Repository("Project_ProjectRepository")
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    List<Project> findAllByProjectMemberList_Employee_EmployeeCode(Long employeeCode);
-
-    List<Project> findAllByProjectManager_Department_DepartmentCode(Long departmentCode);
-
-    List<Project> findAllByProjectTitleLike(String searchValuePattern);
-
-    Optional<Project> findByProjectPostList_ProjectPostCodeAndProjectMemberList_Employee_EmployeeCode(Long projectPostCode, Long employeeCode);
-
-    Optional<Project> findByProjectPostList_ProjectPostCode(Long projectPostCode);
+//    List<Project> findAllByProjectMemberList_Employee_EmployeeCode(Long employeeCode);
+//
+//    List<Project> findAllByProjectManager_Department_DepartmentCode(Long departmentCode);
+//
+//    List<Project> findAllByProjectTitleLike(String searchValuePattern);
+//
+//    Optional<Project> findByProjectPostList_ProjectPostCodeAndProjectMemberList_Employee_EmployeeCode(Long projectPostCode, Long employeeCode);
+//
+//    Optional<Project> findByProjectPostList_ProjectPostCode(Long projectPostCode);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +

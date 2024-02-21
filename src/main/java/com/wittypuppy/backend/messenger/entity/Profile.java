@@ -3,7 +3,7 @@ package com.wittypuppy.backend.messenger.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +28,7 @@ public class Profile {
     private String profileChangedFile;
 
     @Column(name = "profile_regist_date")
-    private LocalDateTime profileRegistDate;
+    private Date profileRegistDate;
 
     @Column(name = "profile_delete_status")
     private String profileDeleteStatus;

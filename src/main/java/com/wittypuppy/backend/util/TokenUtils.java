@@ -157,6 +157,13 @@ public class TokenUtils {
                 .getBody(); //바디를 가져옴 사용자 정보 같은 거 여기 있음
         return claims.getSubject(); //아이디 나와라
     }
+    public int getUserEmployeeCode(String token){
+        Claims claims = Jwts.parser()   //JWT를 파싱하기 위해서
+                .setSigningKey(jwtSecretKey)    //생성된 시크릿 키
+                .parseClaimsJws(token.replace("Bearer ", ""))   //Bearer빼고 파싱함
+                .getBody(); //바디를 가져옴 사용자 정보 같은 거 여기 있음
+        return (Integer)claims.get("empCode"); //아이디 나와라
+    }
     /**
      * JWT 서명을 발급해주는 메서드이다.
      *

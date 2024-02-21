@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository("Messenger_ChatroomMemberRepository")
 public interface ChatroomMemberRepository extends JpaRepository<ChatroomMember, Long> {
-    Optional<ChatroomMember> findByChatroomCodeAndEmployee_EmployeeCode(Long chatroomCode, Long employeeCode);
+    Optional<ChatroomMember> findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(Long chatroomCode, Long employeeCode, String chatroomMemberType);
 
     @Query("SELECT CM FROM MESSENGER_CHATROOM_MEMBER CM " +
             "LEFT JOIN CM.employee e " +

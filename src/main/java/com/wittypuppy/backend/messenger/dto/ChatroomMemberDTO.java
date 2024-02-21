@@ -10,7 +10,7 @@ import lombok.*;
 public class ChatroomMemberDTO {
     private Long chatroomMemberCode;
     private Long chatroomCode;
-    private EmployeeDTO employeeDTO;
+    private EmployeeDTO employee;
     private String chatroomMemberType;
     private String chatroomMemberPinnedStatus;
 }

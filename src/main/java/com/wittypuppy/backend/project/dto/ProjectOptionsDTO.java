@@ -14,7 +14,7 @@ import java.util.Date;
 public class ProjectOptionsDTO {
     private String projectTitle;
     private String projectDescription;
-    private String progressStatus;
+    private String projectProgressStatus;
     private Date projectDeadline;
     private String projectLockedStatus;
 }

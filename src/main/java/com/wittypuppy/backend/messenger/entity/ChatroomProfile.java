@@ -1,12 +1,9 @@
 package com.wittypuppy.backend.messenger.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +15,7 @@ public class ChatroomProfile {
 
     @Id
     @Column(name = "chatroom_profile_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatroomProfileCode;
 
     @Column(name = "chatroom_code")
@@ -30,7 +28,7 @@ public class ChatroomProfile {
     private String chatroomProfileChangedFile;
 
     @Column(name = "chatroom_profile_regist_date")
-    private LocalDateTime chatroomProfileRegistDate;
+    private Date chatroomProfileRegistDate;
 
     @Column(name = "chatroom_profile_delete_status")
     private String chatroomProfileDeleteStatus;
@@ -55,7 +53,7 @@ public class ChatroomProfile {
         return this;
     }
 
-    public ChatroomProfile setChatroomProfileRegistDate(LocalDateTime chatroomProfileRegistDate) {
+    public ChatroomProfile setChatroomProfileRegistDate(Date chatroomProfileRegistDate) {
         this.chatroomProfileRegistDate = chatroomProfileRegistDate;
         return this;
     }

@@ -16,6 +16,7 @@ public class ProjectDTO {
     private String projectDescription;
     private Date projectDeadline;
     private String projectLockedStatus;
+    private String projectProgressStatus;
 
     public ProjectDTO setProjectCode(Long projectCode) {
         this.projectCode = projectCode;
@@ -42,7 +43,12 @@ public class ProjectDTO {
         return this;
     }
 
+    public ProjectDTO setProjectProgressStatus(String projectProgressStatus) {
+        this.projectProgressStatus = projectProgressStatus;
+        return this;
+    }
+
     public ProjectDTO builder() {
-        return new ProjectDTO(projectCode, projectTitle, projectDescription, projectDeadline, projectLockedStatus);
+        return new ProjectDTO(projectCode, projectTitle, projectDescription, projectDeadline, projectLockedStatus,projectProgressStatus);
     }
 }
