@@ -17,7 +17,7 @@ public class BoardDTO {
 
     private Long boardCode;
 
-    private Long boardManagerCode;
+//    private Long boardManagerCode;
 
     private Long boardGroupCode;
 
@@ -27,7 +27,7 @@ public class BoardDTO {
 
     private String boardAccessStatus;
 
-    private List<PostDTO> postList;
+//    private List<PostDTO> postList;
 
     private List<BoardMemberDTO> boardMemberList;
 

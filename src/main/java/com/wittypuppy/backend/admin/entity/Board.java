@@ -20,8 +20,8 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardCode;
 
-    @Column(name = "board_manager_code",columnDefinition = "BIGINT")
-    private Long boardManagerCode;
+//    @Column(name = "board_manager_code",columnDefinition = "BIGINT")
+//    private Long boardManagerCode;
 
     @Column(name = "board_group_code",columnDefinition = "BIGINT")
     private Long boardGroupCode;
@@ -35,9 +35,9 @@ public class Board {
     @Column(name = "board_access_status",columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String boardAccessStatus;
 
-    @JoinColumn(name = "board_code")
-    @OneToMany
-    private List<Post> postList;
+//    @JoinColumn(name = "board_code")
+//    @OneToMany
+//    private List<Post> postList;
 
     @JoinColumn(name = "board_code")
     @OneToMany

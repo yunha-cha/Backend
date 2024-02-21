@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,16 +32,18 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardMemberRepository boardMemberRepository;
 
+    private final BoardGroupRepository boardGroupRepository;
 
     private final BoardEmployeeRepository boardEmployeeRepository;
     private final ModelMapper modelMapper;
 
-    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, BoardRepository boardRepository, BoardMemberRepository boardMemberRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
+    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, BoardRepository boardRepository, BoardMemberRepository boardMemberRepository, BoardGroupRepository boardGroupRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
         this.postCommentRepository = postCommentRepository;
         this.postLikeRepository = postLikeRepository;
         this.boardRepository = boardRepository;
         this.boardMemberRepository = boardMemberRepository;
+        this.boardGroupRepository = boardGroupRepository;
         this.boardEmployeeRepository = boardEmployeeRepository;
         this.modelMapper = modelMapper;
     }
@@ -117,11 +118,13 @@ public class BoardService {
 
 
     @Transactional
-    public String insertPost(PostDTO postDTO) {
+    public String insertPost(PostDTO postDTO,  Long employeeCode) {
 
         log.info("BoardService >>> insertPost >>> start");
 
         int result = 0;
+
+        Employee userEmployee = boardEmployeeRepository.findByEmployeeCode(employeeCode);
 
         try{
             // 받은 dto를 엔티티로 변환
@@ -129,6 +132,10 @@ public class BoardService {
 
             // 등록할 때 현재 날짜로 설정
             newPost.setPostDate(LocalDateTime.now());
+            newPost.setEmployee(userEmployee);
+            newPost.setPostViews(0L);
+
+            // 좋아요 개수 초기화 (아직 좋아요 개수 미구현)
 
             // 알림 받을 직원 설정 -> 테이블 생성?(게시판 멤버, 게시글 코드)
             postRepository.save(newPost);
@@ -139,7 +146,7 @@ public class BoardService {
         }
 
 
-        return result > 0 ? "게시물 등록 성공" : "게시물 등록 실패";
+        return result > 0 ? "게시글 등록 성공" : "게시글 등록 실패";
 
     }
 
@@ -154,6 +161,15 @@ public class BoardService {
         Post entityPost = postRepository.findById(postCode).get();
         entityPost.setPostTitle(postDTO.getPostTitle());
         entityPost.setPostContext(postDTO.getPostContext());
+        entityPost.setPostNoticeStatus(postDTO.getPostNoticeStatus());
+        entityPost.setBoardCode(postDTO.getBoardCode());
+
+
+        // 파일 첨부
+
+        // 알림 설정
+        // 알림 엔티티.set
+
 
         PostDTO updatedPostDTO = modelMapper.map(entityPost, PostDTO.class);
 
@@ -220,6 +236,7 @@ public class BoardService {
     }
 
 
+    // 댓글 등록
     @Transactional
     public PostCommentDTO insertComment(PostCommentDTO postCommentDTO, Long postCode, Long employeeCode) {
         Employee employee = new Employee();
@@ -558,11 +575,22 @@ public class BoardService {
 
             return null;
         }
-
-
     }
 
 
+
+    /* 게시판 카테고리 조회 */
+    public List<BoardDTO> selectBoardList() {
+
+        List<Board> boardList = boardRepository.findAllByBoardAccessStatus("Y");
+
+        List<BoardDTO> boardDTOList = boardList.stream()
+                .map(board -> modelMapper.map(board, BoardDTO.class))
+                .collect(Collectors.toList());
+
+        return boardDTOList;
+
+    }
 }
 
 
