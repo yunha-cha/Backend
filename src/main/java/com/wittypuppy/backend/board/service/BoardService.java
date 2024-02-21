@@ -476,6 +476,11 @@ public class BoardService {
         return null;
 
     }
+
+    public List<PostDTO> findByEmployeeCodeMain(long employeeCode) {
+        List<Post> postEntity = postRepository.findByEmployeeCode(employeeCode);
+        return convert(postEntity, PostDTO.class);
+    }
 }
 
 

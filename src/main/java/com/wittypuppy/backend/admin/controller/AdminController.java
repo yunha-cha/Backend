@@ -4,24 +4,70 @@ import com.wittypuppy.backend.admin.dto.*;
 import com.wittypuppy.backend.admin.service.AdminService;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import com.wittypuppy.backend.admin.dto.EmailDTO;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
 import org.hibernate.QueryTimeoutException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
     private final AdminService adminService;
-    public AdminController(AdminService adminService) {
+    private final SimpMessagingTemplate simp;
+    public AdminController(AdminService adminService, SimpMessagingTemplate simp) {
         this.adminService = adminService;
+        this.simp = simp;
+    }
+
+    @MessageMapping("/mail/alert/admin/send")
+    public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+        //관리자가 보냈음
+        email.setEmailSender(new EmployeeDTO(15L));
+        email.setEmailStatus("send");
+        email.setEmailReadStatus("N");
+
+        if(email.getStatus().equals("all")){    //조직이 all이라면
+            List<EmployeeDTO> employeeDTO = adminService.sendMailAll(email);
+            for(EmployeeDTO emp : employeeDTO){
+                simp.convertAndSend("topic/mail/alert/"+emp.getEmployeeCode(),email);
+            }
+        } else if(!email.getStatus().isEmpty()){    //조직이 비어있다면
+            List<EmployeeDTO> employeeDTO = adminService.sendDepartmentMail(email);
+            for(EmployeeDTO emp : employeeDTO){
+                simp.convertAndSend("topic/mail/alert/"+emp.getEmployeeCode(),email);
+            }
+        }
+    }
+    @MessageMapping("/mail/alert/admin/send2")
+    public void mailAlert2(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+        //관리자가 보냈음
+        System.out.println("여2"+email.getStatus2());
+        email.setEmailSender(new EmployeeDTO(15L));
+        email.setEmailStatus("send");
+        email.setEmailReadStatus("N");
+        List<EmployeeDTO> employeeDTOS = adminService.sendMailAll2(email);
+        for(EmployeeDTO emp : employeeDTOS){
+            simp.convertAndSend("topic/mail/alert/"+emp.getEmployeeCode(),email);
+        }
+    }
+    @GetMapping("/get-department")
+    public ResponseEntity<ResponseDTO> getDepartment(){
+        List<DepartmentDTO> departmentDTO = adminService.getDepartment();
+        for(DepartmentDTO department : departmentDTO){
+            System.out.println(department);
+        }
+        return res("조직 조회 성공",departmentDTO);
     }
     /**
      * 유저의 모든 정보를 가져오는 메서드

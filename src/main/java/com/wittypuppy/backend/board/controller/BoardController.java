@@ -1,16 +1,17 @@
 package com.wittypuppy.backend.board.controller;
 
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.board.dto.*;
 import com.wittypuppy.backend.board.service.BoardService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,14 @@ public class BoardController {
     public BoardController(BoardService boardService, SimpMessagingTemplate simpMessagingTemplate) {
         this.boardService = boardService;
         this.simp = simpMessagingTemplate;
+    }
+    @GetMapping("main-board")
+    public ResponseEntity<ResponseDTO> selectMainPagePost(@AuthenticationPrincipal User user){
+        List<PostDTO> postList = boardService.findByEmployeeCodeMain((long)user.getEmployeeCode());
+        for(PostDTO post : postList){
+            System.out.println(post);
+        }
+        return res("메인페이지 post 조회 성공", postList);
     }
 
 

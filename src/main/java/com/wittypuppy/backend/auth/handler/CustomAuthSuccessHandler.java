@@ -23,7 +23,7 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         User employee  = ((User) authentication.getPrincipal());
-
+        System.out.println("============나는야 : "+employee);
         HashMap<String, Object> responseMap = new HashMap<>();
         JSONObject jsonValue = null;
         JSONObject jsonObject;
@@ -39,6 +39,8 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
                                 .employeeName(employee.getEmployeeName())
                                 .employeeCode(employee.getEmployeeCode())
                                 .employeeId(employee.getEmployeeId())
+                                .deptName(employee.getDepartment().getDepartmentName())
+                                .groupName(employee.getDepartment().getParentDepartmentCode())
                                 .accessToken(token)
                                 .grantType(AuthConstants.TOKEN_TYPE)
                                 .build();
