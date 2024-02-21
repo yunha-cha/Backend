@@ -538,7 +538,7 @@ public class BoardService {
     }
 
     public List<PostDTO> findByEmployeeCodeMain(long employeeCode) {
-        List<Post> postEntity = postRepository.findByEmployeeCode(employeeCode);
+        List<Post> postEntity = postRepository.findByEmployee_EmployeeCode(employeeCode);
         return convert(postEntity, PostDTO.class);
     }
 

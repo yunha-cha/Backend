@@ -20,5 +20,5 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     Page<Post> findByBoardCode(Long boardCode, Pageable paging);
 
-    List<Post> findByEmployeeCode(long employeeCode);
+    List<Post> findByEmployee_EmployeeCode(long employeeCode);
 }

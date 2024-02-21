@@ -37,6 +37,11 @@ public class BoardController {
         this.boardService = boardService;
         this.simp = simpMessagingTemplate;
     }
+    @GetMapping("main-board")
+    public ResponseEntity<ResponseDTO> selectMainPagePost(@AuthenticationPrincipal User user){
+        List<PostDTO> postList = boardService.findByEmployeeCodeMain((long)user.getEmployeeCode());
+        return res("메인페이지 post 조회 성공", postList);
+    }
 
 
 
