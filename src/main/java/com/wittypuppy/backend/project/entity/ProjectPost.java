@@ -36,8 +36,9 @@ public class ProjectPost {
     @Column(name = "project_post_title")
     private String projectPostTitle;
 
-    @Column(name = "project_member_code")
-    private Long projectMemberCode;
+    @JoinColumn(name = "project_member_code")
+    @ManyToOne
+    private ProjectMember projectMember;
 
     @JoinColumn(name = "project_post_file_code")
     @OneToMany(cascade = CascadeType.PERSIST)

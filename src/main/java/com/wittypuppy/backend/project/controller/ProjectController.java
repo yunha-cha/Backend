@@ -122,7 +122,7 @@ public class ProjectController {
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         Map<String, Object> result = null;
-        Criteria cri = new Criteria(Integer.valueOf(offset), 20);
+        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
         System.out.println("searchValue>>>" + searchValue);
         result = projectService.selectProjectPostListWithPaging("%" + searchValue + "%", projectCode, cri, userEmployeeCode);
 

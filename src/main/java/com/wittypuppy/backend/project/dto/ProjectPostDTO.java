@@ -26,4 +26,6 @@ public class ProjectPostDTO {
     private Long projectMemberCode;
 
     private List<ProjectPostFileDTO> projectPostFileList;
+
+    private ProjectMemberDTO projectMember;
 }
