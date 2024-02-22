@@ -43,9 +43,6 @@ public class MessengerService {
     @Value("${image.image-dir}")
     private String IMAGE_DIR;
 
-    @Value("${image.image-url}")
-    private String IMAGE_URL;
-
     /**
      * 내가 속한 채팅방의 채팅방 식별 코드에 대한 리스트를 가져온다. 채팅방 코드와 내 사원 코드를 이용해서 채팅 엔티티의 최근 채팅코드(max), 채팅읽음여부 엔티티의 채팅코드를 읽어온다.
      * <p>

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -113,23 +114,24 @@ public class ProjectController {
         return res("프로젝트 열기 성공", result);
     }
 
-//    @GetMapping("/projects/{projectCode}/paging")
-//    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
-//            @PathVariable Long projectCode,
-//            @RequestParam(name = "search", required = false) String searchValue,
-//            @RequestParam(name = "offset", defaultValue = "1") String offset,
-//            @AuthenticationPrincipal User principal) {
-//        Long userEmployeeCode = (long) principal.getEmployeeCode();
-//        Map<String, Object> result = null;
-//        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
-//
-//        result = projectService.selectProjectPostListWithPaging(searchValue, projectCode, cri, userEmployeeCode);
-//
-//        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
-//        pagingResponseDTO.setData(result.get("projectPostList"));
-//        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("projectPostListSize")).intValue()));
-//        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
-//    }
+    @GetMapping("/projects/{projectCode}/paging")
+    public ResponseEntity<ResponseDTO> selectProjectPostListWithPaging(
+            @PathVariable Long projectCode,
+            @RequestParam(name = "search", required = false, defaultValue = "") String searchValue,
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        Map<String, Object> result = null;
+        Criteria cri = new Criteria(Integer.valueOf(offset), 20);
+        System.out.println("searchValue>>>" + searchValue);
+        result = projectService.selectProjectPostListWithPaging("%" + searchValue + "%", projectCode, cri, userEmployeeCode);
+
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+        pagingResponseDTO.setData(result.get("content"));
+        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("totalSize")).intValue()));
+        System.out.println("pagingResponseDTO>>>" + pagingResponseDTO);
+        return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
+    }
 
     /**
      * 프로젝트 코드와 프로젝트 정보 값을 전달하면 프로젝트를 수정한다.
@@ -140,9 +142,9 @@ public class ProjectController {
      * 4. 프로젝트 마감 기한<br>
      * 5. 프로젝트 잠금 여부
      *
-     * @param projectCode       전달받은 프로젝트 식별 코드 값
+     * @param projectCode    전달받은 프로젝트 식별 코드 값
      * @param projectOptions 입력한 프로젝트 정보 값
-     * @param principal         계정 정보
+     * @param principal      계정 정보
      * @return 200, 메시지 반환
      */
     @PutMapping("/projects/{projectCode}")
@@ -172,31 +174,31 @@ public class ProjectController {
      * 사원을 프로젝트에 초대합니다. 관리자만 초대 가능합니다.
      * 이미 프로젝트에 존재하는 사원인 경우 자동으로 제외하고 초대한다.
      *
-     * @param projectCode            해당 프로젝트 코드
-     * @param inviteEmployeeCodeList 초대할 사원 코드
-     * @param object                 계정 정보
+     * @param projectCode        해당 프로젝트 코드
+     * @param inviteEmployeeCode 초대할 사원 코드
+     * @param principal          계정 정보
      * @return 200, 메시지 반환
      */
     @PostMapping("/projects/{projectCode}/invite")
     public ResponseEntity<ResponseDTO> inviteProjectMembers(@PathVariable Long projectCode,
-                                                            @RequestBody List<Long> inviteEmployeeCodeList,
-                                                            @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        return res(projectService.inviteProjectMembers(projectCode, inviteEmployeeCodeList, userEmployeeCode));
+                                                            @RequestBody Long inviteEmployeeCode,
+                                                            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res("프로젝트 멤버 초대 성공", projectService.inviteProjectMember(projectCode, inviteEmployeeCode, userEmployeeCode));
     }
 
     /**
      * 프로젝트에서 나간다. 관리자인 경우 다른 사람에게 관리자를 위임해야 한다.
      *
      * @param projectCode 해당 프로젝트 식별 코드
-     * @param object      계정 정보
+     * @param principal   계정 정보
      * @return 200, 메시지 반환
      */
-    @DeleteMapping("/projects/{projectCode}/exit")
+    @DeleteMapping("/projects/{projectCode}/leave")
     public ResponseEntity<ResponseDTO> kickProjectMember(@PathVariable Long projectCode,
-                                                         @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        return res(projectService.exitProjectMember(projectCode, userEmployeeCode));
+                                                         @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res("프로젝트 나가기 성공", projectService.leaveProjectMember(projectCode, userEmployeeCode));
     }
 
     /**
@@ -204,16 +206,36 @@ public class ProjectController {
      *
      * @param projectCode             해당 프로젝트 식별 코드
      * @param kickedProjectMemberCode 강제로 내보낼 사원의 프로젝트 멤버 코드
-     * @param object                  계정 정보
+     * @param principal               계정 정보
      * @return 200, 메시지 반환
      */
     @DeleteMapping("/projects/{projectCode}/kick/{kickedProjectMemberCode}")
-    public ResponseEntity<ResponseDTO> kickProjectMember(@PathVariable Long projectCode,
-                                                         @PathVariable Long kickedProjectMemberCode,
-                                                         @AuthenticationPrincipal Object object) {
-        Long userEmployeeCode = 12L;
-        return res(projectService.kickProjectMember(projectCode, kickedProjectMemberCode, userEmployeeCode));
+    public ResponseEntity<ResponseDTO> kickedProjectMember(@PathVariable Long projectCode,
+                                                           @PathVariable Long kickedProjectMemberCode,
+                                                           @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res("프로젝트 멤버 내보내기 성공", projectService.kickedProjectMember(projectCode, kickedProjectMemberCode, userEmployeeCode));
     }
+
+    @PostMapping("/projects/upload-image")
+    public ResponseEntity<ResponseDTO> uploadImage(
+            MultipartFile file,
+            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        System.out.println(">>>" + file);
+        System.out.println(">>>" + file.getOriginalFilename());
+        return res("파일 업로드 성공", projectService.uploadImage(file, userEmployeeCode));
+    }
+
+    @PostMapping("/projects/{projectCode}")
+    public ResponseEntity<ResponseDTO> createProjectPost(
+            @PathVariable Long projectCode,
+            @RequestBody ProjectPostDTO projectPost,
+            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res("프로젝트 게시글 생성 성공", projectService.createProjectPost(projectCode, projectPost, userEmployeeCode));
+    }
+
 
     /**
      * 정상적인 조회에 성공했을 경우 응답하는 메서드

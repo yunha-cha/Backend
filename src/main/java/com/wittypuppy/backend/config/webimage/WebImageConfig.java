@@ -18,7 +18,10 @@ public class WebImageConfig implements WebMvcConfigurer {
 
     @Value("${image.add-resource-handler}")
     private String ADD_RESOURCE_HANDLER;
-
+/*
+  add-resource-locations: classpath:/static/web-images/
+  add-resource-handler: /web-images/**
+* */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         registry.addResourceHandler(ADD_RESOURCE_HANDLER)
