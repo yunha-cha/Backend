@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,5 +32,5 @@ public class SoftwareUse {
     private String softwareReason;
 
     @Column(name = "software_start_date")
-    private LocalDateTime softwareStartDate;
+    private Date softwareStartDate;
 }

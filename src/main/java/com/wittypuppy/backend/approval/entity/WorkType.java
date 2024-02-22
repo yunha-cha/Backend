@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,10 +29,10 @@ public class WorkType {
     private String workTypeTitle;
 
     @Column(name = "work_type_start_date")
-    private LocalDateTime workTypeStartDate;
+    private Date workTypeStartDate;
 
     @Column(name = "work_type_end_date")
-    private LocalDateTime workTypeEndDate;
+    private Date workTypeEndDate;
 
     @Column(name = "work_type_place")
     private String workTypePlace;
