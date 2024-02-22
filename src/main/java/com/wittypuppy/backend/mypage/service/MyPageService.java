@@ -167,7 +167,7 @@ public class MyPageService {
 
 
     @Transactional
-    public String updateMyPageProfileImage(MultipartFile ProfileImage, Long empCode, @AuthenticationPrincipal User principal) {
+    public String updateMyPageProfileImage(MultipartFile profileImage, Long empCode, @AuthenticationPrincipal User principal) {
         try {
             LocalDateTime now = LocalDateTime.now();
             empCode = (long) principal.getEmployeeCode();
@@ -180,17 +180,19 @@ public class MyPageService {
                 existingProfile.setProfileDeleteStatus("Y");
                 myPageProfileRepository.save(existingProfile);
             }
+            System.out.println("ProfileImage 위에서 나오는지 = " + profileImage);
 
             // 새로운 프로필을 생성합니다.
             String imageName = UUID.randomUUID().toString().replace("-", "");
             String replaceFileName = null;
             try {
-                replaceFileName = FileUploadUtils.saveFile(IMAGE_DIR, imageName, ProfileImage);
+                replaceFileName = FileUploadUtils.saveFile(IMAGE_DIR, imageName, profileImage);
 
+                System.out.println("ProfileImage 여기서 나오는지 = " + profileImage);
                 // 새로운 프로필 정보를 생성합니다.
                 MyPageProfile newMyPageProfile = new MyPageProfile()
                         .setEmpCode(empCode)
-                        .setProfileOgFile(ProfileImage.getOriginalFilename())
+                        .setProfileOgFile(profileImage.getOriginalFilename())
                         .setProfileChangedFile(replaceFileName)
                         .setProfileRegistDate(now)
                         .setProfileDeleteStatus("N"); // 새 프로필을 등록할 때 삭제 상태를 'N'으로 설정합니다.

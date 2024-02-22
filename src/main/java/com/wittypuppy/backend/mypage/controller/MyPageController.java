@@ -123,13 +123,13 @@ public class MyPageController {
 
     @PutMapping("/updateprofile")
     public ResponseEntity<ResponseDTO> updateMyPageProfileImg(
-            MultipartFile ProfileImage,Long empCode, @AuthenticationPrincipal User principal){
+            MultipartFile profileImage,Long empCode, @AuthenticationPrincipal User principal){
 
-        if (ProfileImage.isEmpty()) {
+        if (profileImage.isEmpty()) {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로필변경 실패","프로필 변경 실패"));
         }
 //        Long userEmpCode = (long) principal.getEmployeeCode();
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로필변경 성공",myPageService.updateMyPageProfileImage(ProfileImage,empCode,principal)));
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "프로필변경 성공",myPageService.updateMyPageProfileImage(profileImage,empCode,principal)));
     }
 
 
