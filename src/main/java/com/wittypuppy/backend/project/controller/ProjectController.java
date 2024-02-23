@@ -53,9 +53,9 @@ public class ProjectController {
         Criteria cri = new Criteria(Integer.valueOf(offset), 6);
         if (projectType.equals("all")) {
             if (Objects.isNull(searchValue) || searchValue.isBlank()) {
-                result = projectService.selectProjectListWithPaging(cri);
+                result = projectService.selectProjectListWithPaging(userEmployeeCode, cri);
             } else {
-                result = projectService.searchProjectListWithPaging(searchValue, cri);
+                result = projectService.searchProjectListWithPaging(userEmployeeCode, searchValue, cri);
             }
         } else if (projectType.equals("me")) {
             if (Objects.isNull(searchValue) || searchValue.isBlank()) {

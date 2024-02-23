@@ -17,7 +17,6 @@ import com.wittypuppy.backend.project.exception.ProjectManagerException;
 import com.wittypuppy.backend.project.repository.*;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -52,11 +51,11 @@ public class ProjectService {
     private String IMAGE_DIR;
 
     /* 전체 프로젝트 목록 확인 */
-    public Map<String, Object> selectProjectListWithPaging(Criteria cri) {
+    public Map<String, Object> selectProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
         Long projectListSize = projectRepository.getCountAllProject();
-        List<ProjectMainInterface> projectMainDTOList = projectRepository.findAllProjectInfoWithPaging(index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.findAllProjectInfoWithPaging(userEmployeeCode, index * count, count);
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("projectListSize", projectListSize);
         returnMap.put("projectMainDTOList", projectMainDTOList);
@@ -90,11 +89,11 @@ public class ProjectService {
     }
 
     /* 프로젝트 검색하기 */
-    public Map<String, Object> searchProjectListWithPaging(String searchValue, Criteria cri) {
+    public Map<String, Object> searchProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
         Long projectListSize = projectRepository.getSearchCountAllProject(searchValue);
-        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchAllProjectInfoWithPaging(searchValue, index * count, count);
+        List<ProjectMainInterface> projectMainDTOList = projectRepository.searchAllProjectInfoWithPaging(userEmployeeCode, searchValue, index * count, count);
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("projectListSize", projectListSize);
         returnMap.put("projectMainDTOList", projectMainDTOList);
@@ -142,7 +141,7 @@ public class ProjectService {
                     .setProjectManager(employee)
                     .setProjectDescription(projectDTO.getProjectDescription())
                     .setProjectDeadline(projectDTO.getProjectDeadline())
-                    .setProjectProgressStatus("프로젝트 생성")
+                    .setProjectProgressStatus(projectDTO.getProjectProgressStatus())
                     .setProjectLockedStatus(projectDTO.getProjectLockedStatus())
                     .setProjectMemberList(Collections.singletonList(projectMember))
                     .builder();
@@ -160,12 +159,12 @@ public class ProjectService {
     public Map<String, Object> openProject(Long projectCode, Long userEmployeeCode) {
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다"));
-
-        ProjectMember userProjectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
-                .orElseThrow(() -> new DataNotFoundException("해당 프로젝트의 멤버가 아닙니다."));
+        List<Long> projectMemberEmployeeCodeList = project.getProjectMemberList().stream().map(projectMember -> projectMember.getEmployee().getEmployeeCode())
+                .toList();
 
         boolean isLocked = project.getProjectLockedStatus().equals("Y");
-        if (isLocked && userProjectMember == null) {
+        boolean isMember = projectMemberEmployeeCodeList.contains(userEmployeeCode);
+        if (isLocked && !isMember) {
             throw new InvalidProjectMemberException("허가된 사원이 아닙니다.");
         }
         Map<String, Object> resultMap = new HashMap<>();
@@ -194,7 +193,10 @@ public class ProjectService {
                 .orElse(null); // 현재 프로젝트의 멤버가 아니면 null
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
-        if (projectMember == null && project.getProjectLockedStatus().equals("Y")) {
+
+        boolean isLocked = project.getProjectLockedStatus().equals("Y");
+
+        if (projectMember == null && isLocked) {
             throw new InvalidProjectMemberException("허가된 사원이 아닙니다.");
         }
         int index = cri.getPageNum() - 1;
@@ -222,7 +224,7 @@ public class ProjectService {
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
         if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
-            return "해당 프로젝트의 관리자가 아닙니다.";
+            throw new NotProjectManagerException("해당 프로젝트의 관리자가 아닙니다.");
         }
         try {
             project = project.setProjectTitle(projectOptions.getProjectTitle())

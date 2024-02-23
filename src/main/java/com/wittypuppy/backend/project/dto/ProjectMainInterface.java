@@ -19,5 +19,5 @@ public interface ProjectMainInterface {
 
     String getProjectLockedStatus();
 
-    Long getProjectMemberCount();
+    Long getMyParticipationStatus();
 }
