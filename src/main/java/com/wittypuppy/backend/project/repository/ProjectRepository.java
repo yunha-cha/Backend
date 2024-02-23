@@ -11,15 +11,6 @@ import java.util.Optional;
 
 @Repository("Project_ProjectRepository")
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-//    List<Project> findAllByProjectMemberList_Employee_EmployeeCode(Long employeeCode);
-//
-//    List<Project> findAllByProjectManager_Department_DepartmentCode(Long departmentCode);
-//
-//    List<Project> findAllByProjectTitleLike(String searchValuePattern);
-//
-//    Optional<Project> findByProjectPostList_ProjectPostCodeAndProjectMemberList_Employee_EmployeeCode(Long projectPostCode, Long employeeCode);
-//
-//    Optional<Project> findByProjectPostList_ProjectPostCode(Long projectPostCode);
 
     @Query(value = "SELECT tp.project_code projectCode, " +
             "te.employee_name projectManagerName," +
@@ -29,7 +20,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "tp.project_progress_status projectProgressStatus," +
             "tp.project_deadline projectDeadline," +
             "tp.project_locked_status projectLockedStatus, " +
-            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code) projectMemberCount " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code) projectMemberCount ," +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code AND tpm.employee_code = :employeeCode) myParticipationStatus " +
             "FROM tbl_project tp " +
             "LEFT JOIN tbl_employee te " +
             "ON tp.project_manager_code = te.employee_code " +
@@ -38,7 +30,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainInterface> findAllProjectInfoWithPaging(Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> findAllProjectInfoWithPaging(Long employeeCode, Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT count(*) " +
             "FROM tbl_project tp " +
@@ -57,7 +49,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "tp.project_progress_status projectProgressStatus," +
             "tp.project_deadline projectDeadline," +
             "tp.project_locked_status projectLockedStatus, " +
-            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount " +
+            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount, " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code AND tpm.employee_code = :employeeCode) myParticipationStatus " +
             "FROM tbl_project tp " +
             "LEFT JOIN tbl_employee te " +
             "ON tp.project_manager_code = te.employee_code " +
@@ -93,7 +86,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "tp.project_progress_status projectProgressStatus," +
             "tp.project_deadline projectDeadline," +
             "tp.project_locked_status projectLockedStatus, " +
-            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount " +
+            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount,  " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code AND tpm.employee_code = :employeeCode) myParticipationStatus " +
             "FROM tbl_project tp " +
             "LEFT JOIN tbl_employee te " +
             "ON tp.project_manager_code = te.employee_code " +
@@ -139,7 +133,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "tp.project_progress_status projectProgressStatus," +
             "tp.project_deadline projectDeadline," +
             "tp.project_locked_status projectLockedStatus, " +
-            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code) projectMemberCount " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code) projectMemberCount, " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code AND tpm.employee_code = :employeeCode) myParticipationStatus " +
             "FROM tbl_project tp " +
             "LEFT JOIN tbl_employee te " +
             "ON tp.project_manager_code = te.employee_code " +
@@ -149,7 +144,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY tp.project_code " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
-    List<ProjectMainInterface> searchAllProjectInfoWithPaging(String searchValue, Integer startCount, Integer searchCount);
+    List<ProjectMainInterface> searchAllProjectInfoWithPaging(Long employeeCode, String searchValue, Integer startCount, Integer searchCount);
 
     @Query(value = "SELECT count(*) " +
             "FROM tbl_project tp " +
@@ -169,7 +164,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "tp.project_progress_status projectProgressStatus," +
             "tp.project_deadline projectDeadline," +
             "tp.project_locked_status projectLockedStatus, " +
-            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount " +
+            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount, " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code AND tpm.employee_code = :employeeCode) myParticipationStatus " +
             "FROM tbl_project tp " +
             "LEFT JOIN tbl_employee te " +
             "ON tp.project_manager_code = te.employee_code " +
@@ -207,7 +203,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "tp.project_progress_status projectProgressStatus," +
             "tp.project_deadline projectDeadline," +
             "tp.project_locked_status projectLockedStatus, " +
-            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount " +
+            "(SELECT COUNT(*) FROM tbl_project_member WHERE project_member_delete_status='N' AND project_code=tp.project_code) projectMemberCount, " +
+            "(SELECT COUNT(*) FROM tbl_project_member tpm WHERE tpm.project_member_delete_status='N' AND tpm.project_code=tp.project_code AND tpm.employee_code = :employeeCode) myParticipationStatus " +
             "FROM tbl_project tp " +
             "LEFT JOIN tbl_employee te " +
             "ON tp.project_manager_code = te.employee_code " +

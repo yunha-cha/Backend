@@ -23,8 +23,6 @@ public class ProjectPostDTO {
 
     private String projectPostTitle;
 
-    private Long projectMemberCode;
-
     private List<ProjectPostFileDTO> projectPostFileList;
 
     private ProjectMemberDTO projectMember;
