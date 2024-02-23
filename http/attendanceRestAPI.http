@@ -114,3 +114,10 @@ Authorization:Bear eyJkYXRlIjoxNzA3MjY5OTkwNDg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyN
   "attendanceManagementDepartureTime" : "2024-02-07T17:01:02",
   "attendanceManagementState" : "정상"
 }
+
+
+### 신청한 문서 상세보기
+GET http://localhost:1208/api/v1/attendances/my/documents-waiting/61
+Content-Type: application/json
+Accept: */*
+Authorization:Bear eyJkYXRlIjoxNzA4NjgxNzkxNTMwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshpDtnaXrr7wiLCJzdWIiOiJhcF9maXJzdCIsImVtcERlcHROYW1lIjoi7LSd66y07YyAIiwiZW1wQ29kZSI6MzAsImVtcGxveWVlRW1haWwiOiJhcF9maXJzdEBnbWFpbC5jb20iLCJlbXBHcm91cENvZGUiOjEsImVtcGxveWVlSWQiOiJhcF9maXJzdCIsImV4cCI6MTcwODY4NTM5MSwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZUNvZGUiOjMwLCJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfVVNFUiJ9fV19.s2keOxCzORnfz_wKC-V5GjeOnyxzE5waYF8yX1PVhEw

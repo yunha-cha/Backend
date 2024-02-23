@@ -36,6 +36,8 @@ public class AttendanceService {
 
     private final InsertCommuteRepository insertCommuteRepository;
 
+    private final DetailMyRepository detailMyRepository;
+
     private final AttendanceOnLeaveRepository attendanceOnLeaveRepository;
 
     private final AttendanceOverWorkRepository attendanceOverWorkRepository;
@@ -46,13 +48,14 @@ public class AttendanceService {
 
     private final AttendanceVaca attendanceVaca;
 
-    public AttendanceService(AttendanceEmployeeRepository attendanceEmployeeRepository, ModelMapper modelMapper, AttendanceApprovalRepository attendanceApprovalRepository, AttendanceLineRepository attendanceLineRepository, ManagementRepository managementRepository, InsertCommuteRepository insertCommuteRepository, AttendanceOnLeaveRepository attendanceOnLeaveRepository, AttendanceOverWorkRepository attendanceOverWorkRepository, DocumentWorkType documentWorkType, AttendanceSoft attendanceSoft, AttendanceVaca attendanceVaca) {
+    public AttendanceService(AttendanceEmployeeRepository attendanceEmployeeRepository, ModelMapper modelMapper, AttendanceApprovalRepository attendanceApprovalRepository, AttendanceLineRepository attendanceLineRepository, ManagementRepository managementRepository, InsertCommuteRepository insertCommuteRepository, DetailMyRepository detailMyRepository, AttendanceOnLeaveRepository attendanceOnLeaveRepository, AttendanceOverWorkRepository attendanceOverWorkRepository, DocumentWorkType documentWorkType, AttendanceSoft attendanceSoft, AttendanceVaca attendanceVaca) {
         this.attendanceEmployeeRepository = attendanceEmployeeRepository;
         this.modelMapper = modelMapper;
         this.attendanceApprovalRepository = attendanceApprovalRepository;
         this.attendanceLineRepository = attendanceLineRepository;
         this.managementRepository = managementRepository;
         this.insertCommuteRepository = insertCommuteRepository;
+        this.detailMyRepository = detailMyRepository;
         this.attendanceOnLeaveRepository = attendanceOnLeaveRepository;
         this.attendanceOverWorkRepository = attendanceOverWorkRepository;
         this.documentWorkType = documentWorkType;
@@ -544,4 +547,19 @@ public class AttendanceService {
     }
 
 
+    public DetailMyWaitingDTO detailMyApply(Long approvalDocumentCode) {
+
+        System.out.println("문서 코드 = " + approvalDocumentCode);
+
+        //근무 형태 서류 상세 보기
+        DetailMyWaing detailWaiting = detailMyRepository.findContent(approvalDocumentCode);
+        System.out.println(" 상세보기 detailWaiting = " + detailWaiting);
+
+        //연장근로 서류 상세보기
+        ApprovalLine detailOver = attendanceLineRepository.findOver(approvalDocumentCode);
+
+        DetailMyWaitingDTO detailMyWaiting = modelMapper.map(detailWaiting, DetailMyWaitingDTO.class);
+
+        return detailMyWaiting;
+    }
 }

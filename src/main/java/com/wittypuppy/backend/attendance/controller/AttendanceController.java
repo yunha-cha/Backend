@@ -346,5 +346,22 @@ public class AttendanceController {
 
 
 
+    //신청한 문서- 기안 상세 보기
+    @Operation(summary = "내 결재 문서" , description = "내가 신청한 문서를 상세 보기")
+    @GetMapping("/attendances/my/documents-waiting/{approvalDocumentCode}")
+    public ResponseEntity<ResponseDTO> detailMyApply (
+            @AuthenticationPrincipal User employeeInFo,
+            @PathVariable Long approvalDocumentCode
+    ) {
+        int employeeCode = employeeInFo.getEmployeeCode();
+
+        System.out.println("====controller======detailMyApply==========");
+        System.out.println("employeeCode = " + employeeCode);
+        System.out.println("approvalDocumentCode = " + approvalDocumentCode);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "대기 문서 조회 성공",attendanceService.detailMyApply(approvalDocumentCode) ));
+    }
+
+
 
 }
