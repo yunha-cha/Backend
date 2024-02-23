@@ -23,8 +23,8 @@ Access-Control-Allow-Origin: *
 
 {
 
-  "employeeId": "user09",
-  "employeePassword": "pass09"
+  "employeeId": "ap_first",
+  "employeePassword": "gLs6VC02DRc"
 
 }
 
@@ -32,11 +32,11 @@ Access-Control-Allow-Origin: *
 POST http://localhost:1208/api/v1/employee/searchpwd
 Content-Type: application/json
 Accept: */*
-Authorization: Bearer eyJkYXRlIjoxNzA3ODExMzg1MzIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJleHAiOjE3MDc4MTQ5ODUsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVDb2RlIjoxMiwiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eU5hbWUiOiJST0xFX0FETUlOIn19XX0.cRE79iCiO-UN2jE0yqYUWmkN7UH6lJPQi7nPbV2ZXC8
+Authorization:Bear eyJkYXRlIjoxNzA4NjY2NzAxNjIzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLshJzrs7TtmJwiLCJzdWIiOiJ1c2VyMDkiLCJlbXBEZXB0TmFtZSI6IklU7Jq07JiB7YyAIiwiZW1wQ29kZSI6MTQsImVtcGxveWVlRW1haWwiOiJra2tycnI1NUBnbWFpbC5jb20iLCJlbXBHcm91cENvZGUiOjMsImVtcGxveWVlSWQiOiJ1c2VyMDkiLCJleHAiOjE3MDg2NzAzMDEsImVtcGxveWVlUm9sZSI6W3siZW1wbG95ZWVDb2RlIjoxNCwiYXV0aG9yaXR5Q29kZSI6MSwiYXV0aG9yaXR5Ijp7ImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eU5hbWUiOiJST0xFX1VTRVIifX1dfQ.E8W1mDLKhlgM0_aJC7xSMhFWVr-WWYqRCpLAdYuzqbk
 
 {
-  "employeeId": "user08",
-  "employeeEmail": "kkkrrr12@gmail.com"
+  "employeeId": "ap_first",
+  "employeeEmail": "ap_first@gmail.com"
 }
 
 #### 로그아웃

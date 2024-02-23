@@ -32,8 +32,8 @@ public class AdminEmployee {
     private LocalDateTime employeeJoinDateAdmin;
 
 
-    @Column(name="employee_assigned_code", columnDefinition = "BIGINT")
-    private Long employeeAssignedCodeAdmin;
+    @Column(name="employee_role", columnDefinition = "VARCHAR(10)")
+    private String employeeRole;
 
     @Column(name = "vacation_creation_date")
     private LocalDateTime vacationCreationDate;

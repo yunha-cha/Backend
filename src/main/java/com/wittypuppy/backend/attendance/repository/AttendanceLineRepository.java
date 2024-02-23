@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+
 public interface AttendanceLineRepository extends JpaRepository<ApprovalLine, Long> {
 
 
@@ -26,7 +27,6 @@ public interface AttendanceLineRepository extends JpaRepository<ApprovalLine, Lo
             "WHERE A.employee_code = :employeeCode " +
             "AND A.approval_process_status = '반려'"
             , nativeQuery = true)
-
     //내가 반려한 문서
     Page<ApprovalLine> rejectionDocument(Pageable paging, int employeeCode);
 

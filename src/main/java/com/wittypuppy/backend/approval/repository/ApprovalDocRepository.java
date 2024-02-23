@@ -11,8 +11,6 @@ import java.util.List;
 public interface ApprovalDocRepository extends JpaRepository<ApprovalDoc, Long> {
     List<ApprovalDoc> findByEmployeeCode(LoginEmployee loginEmployee);
 
-    List<ApprovalDoc> findByApprovalForm(String approvalForm);
-
     @Query(value =
             "SELECT " +
                     "approval_document_code " +
