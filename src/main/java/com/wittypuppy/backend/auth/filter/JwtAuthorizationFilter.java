@@ -45,6 +45,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/auth/login",
                 "/websocket",
                 "/api/v1/employee/searchpwd",
+                "/api/v1/project/projects/upload-image",
                 "/swagger-ui/(.*)",        //swagger 설정
                 "/swagger-ui/index.html",  //swagger 설정
                 "/v3/api-docs",              //swagger 설정

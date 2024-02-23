@@ -35,7 +35,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ON tp.project_manager_code = te.employee_code " +
             "LEFT JOIN tbl_department td " +
             "ON te.department_code = td.department_code " +
-            "ORDER BY tp.project_code " +
+            "ORDER BY tp.project_code DESC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> findAllProjectInfoWithPaging(Integer startCount, Integer searchCount);
@@ -67,7 +67,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ON tp.project_code = tpm.project_code " +
             "WHERE tpm.employee_code = :employeeCode " +
             "AND tpm.project_member_delete_status = 'N' " +
-            "ORDER BY tp.project_code " +
+            "ORDER BY tp.project_code DESC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> findMyProjectInfoWithPaging(Long employeeCode, Integer startCount, Integer searchCount);
@@ -108,7 +108,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "WHERE subTE.employee_code = tpm.employee_code) = :deptCode " +
             "AND tpm.employee_code = :employeeCode " +
             "AND tpm.project_member_delete_status = 'N' " +
-            "ORDER BY tp.project_code " +
+            "ORDER BY tp.project_code DESC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> findMyDeptProjectInfoWithPaging(Long deptCode, Long employeeCode, Integer startCount, Integer searchCount);
@@ -146,7 +146,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "LEFT JOIN tbl_department td " +
             "ON te.department_code = td.department_code " +
             "WHERE tp.project_title LIKE concat('%',:searchValue,'%') " +
-            "ORDER BY tp.project_code " +
+            "ORDER BY tp.project_code DESC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> searchAllProjectInfoWithPaging(String searchValue, Integer startCount, Integer searchCount);
@@ -180,7 +180,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "WHERE tpm.employee_code = :employeeCode " +
             "AND tp.project_title LIKE concat('%',:searchValue,'%') " +
             "AND tpm.project_member_delete_status = 'N' " +
-            "ORDER BY tp.project_code " +
+            "ORDER BY tp.project_code DESC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> searchMyProjectInfoWithPaging(Long employeeCode, String searchValue, Integer startCount, Integer searchCount);
@@ -223,7 +223,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "AND tp.project_title LIKE concat('%',:searchValue,'%') " +
             "AND tpm.employee_code = :employeeCode " +
             "AND tpm.project_member_delete_status = 'N' " +
-            "ORDER BY tp.project_code " +
+            "ORDER BY tp.project_code DESC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> searchMyDeptProjectInfoWithPaging(Long deptCode, Long employeeCode, String searchValue, Integer startCount, Integer searchCount);

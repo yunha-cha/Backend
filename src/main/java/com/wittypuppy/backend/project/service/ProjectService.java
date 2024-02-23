@@ -17,11 +17,11 @@ import com.wittypuppy.backend.project.exception.ProjectManagerException;
 import com.wittypuppy.backend.project.repository.*;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,7 +77,7 @@ public class ProjectService {
 
     /* 내 부서 프로젝트 목록 확인 */
     public Map<String, Object> selectMyDeptProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
-        Employee employee = employeeRepository.findById(userEmployeeCode)
+        Employee employee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -115,7 +115,7 @@ public class ProjectService {
 
     /* 내 부서 프로젝트 검색하기 */
     public Map<String, Object> searchMyDeptProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
-        Employee employee = employeeRepository.findById(userEmployeeCode)
+        Employee employee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -130,7 +130,7 @@ public class ProjectService {
     /* 프로젝트 만들기 */
     @Transactional
     public Long createProject(ProjectDTO projectDTO, Long userEmployeeCode) {
-        Employee employee = employeeRepository.findById(userEmployeeCode)
+        Employee employee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("로그인한 계정의 정보를 찾을 수 없습니다."));
         try {
             ProjectMember projectMember = new ProjectMember()
@@ -160,13 +160,12 @@ public class ProjectService {
     public Map<String, Object> openProject(Long projectCode, Long userEmployeeCode) {
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다"));
-        List<Long> projectMemberEmployeeCodeList = project.getProjectMemberList().stream().map(projectMember -> projectMember.getEmployee().getEmployeeCode())
-                .toList();
-        Long projectAdminEmployeeCode = project.getProjectManager().getEmployeeCode();
+
+        ProjectMember userProjectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
+                .orElseThrow(() -> new DataNotFoundException("해당 프로젝트의 멤버가 아닙니다."));
 
         boolean isLocked = project.getProjectLockedStatus().equals("Y");
-        boolean isMember = List.of(projectMemberEmployeeCodeList, projectAdminEmployeeCode).contains(userEmployeeCode);
-        if (isLocked && !isMember) {
+        if (isLocked && userProjectMember == null) {
             throw new InvalidProjectMemberException("허가된 사원이 아닙니다.");
         }
         Map<String, Object> resultMap = new HashMap<>();
@@ -262,7 +261,7 @@ public class ProjectService {
                 throw new InvalidProjectMemberException("해당 프로젝트에 이미 존재하는 사원입니다.");
             }
 
-            Employee newEmployee = employeeRepository.findById(inviteEmployeeCode)
+            Employee newEmployee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(inviteEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("추가할 사원 정보가 존재하지 않습니다."));
             ProjectMember newProjectMember = new ProjectMember()
                     .setProjectCode(projectCode)
@@ -300,14 +299,14 @@ public class ProjectService {
 
     /* 프로젝트 멤버 내보내기*/
     @Transactional
-    public ProjectMemberDTO kickedProjectMember(Long projectCode, Long kickedProjectMemberCode, Long userEmployeeCode) {
+    public ProjectMemberDTO kickedProjectMember(Long projectCode, Long kickedEmployeeCode, Long userEmployeeCode) {
         try {
             Project project = projectRepository.findById(projectCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
             if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
                 throw new ProjectManagerException("현재 계정이 관리자가 아닙니다.");
             }
-            ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndProjectMemberCode(projectCode, "N", kickedProjectMemberCode)
+            ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", kickedEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 강퇴할 계정이 존재하지 않습니다."));
             System.out.println("projectMember = " + projectMember);
             if (projectMember.getEmployee().getEmployeeCode().equals(userEmployeeCode)) {
@@ -318,11 +317,12 @@ public class ProjectService {
             ProjectMemberDTO projectMemberDTO = modelMapper.map(projectMember, ProjectMemberDTO.class);
             return projectMemberDTO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new DataDeletionException("멤버 내보내기 실패");
         }
     }
 
-    public ProjectPostFileDTO uploadImage(MultipartFile file, Long userEmployeeCode) {
+    public ProjectPostFileDTO uploadImage(MultipartFile file) {
         try {
             LocalDateTime now = LocalDateTime.now();
             System.out.println("file>>>" + file);
@@ -350,13 +350,36 @@ public class ProjectService {
             ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("현재 계정은 해당 프로젝트의 멤버가 아닙니다."));
             System.out.println("projectMember = " + projectMember);
-            projectPostDTO.setProjectMemberCode(projectMember.getProjectMemberCode());
             ProjectPost projectPost = modelMapper.map(projectPostDTO, ProjectPost.class);
+            projectPost.setProjectMember(projectMember);
             projectPostRepository.save(projectPost);
+            System.out.println("projectPost<<<<"+projectPost.getProjectPostFileList().get(0).toString());
             ProjectPostDTO newProjectPostDTO = modelMapper.map(projectPost, ProjectPostDTO.class);
             return newProjectPostDTO;
         } catch (Exception e) {
             throw new DataDeletionException("프로젝트 게시글 생성 실패");
+        }
+    }
+
+    @Transactional
+    public String delegateAdminInProject(Long projectCode, Long delegateEmployeeCode, Long userEmployeeCode) {
+        try {
+            Project project = projectRepository.findById(projectCode)
+                    .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다."));
+            if (!project.getProjectManager().getEmployeeCode().equals(userEmployeeCode)) {
+                throw new ProjectManagerException("현재 계정이 관리자가 아닙니다.");
+            }
+            ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", delegateEmployeeCode)
+                    .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 위임할 계정이 존재하지 않습니다."));
+            if (projectMember.getEmployee().getEmployeeCode().equals(userEmployeeCode)) {
+                throw new ProjectKickedException("자기자신을 위임할 수 없습니다.");
+            }
+            project = project.setProjectManager(projectMember.getEmployee())
+                    .builder();
+            projectRepository.save(project);
+            return "프로젝트 멤버 위임하기 성공";
+        } catch (Exception e) {
+            throw new DataDeletionException("프로젝트 멤버 위임하기 실패");
         }
     }
 

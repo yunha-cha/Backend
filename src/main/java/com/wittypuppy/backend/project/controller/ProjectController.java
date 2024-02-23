@@ -195,8 +195,8 @@ public class ProjectController {
      * @return 200, 메시지 반환
      */
     @DeleteMapping("/projects/{projectCode}/leave")
-    public ResponseEntity<ResponseDTO> kickProjectMember(@PathVariable Long projectCode,
-                                                         @AuthenticationPrincipal User principal) {
+    public ResponseEntity<ResponseDTO> leaveProjectMember(@PathVariable Long projectCode,
+                                                          @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         return res("프로젝트 나가기 성공", projectService.leaveProjectMember(projectCode, userEmployeeCode));
     }
@@ -217,14 +217,20 @@ public class ProjectController {
         return res("프로젝트 멤버 내보내기 성공", projectService.kickedProjectMember(projectCode, kickedProjectMemberCode, userEmployeeCode));
     }
 
+    @PutMapping("/projects/{projectCode}/delegate-admin")
+    public ResponseEntity<ResponseDTO> delegateAdminOnProject(@PathVariable Long projectCode,
+                                                              @RequestBody Long delegateEmployeeCode,
+                                                              @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        return res(projectService.delegateAdminInProject(projectCode, delegateEmployeeCode, userEmployeeCode));
+    }
+
     @PostMapping("/projects/upload-image")
     public ResponseEntity<ResponseDTO> uploadImage(
-            MultipartFile file,
-            @AuthenticationPrincipal User principal) {
-        Long userEmployeeCode = (long) principal.getEmployeeCode();
+            MultipartFile file){
         System.out.println(">>>" + file);
         System.out.println(">>>" + file.getOriginalFilename());
-        return res("파일 업로드 성공", projectService.uploadImage(file, userEmployeeCode));
+        return res("파일 업로드 성공", projectService.uploadImage(file));
     }
 
     @PostMapping("/projects/{projectCode}")
@@ -233,6 +239,7 @@ public class ProjectController {
             @RequestBody ProjectPostDTO projectPost,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
+        System.out.println("projectPost>>>"+projectPost);
         return res("프로젝트 게시글 생성 성공", projectService.createProjectPost(projectCode, projectPost, userEmployeeCode));
     }
 

@@ -1,10 +1,7 @@
 package com.wittypuppy.backend.project.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
@@ -12,6 +9,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity(name = "PROJECT_PROJECT_POST_FILE")
 @Table(name = "tbl_project_post_file")
 public class ProjectPostFile {
