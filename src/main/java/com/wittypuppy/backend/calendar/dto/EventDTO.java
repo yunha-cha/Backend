@@ -45,4 +45,6 @@ public class EventDTO {
     private String eventDragBackgroundColor;
 
     private String eventBorderColor;
+
+    private String eventCategory;
 }

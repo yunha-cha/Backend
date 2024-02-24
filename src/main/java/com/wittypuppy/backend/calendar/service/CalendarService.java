@@ -2,7 +2,9 @@ package com.wittypuppy.backend.calendar.service;
 
 import com.wittypuppy.backend.calendar.dto.*;
 import com.wittypuppy.backend.calendar.entity.Calendar;
-import com.wittypuppy.backend.calendar.entity.*;
+import com.wittypuppy.backend.calendar.entity.Employee;
+import com.wittypuppy.backend.calendar.entity.Event;
+import com.wittypuppy.backend.calendar.entity.EventOptions;
 import com.wittypuppy.backend.calendar.exception.RollbackEventException;
 import com.wittypuppy.backend.calendar.repository.*;
 import com.wittypuppy.backend.common.dto.Criteria;
@@ -17,9 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -29,7 +32,6 @@ public class CalendarService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
     private final EventAlertRepository eventAlertRepository;
-    private final EventAttendeeRepository eventAttendeeRepository;
     private final EventOptionsRepository eventOptionsRepository;
     private final EventRepository eventRepository;
     private final JobRepository jobRepository;
@@ -70,7 +72,7 @@ public class CalendarService {
         return calendarDTO;
     }
 
-    public List<EventInterfaceAndEventAttendeesDTO> selectEvents(Long userEmployeeCode) {
+    public List<EventInterface> selectEvents(Long userEmployeeCode) {
         Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 사원의 캘린더가 존재하지 않습니다."));
 
@@ -78,37 +80,18 @@ public class CalendarService {
 
         List<EventInterface> eventList = eventRepository.findAllEventByCalendarCode(calendar.getCalendarCode());
         log.info("eventList>>>" + eventList.toString());
-        List<EventInterfaceAndEventAttendeesDTO> eventInterfaceAndEventAttendeesDTO = eventList.stream().map(
-                eventDTO -> {
-                    List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventDTO.getEventCode());
-                    List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
-                            .collect(Collectors.toList());
-                    EventInterfaceAndEventAttendeesDTO dto = new EventInterfaceAndEventAttendeesDTO(eventDTO, eventAttendeeDTOList);
-                    return dto;
-                }
-        ).collect(Collectors.toList());
 
-        return eventInterfaceAndEventAttendeesDTO;
+        return eventList;
     }
 
-    public Map<String, Object> selectEventByEventCode(Long eventCode, Long userEmployeeCode) {
+    public EventDTO selectEventByEventCode(Long eventCode, Long userEmployeeCode) {
         Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 사원의 캘린더가 존재하지 않습니다."));
 
-        Map<String, Object> eventInfo = new HashMap<>();
-
-        EventDTO event = eventRepository.findEventByCalendarCodeAndEventCodeAndIsNotDelete(calendar.getCalendarCode(), eventCode)
+        EventDTO eventDTO = eventRepository.findEventByCalendarCodeAndEventCodeAndIsNotDelete(calendar.getCalendarCode(), eventCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 이벤트가 존재하지 않습니다."));
 
-        eventInfo.put("Event", event);
-
-        List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventCode);
-        List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
-                .collect(Collectors.toList());
-
-        eventInfo.put("EventAttendeeList", eventAttendeeDTOList);
-
-        return eventInfo;
+        return eventDTO;
     }
 
     public List<EmployeeDTO> selectEmployeeList() {
@@ -123,17 +106,15 @@ public class CalendarService {
     }
 
     @Transactional
-    public EventInterfaceAndEventAttendeesDTO createEvent(EventOptionsDTO eventOptions, Long userEmployeeCode) {
-        EventInterfaceAndEventAttendeesDTO returnDTO;
+    public EventInterface createEvent(EventOptionsDTO eventOptions, Long userEmployeeCode) {
         try {
             EventDTO eventDTO = eventOptions.getEvent();
-            EventAlertDTO eventAlertDTO = eventOptions.getEventAlert();
-            List<Long> eventAttendeeEmployeeCodeList = eventOptions.getEventAttendeeEmployeeCodeList();
 
             Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 사원의 캘린더가 존재하지 않습니다."));
             Employee employee = employeeRepository.findById(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 사원이 존재하지 않습니다."));
+            System.out.println("eventOptions>>>" + eventOptions);
             EventOptions eventOptionsEntity = new EventOptions()
                     .setEventCode(null)
                     .setEventDeleteStatus("N")
@@ -149,24 +130,13 @@ public class CalendarService {
                     .setEventBackgroundColor(eventDTO.getEventBackgroundColor())
                     .setEventDragBackgroundColor(eventDTO.getEventDragBackgroundColor())
                     .setEventBorderColor(eventDTO.getEventBorderColor())
+                    .setEventCategory(eventDTO.getEventCategory())
                     .builder();
             System.out.println("eventOptionsEntity" + eventOptionsEntity.toString());
-            List<Long> newAttendeeEmployeeCodeList = Stream.concat(eventAttendeeEmployeeCodeList.stream(), Stream.of(userEmployeeCode))
-                    .distinct()
-                    .collect(Collectors.toList());
-            List<Employee> newAttendeeEmployeeList = employeeRepository.findAllById(newAttendeeEmployeeCodeList);
-            List<EventAttendee> newAttendeeList = newAttendeeEmployeeList.stream().map(newAttendeeEmployee -> {
-                EventAttendee eventAttendee = new EventAttendee(null, null, newAttendeeEmployee,
-//                        new EventAlert(null, null, eventAlertDTO.getEventAlertNotificationTime(), eventAlertDTO.getEventAlertCheckStatus())
-                        null
-                );
-                return eventAttendee;
-            }).collect(Collectors.toList());
             Event event = new Event()
                     .setCalendarCode(calendar.getCalendarCode())
                     .setDepartment(employee.getDepartment())
                     .setEventOptions(eventOptionsEntity)
-                    .setEventAttendeeList(newAttendeeList)
                     .builder();
             eventRepository.save(event);
             eventOptionsEntity = eventOptionsEntity
@@ -175,30 +145,20 @@ public class CalendarService {
                     .setEventEditable("Y")
                     .builder();
             eventOptionsRepository.save(eventOptionsEntity);
-            eventAttendeeRepository.saveAll(newAttendeeList);
 
             EventInterface returnEvent = eventRepository.findEventInterfaceByCalendarCodeAndEventCode(calendar.getCalendarCode(), event.getEventCode())
                     .orElseThrow(() -> new DataNotFoundException("해당 일정이 존재하지 않습니다."));
-            List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(event.getEventCode());
-            System.out.println("eventAttendeeList>>>>" + eventAttendeeList.toString());
-            List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
-                    .collect(Collectors.toList());
-            returnDTO = new EventInterfaceAndEventAttendeesDTO(returnEvent, eventAttendeeDTOList);
+            return returnEvent;
         } catch (Exception e) {
             e.printStackTrace();
             throw new DataInsertionException("이벤트 생성 실패");
         }
-        return returnDTO;
     }
 
     @Transactional
-    public EventInterfaceAndEventAttendeesDTO modifyEventOptions(Long eventCode, EventOptionsDTO eventOptions, Long userEmployeeCode) {
-        EventInterfaceAndEventAttendeesDTO returnDTO;
-        System.out.println(">>>>>>>" + eventOptions.getEvent().toString());
+    public EventInterface modifyEventOptions(Long eventCode, EventOptionsDTO eventOptions, Long userEmployeeCode) {
         try {
             EventDTO eventDTO = eventOptions.getEvent();
-            EventAlertDTO eventAlertDTO = eventOptions.getEventAlert();
-            List<Long> eventAttendeeEmployeeCodeList = eventOptions.getEventAttendeeEmployeeCodeList();
 
             Calendar calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 캘린더가 존재하지 않습니다."));
@@ -219,36 +179,17 @@ public class CalendarService {
                     .setEventBackgroundColor(eventDTO.getEventBackgroundColor())
                     .setEventDragBackgroundColor(eventDTO.getEventDragBackgroundColor())
                     .setEventBorderColor(eventDTO.getEventBorderColor())
+                    .setEventCategory(eventDTO.getEventCategory())
                     .builder();
             eventOptionsRepository.save(eventOptionsEntity);
 
-            List<EventAttendee> oldEventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventCode);
-            eventAttendeeRepository.deleteAll(oldEventAttendeeList);
-
-            List<Long> newAttendeeEmployeeCodeList = Stream.concat(eventAttendeeEmployeeCodeList.stream(), Stream.of(userEmployeeCode))
-                    .distinct()
-                    .collect(Collectors.toList());
-            List<Employee> newAttendeeEmployeeList = employeeRepository.findAllById(newAttendeeEmployeeCodeList);
-            List<EventAttendee> newAttendeeList = newAttendeeEmployeeList.stream().map(newAttendeeEmployee -> {
-                EventAttendee eventAttendee = new EventAttendee(null, eventCode, newAttendeeEmployee,
-                        // new EventAlert(null, null, eventAlertDTO.getEventAlertNotificationTime(), eventAlertDTO.getEventAlertCheckStatus())
-                        null
-                );
-                return eventAttendee;
-            }).collect(Collectors.toList());
-            eventAttendeeRepository.saveAll(newAttendeeList);
-
             EventInterface returnEvent = eventRepository.findEventInterfaceByCalendarCodeAndEventCode(calendar.getCalendarCode(), eventCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 일정이 존재하지 않습니다."));
-            List<EventAttendee> eventAttendeeList = eventAttendeeRepository.findAllByEventCode(eventDTO.getEventCode());
-            List<EventAttendeeDTO> eventAttendeeDTOList = eventAttendeeList.stream().map(eventAttendee -> modelMapper.map(eventAttendee, EventAttendeeDTO.class))
-                    .collect(Collectors.toList());
-            returnDTO = new EventInterfaceAndEventAttendeesDTO(returnEvent, eventAttendeeDTOList);
+            return returnEvent;
         } catch (Exception e) {
             e.printStackTrace();
             throw new DataUpdateException("일정 수정 실패");
         }
-        return returnDTO;
     }
 
     public String modifyEventOptionsAboutDate(long eventCode, EventOptionsAboutDateDTO eventOptionsAboutDate, Long userEmployeeCode) {

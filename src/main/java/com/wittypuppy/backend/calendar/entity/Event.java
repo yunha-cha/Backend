@@ -31,9 +31,6 @@ public class Event {
     @OneToOne(cascade = CascadeType.ALL)
     private EventOptions eventOptions;
 
-    @JoinColumn(name = "event_code")
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<EventAttendee> eventAttendeeList;
 
     public Event setEventCode(Long eventCode) {
         this.eventCode = eventCode;
@@ -55,12 +52,7 @@ public class Event {
         return this;
     }
 
-    public Event setEventAttendeeList(List<EventAttendee> eventAttendeeList) {
-        this.eventAttendeeList = eventAttendeeList;
-        return this;
-    }
-
     public Event builder() {
-        return new Event(eventCode, calendarCode, department, eventOptions, eventAttendeeList);
+        return new Event(eventCode, calendarCode, department, eventOptions);
     }
 }

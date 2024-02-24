@@ -38,4 +38,6 @@ public interface EventInterface {
     String getEventDragBackgroundColor();
 
     String getEventBorderColor();
+
+    String getEventCategory();
 }

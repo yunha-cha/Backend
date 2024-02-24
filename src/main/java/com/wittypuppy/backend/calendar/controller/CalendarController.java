@@ -3,9 +3,8 @@ package com.wittypuppy.backend.calendar.controller;
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.calendar.dto.CalendarDTO;
 import com.wittypuppy.backend.calendar.dto.EventDTO;
-import com.wittypuppy.backend.calendar.dto.EventInterfaceAndEventAttendeesDTO;
+import com.wittypuppy.backend.calendar.dto.EventOptionsAboutDateDTO;
 import com.wittypuppy.backend.calendar.dto.EventOptionsDTO;
-import com.wittypuppy.backend.calendar.dto.*;
 import com.wittypuppy.backend.calendar.service.CalendarService;
 import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.common.dto.PageDTO;
@@ -19,7 +18,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "캘린더관련 스웨거 연동")
 @RestController
@@ -45,9 +43,7 @@ public class CalendarController {
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
 
-        List<EventInterfaceAndEventAttendeesDTO> eventInterfaceAndEventAttendeesDTOList = calendarService.selectEvents(userEmployeeCode);
-
-        return res("이벤트 리스트 가져오기 성공", eventInterfaceAndEventAttendeesDTOList);
+        return res("이벤트 리스트 가져오기 성공", calendarService.selectEvents(userEmployeeCode));
     }
 
     @GetMapping("/events/search")
@@ -72,9 +68,7 @@ public class CalendarController {
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
 
-        Map<String, Object> resultMap = calendarService.selectEventByEventCode(eventCode, userEmployeeCode);
-
-        return res("이벤트 정보 가져오기 성공", resultMap);
+        return res("이벤트 정보 가져오기 성공", calendarService.selectEventByEventCode(eventCode, userEmployeeCode));
     }
 
     @Tag(name = "사원 조회", description = "해당 회사의 현재 퇴사하지 않은 전체 사원 목록 조회(사원 초대를 위함)")
