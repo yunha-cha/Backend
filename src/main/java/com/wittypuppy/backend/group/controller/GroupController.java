@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,7 @@ import java.util.List;
 @Slf4j
 public class GroupController {
 
-
     private final GroupEmpService groupEmpService;
-
 
     public GroupController(GroupEmpService groupEmpService) {
         this.groupEmpService = groupEmpService;
@@ -38,21 +37,20 @@ public class GroupController {
     @GetMapping("/chartlist")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> selectEmpListWithGroupPaging(
-            @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @AuthenticationPrincipal User principal
+            @RequestParam(name = "offset", defaultValue = "1") String offset
             ){
-
-        System.out.println("principal로그인 사용자 권한 알아보기  = " + principal);
-        log.info("[그룹컨트롤러 시작] selectProductListWithPaging Start ============ ");
-        log.info("[offset 나오는지 확인용] selectProductListWithPaging offset : {} ", offset);
+//
+//        System.out.println("principal로그인 사용자 권한 알아보기  = " + principal);
+//        log.info("[그룹컨트롤러 시작] selectProductListWithPaging Start ============ ");
+//        log.info("[offset 나오는지 확인용] selectProductListWithPaging offset : {} ", offset);
 
         Criteria criteria = new Criteria(Integer.valueOf(offset), 10);
 
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
-        Page<GroupEmpDTO> productList = groupEmpService.selectEmpListWithGroupPaging(criteria);
-        pagingResponseDTO.setData(productList);
+        Page<GroupEmpDTO> groupList = groupEmpService.selectEmpListWithGroupPaging(criteria);
+        pagingResponseDTO.setData(groupList);
         /* 2. PageDTO : 화면에서 페이징 처리에 필요한 정보들 */
-        pagingResponseDTO.setPageInfo(new PageDTO(criteria, (int) productList.getTotalElements()));
+        pagingResponseDTO.setPageInfo(new PageDTO(criteria, (int) groupList.getTotalElements()));
 
         log.info("[그룹컨트롤러 페이징처리 끝] selectProductListWithPaging End ============ ");
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "조회 성공", pagingResponseDTO));
@@ -73,8 +71,5 @@ public class GroupController {
         List<ChartData> orgChartData = groupEmpService.getChartData();
         return ResponseEntity.ok().body(orgChartData);
     }
-
-
-
 
 }

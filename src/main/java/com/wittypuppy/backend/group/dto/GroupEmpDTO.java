@@ -20,6 +20,8 @@ import lombok.*;
 
         private String phone;
 
+        private GroupJobDTO job;
+
 
 }
 

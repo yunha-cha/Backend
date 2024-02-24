@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.mypage.entity;
 
 import com.wittypuppy.backend.group.entity.GroupDept;
+import com.wittypuppy.backend.group.entity.GroupJob;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,9 +48,9 @@ public class MyPageEmp {
     @Column(name = "employee_address")
     private String empAddress;
 
-    @ManyToOne // 다대일 관계로 변경
-    @JoinColumn(name = "job_code") // 조인할 열 지정
-    private MyPageJob job; // MyPageJob 엔티티 전체를 참조
+    @ManyToOne
+    @JoinColumn(name = "job_code")
+    private MyPageJob job;
 
 
 

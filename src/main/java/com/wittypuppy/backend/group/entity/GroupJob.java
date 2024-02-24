@@ -23,8 +23,6 @@ public class GroupJob {
     @Column(name = "job_name")
     private String jobName;
 
-    @OneToMany(mappedBy = "job")
-    private List<GroupEmp> employeeList;
 
 
 }

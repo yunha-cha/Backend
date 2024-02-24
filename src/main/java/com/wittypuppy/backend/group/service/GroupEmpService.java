@@ -38,10 +38,10 @@ public class GroupEmpService {
     /* 조직도에서 retired상태가 null인 사람 찾기 */
 
     public Page<GroupEmpDTO> selectEmpListWithGroupPaging(Criteria criteria){
-        log.info("empservice 시작");
+//        log.info("empservice 시작");
         int index = criteria.getPageNum() - 1;
         int count = criteria.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by("empCode").descending());
+        Pageable paging = PageRequest.of(index, count, Sort.by("empCode").ascending()); //오름차순
 
         Page<GroupEmp> result = groupEmpRepository.findByRetirementDateWithDepartment(paging);
 
