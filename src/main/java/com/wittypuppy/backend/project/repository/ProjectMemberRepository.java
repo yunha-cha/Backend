@@ -13,5 +13,4 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     Optional<ProjectMember> findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(Long projectCode, String projectMemberDeleteStatus, Long employeeCode);
 
-    Optional<ProjectMember> findByProjectCodeAndProjectMemberDeleteStatusAndProjectMemberCode(Long projectCode, String projectMemberDeleteStatus, Long projectMemberCode);
 }

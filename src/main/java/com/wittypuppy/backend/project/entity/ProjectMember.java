@@ -27,10 +27,6 @@ public class ProjectMember {
     @Column(name = "project_member_delete_status")
     private String projectMemberDeleteStatus;
 
-//    @JoinColumn(name = "project_member_code")
-//    @OneToMany
-//    private List<ProjectPostMember> projectPostMemberList;
-
     public ProjectMember setProjectMemberCode(Long projectMemberCode) {
         this.projectMemberCode = projectMemberCode;
         return this;
@@ -51,13 +47,7 @@ public class ProjectMember {
         return this;
     }
 
-//    public ProjectMember setProjectPostMemberList(List<ProjectPostMember> projectPostMemberList) {
-//        this.projectPostMemberList = projectPostMemberList;
-//        return this;
-//    }
-
     public ProjectMember builder(){
-//        return new ProjectMember(projectMemberCode,projectCode,employee,projectMemberDeleteStatus,projectPostMemberList);
         return new ProjectMember(projectMemberCode,projectCode,employee,projectMemberDeleteStatus);
     }
 }

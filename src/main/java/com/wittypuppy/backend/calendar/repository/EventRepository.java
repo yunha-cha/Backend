@@ -31,7 +31,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "teo.event_color eventColor," +
                     "teo.event_background_color eventBackgroundColor," +
                     "teo.event_drag_background_color eventDragBackgroundColor," +
-                    "teo.event_border_color eventBorderColor " +
+                    "teo.event_border_color eventBorderColor," +
+                    "teo.event_category eventCategory " +
                     "FROM tbl_calendar tc " +
                     "LEFT JOIN tbl_event te ON tc.calendar_code = te.calendar_code " +
                     "LEFT JOIN tbl_department td ON te.department_code = td.department_code " +
@@ -59,7 +60,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "teo.event_color eventColor," +
                     "teo.event_background_color eventBackgroundColor," +
                     "teo.event_drag_background_color eventDragBackgroundColor," +
-                    "teo.event_border_color eventBorderColor " +
+                    "teo.event_border_color eventBorderColor," +
+                    "teo.event_category eventCategory " +
                     "FROM tbl_calendar tc " +
                     "LEFT JOIN tbl_event te ON tc.calendar_code = te.calendar_code " +
                     "LEFT JOIN tbl_department td ON te.department_code = td.department_code " +
@@ -88,7 +90,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "teo.event_color eventColor," +
                     "teo.event_background_color eventBackgroundColor," +
                     "teo.event_drag_background_color eventDragBackgroundColor," +
-                    "teo.event_border_color eventBorderColor " +
+                    "teo.event_border_color eventBorderColor," +
+                    "teo.event_category eventCategory " +
                     "FROM tbl_calendar tc " +
                     "LEFT JOIN tbl_event te ON tc.calendar_code = te.calendar_code " +
                     "LEFT JOIN tbl_department td ON te.department_code = td.department_code " +
@@ -117,7 +120,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "teo.event_color eventColor," +
                     "teo.event_background_color eventBackgroundColor," +
                     "teo.event_drag_background_color eventDragBackgroundColor," +
-                    "teo.event_border_color eventBorderColor " +
+                    "teo.event_border_color eventBorderColor," +
+                    "teo.event_category eventCategory " +
                     "FROM tbl_calendar tc " +
                     "LEFT JOIN tbl_event te ON tc.calendar_code = te.calendar_code " +
                     "LEFT JOIN tbl_department td ON te.department_code = td.department_code " +
@@ -178,7 +182,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "teo.event_color," +
                     "teo.event_background_color," +
                     "teo.event_drag_background_color," +
-                    "teo.event_border_color " +
+                    "teo.event_border_color," +
+                    "teo.event_category eventCategory " +
                     "FROM tbl_calendar tc " +
                     "LEFT JOIN tbl_event te ON tc.calendar_code = te.calendar_code " +
                     "LEFT JOIN tbl_department td ON te.department_code = td.department_code " +
