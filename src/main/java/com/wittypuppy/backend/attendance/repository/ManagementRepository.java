@@ -31,14 +31,6 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
 
 
 
-    //전체 연차 수량
-    @Query(value = "SELECT COUNT(*) " +
-            "FROM tbl_vacation " +
-            "WHERE employee_code = :employeeCode " +
-            "AND vacation_expiration_date > NOW()",
-            nativeQuery = true)
-    Long attendanceTotalVacation(int employeeCode);
-
 
     //사용한 연차 수량
     @Query(value = "SELECT COUNT(*) " +

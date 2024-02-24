@@ -3,6 +3,7 @@ package com.wittypuppy.backend.attendance.adminAttend;
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.EmployeeDTO;
 import com.wittypuppy.backend.attendance.dto.ResponseDTO;
+import com.wittypuppy.backend.attendance.dto.VacationDTO;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
 import com.wittypuppy.backend.attendance.paging.PagingResponseDTO;
@@ -11,10 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -72,6 +72,21 @@ public class AttendAdminController {
         pagingResponse.setPageInfo(new PageDTO(cri, (int) employeeNoVacationList.getTotalElements()));
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "관리자 미할당 성공", pagingResponse));
+    }
+
+
+    //연차 인서트
+    @PostMapping("/attendances/admin/vacation")
+    public ResponseEntity<ResponseDTO> insertVacation(
+            @AuthenticationPrincipal User employeeCode
+    ){
+        /*입사일 기준으로 1년 미만이면 매달 1개 연차 인서트
+         * 입사일 기준으로 1년 이상이면 매월 1월 1일 15개 연차 인서트
+         * 2년마다 연차 1개씩 증가*/
+        System.out.println("======= 연차 인서트 ===== ");
+        VacationDTO vacation = attendanceAdminService.insertVacation(employeeCode);
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "연차 등록 성공", vacation));
     }
 
 
