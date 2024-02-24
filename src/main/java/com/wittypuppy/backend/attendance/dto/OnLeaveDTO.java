@@ -18,9 +18,9 @@ public class OnLeaveDTO {
 
     private ApprovalDocument leaveApprovalDocumentCode;
 
-    private String onLeaveTitle;
-
     private Long remainingOnLeave;
+
+    private String onLeaveTitle;
 
     private String kindOfOnLeave;
 

@@ -5,5 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AttendanceOverWorkRepository extends JpaRepository<Overwork, Long> {
 
-    Overwork findByOverworkDocumentCode(Long approvalDocumentCode);
 }

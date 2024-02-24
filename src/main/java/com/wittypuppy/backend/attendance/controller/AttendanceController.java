@@ -172,21 +172,6 @@ public class AttendanceController {
     }
 
 
-    //연차 인서트
-    @PostMapping("/attendances/admin/vacation")
-    public ResponseEntity<ResponseDTO> insertVacation(
-            @AuthenticationPrincipal User employeeCode
-    ){
-        /*입사일 기준으로 1년 미만이면 매달 1개 연차 인서트
-         * 입사일 기준으로 1년 이상이면 매월 1월 1일 15개 연차 인서트
-         * 2년마다 연차 1개씩 증가*/
-        System.out.println("======= 연차 인서트 ===== ");
-        VacationDTO vacation = attendanceService.insertVacation(employeeCode);
-
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "연차 등록 성공", vacation));
-    }
-
-
 
     //내가 신청한 문서 기안
 
@@ -360,21 +345,23 @@ public class AttendanceController {
     }
 
 
-    //결재할 문서 -대기 상세보기
-    @Operation(summary = "내 결재 문서" , description = "내가 결재 할 문서를 상세보기 합니다")
-    @GetMapping("/attendances/payment/waiting/{approvalDocumentCode}")
-    public ResponseEntity<ResponseDTO> PaymentWaiting (
-            @PathVariable Long approvalDocumentCode) {
-        System.out.println("==== 상세 문서 start");
 
-        System.out.println("====controller======PaymentWaiting==========");
-        System.out.println("========== approvalDocumentCode = " + approvalDocumentCode);
+    //신청한 문서- 기안 상세 보기
+    @Operation(summary = "내 결재 문서" , description = "내가 신청한 문서를 상세 보기")
+    @GetMapping("/attendances/my/documents-waiting/{approvalDocumentCode}")
+    public ResponseEntity<ResponseDTO> detailMyApply (
+            @AuthenticationPrincipal User employeeInFo,
+            @PathVariable Long approvalDocumentCode
+    ) {
+        int employeeCode = employeeInFo.getEmployeeCode();
 
-        Object result = attendanceService.approvalWaitingDetail(approvalDocumentCode);
-        System.out.println("result ========== " + result);
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "대기 문서 조회 성공", result));
+        System.out.println("====controller======detailMyApply==========");
+        System.out.println("employeeCode = " + employeeCode);
+        System.out.println("approvalDocumentCode = " + approvalDocumentCode);
 
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "대기 문서 조회 성공",attendanceService.detailMyApply(approvalDocumentCode) ));
     }
+
 
 
 }

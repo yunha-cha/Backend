@@ -36,6 +36,8 @@ public class AttendanceService {
 
     private final InsertCommuteRepository insertCommuteRepository;
 
+    private final DetailMyRepository detailMyRepository;
+
     private final AttendanceOnLeaveRepository attendanceOnLeaveRepository;
 
     private final AttendanceOverWorkRepository attendanceOverWorkRepository;
@@ -46,13 +48,14 @@ public class AttendanceService {
 
     private final AttendanceVaca attendanceVaca;
 
-    public AttendanceService(AttendanceEmployeeRepository attendanceEmployeeRepository, ModelMapper modelMapper, AttendanceApprovalRepository attendanceApprovalRepository, AttendanceLineRepository attendanceLineRepository, ManagementRepository managementRepository, InsertCommuteRepository insertCommuteRepository, AttendanceOnLeaveRepository attendanceOnLeaveRepository, AttendanceOverWorkRepository attendanceOverWorkRepository, DocumentWorkType documentWorkType, AttendanceSoft attendanceSoft, AttendanceVaca attendanceVaca) {
+    public AttendanceService(AttendanceEmployeeRepository attendanceEmployeeRepository, ModelMapper modelMapper, AttendanceApprovalRepository attendanceApprovalRepository, AttendanceLineRepository attendanceLineRepository, ManagementRepository managementRepository, InsertCommuteRepository insertCommuteRepository, DetailMyRepository detailMyRepository, AttendanceOnLeaveRepository attendanceOnLeaveRepository, AttendanceOverWorkRepository attendanceOverWorkRepository, DocumentWorkType documentWorkType, AttendanceSoft attendanceSoft, AttendanceVaca attendanceVaca) {
         this.attendanceEmployeeRepository = attendanceEmployeeRepository;
         this.modelMapper = modelMapper;
         this.attendanceApprovalRepository = attendanceApprovalRepository;
         this.attendanceLineRepository = attendanceLineRepository;
         this.managementRepository = managementRepository;
         this.insertCommuteRepository = insertCommuteRepository;
+        this.detailMyRepository = detailMyRepository;
         this.attendanceOnLeaveRepository = attendanceOnLeaveRepository;
         this.attendanceOverWorkRepository = attendanceOverWorkRepository;
         this.documentWorkType = documentWorkType;
@@ -65,7 +68,7 @@ public class AttendanceService {
 
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by(Sort.Direction.ASC, "attendance_management_code"));
+        Pageable paging = PageRequest.of(index, count, Sort.by(Sort.Direction.DESC, "attendance_management_code"));
 
         System.out.println("========= employeeCode ====== " + employeeCode);
         System.out.println("========== yearMonth ======= " + yearMonth);
@@ -95,13 +98,13 @@ public class AttendanceService {
         System.out.println("=====service=====myDocumentWaitingListStart========");
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        Pageable paging = PageRequest.of(index, count, Sort.by("approval_document_code").descending());
+        Pageable paging = PageRequest.of(index, count, Sort.by("approval_process_date").descending());
 
         System.out.println("======= employeeCode ======== " + employeeCode);
 
-        Page<ApprovalLine> result = attendanceApprovalRepository.findByApplyDocument(employeeCode, paging);
+        Page<ApprovalLine> myWaiting = attendanceApprovalRepository.findByApplyDocument(employeeCode, paging);
 
-        Page<ApprovalLineDTO> resultList = result.map(commute -> modelMapper.map(commute, ApprovalLineDTO.class));
+        Page<ApprovalLineDTO> resultList = myWaiting.map(commute -> modelMapper.map(commute, ApprovalLineDTO.class));
 
         System.out.println("========resultList======= " + resultList);
         System.out.println("======== myDocumentWaitingList end ============");
@@ -271,26 +274,86 @@ public class AttendanceService {
         System.out.println(" =========== employeeCode ===========> " + employeeCode);
         System.out.println("========attendanceVacation ServiceStart======");
 
-        Long total = managementRepository.attendanceTotalVacation(employeeCode);
+
+
+        Employee vacationCount = attendanceEmployeeRepository.findByEmployeeCode(employeeCode);
+        LocalDateTime join = vacationCount.getEmployeeJoinDate();
+        System.out.println("입사일 -----> join = " + join);
+
+        long daysSinceJoin = Duration.between(join, LocalDateTime.now()).toDays(); // 입사일부터 현재까지 경과한 일수 계산
+        System.out.println("경과 일수 ----------> daysSinceJoin = " + daysSinceJoin);
+
+        long yearsSinceJoin = daysSinceJoin / 365; // 현재까지 경과한 연 수
+        System.out.println("연차 --------> yearsSinceJoin = " + yearsSinceJoin);
+
+        int total = 0; //전체 수량 담을 것
+
+        LocalDate currentDate = LocalDate.now();
+
+        int currentDateYear = currentDate.getYear();
+
+        LocalDateTime futureDate = null;
+
+        if(daysSinceJoin >= 365) {
+
+            if(yearsSinceJoin == 1){
+                total = 15;
+            }else {
+                // 1년 이상 경과 후부터는 2년에 1개씩 증가
+                total = 15 + (int) ((yearsSinceJoin - 1) / 2);
+                System.out.println(" 연차 갯수 1 ===== total = " + total);
+            }
+        } else {
+            for (int i = 1; i < 12; i++) {
+                futureDate = join.plusMonths(i);
+                System.out.println(" 월차 생성 일 futureDate = " + futureDate);
+                if(futureDate.isBefore(currentDate.atStartOfDay())){
+                    total = i;
+                    System.out.println(" 월차 갯수 ===== total = " + total);
+                }
+            }
+        }
+
+        System.out.println(futureDate.getYear());
+
         Long useVacation = managementRepository.attendanceUseVacation(employeeCode);
         Long useHalfVacation = managementRepository.attendanceUseHalfVacation(employeeCode);
         System.out.println("========== total ===========> " + total);
         System.out.println("=========== useVacation =========> " + useVacation);
         System.out.println("============== useHalfVacation ==========> " + useHalfVacation);
 
-        int totalDays = total.intValue();
-        int usedVacationDays = useVacation.intValue();
-        int usedHalfVacationDays = useHalfVacation.intValue();
+        int usedVacationDays = useVacation.intValue(); //사용한 연차 수량
+        int usedHalfVacationDays = useHalfVacation.intValue(); //사용한 반차 수량
 
-        double vacationDay = totalDays - usedVacationDays - (usedHalfVacationDays * 0.5);
+        double nowVacation =0;
+
+        LocalDateTime marchFirst = currentDate.withMonth(3).withDayOfMonth(1).atStartOfDay().minusDays(1); //그해 연차 사용 만료일
+
+
+        if (currentDate.isBefore(ChronoLocalDate.from(marchFirst)) ){
+
+            if (futureDate.getYear() < currentDateYear) {
+                double vacationDay = total - usedVacationDays - (usedHalfVacationDays * 0.5);  // 전 년도 남은 연차 수량
+                nowVacation = vacationDay + total;
+            } else if (futureDate.getYear() == currentDateYear) {
+                nowVacation = total - usedVacationDays - (usedHalfVacationDays * 0.5);  // 남은 연차 수량
+            }
+
+        } else if (currentDate.isAfter(ChronoLocalDate.from(marchFirst))) {
+
+            nowVacation = total - usedVacationDays - (usedHalfVacationDays * 0.5);  // 남은 연차 수량
+        }
+
+
+
+
+        System.out.println("현재 수량 ===== nowVacation = " + nowVacation);
 
         VacationDTO vacation = new VacationDTO();
-        vacation.setTotal(totalDays);
+        vacation.setTotal(total);
         vacation.setUseVacation(usedVacationDays);
         vacation.setUseHalfVacation(usedHalfVacationDays);
-        vacation.setResultVacation(vacationDay);
-
-        System.out.println("========= 남은 연차 result ======== " + vacationDay);
+        vacation.setResultVacation(nowVacation);
 
         System.out.println("========attendanceVacation end ======");
 
@@ -483,166 +546,20 @@ public class AttendanceService {
         return attendanceManagementDTO;
     }
 
-    public Object approvalWaitingDetail(Long approvalDocumentCode) {
 
-        System.out.println("서비스====== approvalDocumentCode = " + approvalDocumentCode);
+    public DetailMyWaitingDTO detailMyApply(Long approvalDocumentCode) {
 
-        // 휴가 신청서 상세 조회
-        OnLeave onLeaveDetail = attendanceOnLeaveRepository.findByLeaveApprovalDocumentCode_ApprovalDocumentCode(approvalDocumentCode);
+        System.out.println("문서 코드 = " + approvalDocumentCode);
 
-        //연장 근로 신청서 상세 조회
-        Overwork overworkDetail = attendanceOverWorkRepository.findByOverworkDocumentCode(approvalDocumentCode);
+        //근무 형태 서류 상세 보기
+        DetailMyWaing detailWaiting = detailMyRepository.findContent(approvalDocumentCode);
+        System.out.println(" 상세보기 detailWaiting = " + detailWaiting);
 
-        //근태 신청서 상세 조회
-        WorkType workTypeDetail = documentWorkType.findByWorkTypeDocCode(approvalDocumentCode);
+        //연장근로 서류 상세보기
+        ApprovalLine detailOver = attendanceLineRepository.findOver(approvalDocumentCode);
 
-        //소프트웨어 상세 조회
-        SoftwareUse softwareUseDetail = attendanceSoft.findBySoftDocCode(approvalDocumentCode);
+        DetailMyWaitingDTO detailMyWaiting = modelMapper.map(detailWaiting, DetailMyWaitingDTO.class);
 
-
-        if (onLeaveDetail != null) {
-            OnLeaveDTO onLeaveDTO = modelMapper.map(onLeaveDetail, OnLeaveDTO.class);
-            System.out.println("====== onLeaveDTO ======= " + onLeaveDTO);
-            return onLeaveDTO;
-        } else if (overworkDetail != null) {
-            OverworkDTO overworkDTO = modelMapper.map(overworkDetail, OverworkDTO.class);
-            System.out.println("========= overworkDTO ======= " + overworkDTO);
-            return overworkDTO;
-        } else if (workTypeDetail != null) {
-            WorkTypeDTO workTypeDTO = modelMapper.map(workTypeDetail, WorkTypeDTO.class);
-            System.out.println("========= workTypeDTO ========= " + workTypeDTO);
-            return workTypeDTO;
-        } else if (softwareUseDetail != null) {
-            SoftwareUseDTO softwareUseDTO = modelMapper.map(softwareUseDetail, SoftwareUseDTO.class);
-            System.out.println("========= softwareUseDTO ========= " + softwareUseDTO);
-            return softwareUseDTO;
-        } else {
-            // 처리할 것이 없는 경우에 대한 처리
-            return null;
-        }
+        return detailMyWaiting;
     }
-
-    @Transactional
-    public VacationDTO insertVacation(User employeeCode) {
-
-        int emp = 1;
-
-        //직원 조회
-        Employee user = attendanceEmployeeRepository.findByEmployeeCode(emp);
-
-        LocalDateTime join = user.getEmployeeJoinDate();
-        System.out.println("입사일 >>====== join ========= " + join);
-
-        //연차 인서트 여부 조회 -> 1년 이상 근무자
-        int TotalVacation = attendanceVaca.findCount(emp);
-        System.out.println("전차 연차 수량 :" + TotalVacation);
-
-
-        // 현재 날짜 구하기
-        LocalDate currentDate = LocalDate.now();
-
-        // 입사일로부터 경과한 일수 계산
-        LocalDate joinDate = join.toLocalDate();
-
-        int vacationDays = 0;
-
-        // 현재 날짜와 입사일 간의 차이를 계산
-        long daysSinceJoin = ChronoUnit.DAYS.between(joinDate, currentDate);
-
-        //생성이유
-        String reason = null;
-
-        //생성일
-        LocalDateTime create = null;
-
-        //만기일
-        LocalDateTime done = null;
-
-        // 1년 이상 경과한 경우
-        if (daysSinceJoin >= 365) {
-            // 1년 이상 경과한 경우
-            long yearsSinceJoin = daysSinceJoin / 365; // 현재까지 경과한 연 수
-            if (yearsSinceJoin == 1) {
-                // 1년째인 경우는 연차를 15일로 설정
-                vacationDays = 15 ;
-                reason = "일년만근";
-                create = LocalDate.of(currentDate.getYear(), Month.JANUARY, 1).atStartOfDay();
-                done = LocalDate.of(currentDate.getYear() + 1, Month.MARCH, 1).atStartOfDay().minusDays(1);
-            } else {
-                // 1년 이상 경과 후부터는 2년에 1개씩 증가
-                vacationDays = 15 + (int) ((yearsSinceJoin - 1) / 2) ;
-                reason = "일년만근";
-                create = LocalDate.of(currentDate.getYear(), Month.JANUARY, 1).atStartOfDay();
-                done = LocalDate.of(currentDate.getYear() + 1, Month.MARCH, 1).plusDays(1).atStartOfDay().minusDays(1);
-            }
-        } else {
-                LocalDate joinNextMonth = join.toLocalDate().plusMonths(1);
-                Vacation underVacation = attendanceVaca.underCount(emp);
-            System.out.println("underVacation 목록확인 = " + underVacation);
-
-                if (underVacation == null && currentDate.isAfter(ChronoLocalDate.from(joinNextMonth.atStartOfDay()))) {
-                        vacationDays = 1;
-                        reason = "한달만근";
-                        create = join.toLocalDate().plusMonths(1).atStartOfDay();
-                        done = LocalDate.of(currentDate.getYear() + 1, Month.MARCH, 1).plusDays(1).atStartOfDay().minusDays(1);
-                        System.out.println(" ======= 첫 한달 만근");
-                    } else if(underVacation != null){
-                            LocalDateTime underCreate = underVacation.getVacationCreationDate();
-                            LocalDate underCreateLocalDate = underCreate.toLocalDate();
-                            LocalDate oneMonthAfterUnderCreate = underCreateLocalDate.plusMonths(1); // underCreate 날짜에서 한 달을 더함
-                            System.out.println("oneMonthAfterUnderCreate == 한달 만근 기준= " + oneMonthAfterUnderCreate);
-                            if (currentDate.isAfter(ChronoLocalDate.from(oneMonthAfterUnderCreate))) { // 현재 날짜가 underCreate 날짜에서 한 달 후인 경우
-                            vacationDays = 1;
-                            TotalVacation = 0;
-                            reason = "한달만근";
-                            create = underCreateLocalDate.plusMonths(1).atStartOfDay(); // underCreate의 월에서 1달을 더한 값으로 create 설정
-                            done = LocalDate.of(currentDate.getYear() + 1, Month.MARCH, 1).plusDays(1).atStartOfDay().minusDays(1);
-                                System.out.println("한달만근");
-                        } else { // 현재 날짜가 underCreate 날짜보다 앞에 있는 경우
-                            vacationDays = 0;
-                            TotalVacation = 0;
-                                System.out.println("한달 미만");
-                        }
-
-                    }
-            }
-
-        System.out.println("연차 일수: " + vacationDays);
-        System.out.println("생성이유 : " + reason);
-        System.out.println("생성일 :" + create);
-        System.out.println("만기일 : " + done);
-
-
-        if(TotalVacation != vacationDays ) {
-
-            for (int i = 0; i < vacationDays; i++) {
-
-                VacationDTO inputVacation = new VacationDTO();
-                inputVacation.setVacationEmployeeCode(new EmployeeDTO());
-                inputVacation.getVacationEmployeeCode().setEmployeeCode(emp);
-                inputVacation.setVacationCode(null);
-                inputVacation.setVacationCreationDate(create); //vacationDays 생성되는 날
-                inputVacation.setVacationExpirationDate(done);
-                inputVacation.setVacationUsageDate(null);
-                inputVacation.setVacationCreationReason(reason);
-                inputVacation.setVacationUsedStatus("N");
-                inputVacation.setVacationType(null);
-
-                Vacation input = modelMapper.map(inputVacation, Vacation.class);
-
-                System.out.println("======= input = " + input);
-
-                attendanceVaca.save(input);
-
-            }
-            // 반복문이 모두 실행된 후 반환할 값을 설정합니다.
-            VacationDTO resultVacation = new VacationDTO();
-            return resultVacation;
-
-        } else if (TotalVacation == vacationDays ) {
-            System.out.println("이미 할당 되었습니다");
-        }
-        return null;
-    }
-
 }

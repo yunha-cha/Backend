@@ -9,24 +9,5 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AttendanceVaca extends JpaRepository<Vacation, Long> {
 
-    @Query(value = "SELECT COUNT(*) " +
-            "FROM tbl_vacation " +
-            "WHERE employee_code = :emp " +
-            "AND vacation_expiration_date > NOW() " +
-            "AND YEAR(vacation_creation_date) = YEAR(NOW()) ",
-            nativeQuery = true)
-    int findCount(int emp);
-
-    @Query(value = "SELECT * " +
-            "FROM tbl_vacation " +
-            "WHERE employee_code = :emp " +
-            "AND vacation_expiration_date > NOW() " +
-            "ORDER BY vacation_code DESC " +
-            "LIMIT 1 ",
-            nativeQuery = true)
-    Vacation underCount(int emp);
-
-
-
 
 }

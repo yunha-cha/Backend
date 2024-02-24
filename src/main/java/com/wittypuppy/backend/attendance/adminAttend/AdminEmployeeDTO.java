@@ -20,7 +20,7 @@ public class AdminEmployeeDTO {
 
     private LocalDateTime employeeJoinDateAdmin;
 
-    private Long employeeAssignedCodeAdmin;
+    private String employeeRole;
 
     private LocalDateTime vacationCreationDate;
 
