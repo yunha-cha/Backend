@@ -12,6 +12,8 @@ Authorization: Bearer eyJkYXRlIjoxNzA2OTQ1NjAzNTcxLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 ### 테스트
 GET http://localhost:1208/admin/user-info
 Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzA4NzU3NTE5MDUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBEZXB0TmFtZSI6IklU7Jq07JiB7YyAIiwiZW1wQ29kZSI6MTIsImVtcGxveWVlRW1haWwiOiJraW1taW42OTlAZ21haWwuY29tIiwiZW1wR3JvdXBDb2RlIjozLCJlbXBsb3llZUlkIjoidXNlcjA3IiwiZXhwIjoxNzA4ODAwNzE5LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MTIsImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9BRE1JTiJ9fV19.eDbd9ev_H026TLPaGm0yyIY2CPUcm_KrtdaShOfZGDc
+
 
 {
   "employeeCode": 3
@@ -71,14 +73,14 @@ Content-Type: application/json
 ### 유저 추가
 POST http://localhost:1208/admin/create-user
 Content-Type: application/json
-Authorization: Bearer eyJkYXRlIjoxNzA3OTc3NjcyMjA3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBDb2RlIjoxMiwiZW1wbG95ZWVFbWFpbCI6ImtpbW1pbjY5OUBnbWFpbC5jb20iLCJlbXBsb3llZUlkIjoidXNlcjA3IiwiZXhwIjoxNzA3OTgxMjcyLCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MTIsImF1dGhvcml0eUNvZGUiOjEsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoxLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9VU0VSIn19XX0.Fn0a523m2_XnMM4sTi6QqFRgghGQVznSRJuQ9jrdp_A
+Authorization: Bearer eyJkYXRlIjoxNzA4NzU3NTE5MDUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBEZXB0TmFtZSI6IklU7Jq07JiB7YyAIiwiZW1wQ29kZSI6MTIsImVtcGxveWVlRW1haWwiOiJraW1taW42OTlAZ21haWwuY29tIiwiZW1wR3JvdXBDb2RlIjozLCJlbXBsb3llZUlkIjoidXNlcjA3IiwiZXhwIjoxNzA4ODAwNzE5LCJlbXBsb3llZVJvbGUiOlt7ImVtcGxveWVlQ29kZSI6MTIsImF1dGhvcml0eUNvZGUiOjIsImF1dGhvcml0eSI6eyJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHlOYW1lIjoiUk9MRV9BRE1JTiJ9fV19.eDbd9ev_H026TLPaGm0yyIY2CPUcm_KrtdaShOfZGDc
 
 
 {
   "employee": {
     "employeeDepartment": {
       "departmentCode": 8,
-      "parentDepartmentCode": 3,
+      "parentDepartmentCode": 2,
       "departmentName": "IT운영팀"
     },
     "employeeJob": {
