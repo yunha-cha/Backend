@@ -38,6 +38,8 @@ public class DetailMyWaing {
     @Column(name = "approval_rejected_reason", columnDefinition = "VARCHAR(500)")
     private String approvalRejectedReason;
 
+
+
     @Column(name = "on_leave_title", columnDefinition = "VARCHAR(100)")
     private String onLeaveTitle;
 

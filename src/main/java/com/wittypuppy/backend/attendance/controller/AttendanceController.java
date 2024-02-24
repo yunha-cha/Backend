@@ -173,36 +173,6 @@ public class AttendanceController {
 
 
 
-    //내가 신청한 문서 기안
-
-    @Operation(summary = "내가 기안 문서", description = "내가 기안한 문서중 미 결제된 것을 조회 합니다")
-    @GetMapping("/attendances/my/documents-waiting")
-    public ResponseEntity<ResponseDTO> myDocumentWaiting(
-            @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @AuthenticationPrincipal User employeeInFo
-
-        ) {
-
-        int employeeCode = employeeInFo.getEmployeeCode();
-        System.out.println("employeeCode = " + employeeCode);
-
-        System.out.println("====controller======documentWaitingStart==========");
-        System.out.println("========== offset ======== " + offset);
-
-        Criteria cri = new Criteria(Integer.valueOf(offset), 6);
-
-        PagingResponseDTO pagingResponse = new PagingResponseDTO();
-
-        Page<ApprovalLineDTO> myDocumentWaitingList = attendanceService.myDocumentWaitingList(cri, employeeCode);
-
-
-        pagingResponse.setData(myDocumentWaitingList);
-        pagingResponse.setPageInfo(new PageDTO(cri, (int) myDocumentWaitingList.getTotalElements()));
-
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "내 기안 문서 조회 성공", pagingResponse));
-
-    }
-
 
 
     //내가 신청한 문서 결재 완료
@@ -346,9 +316,10 @@ public class AttendanceController {
 
 
 
-    //신청한 문서- 기안 상세 보기
+
+    // 문서 상세 보기
     @Operation(summary = "내 결재 문서" , description = "내가 신청한 문서를 상세 보기")
-    @GetMapping("/attendances/my/documents-waiting/{approvalDocumentCode}")
+    @GetMapping("/attendances/document/{approvalDocumentCode}")
     public ResponseEntity<ResponseDTO> detailMyApply (
             @AuthenticationPrincipal User employeeInFo,
             @PathVariable Long approvalDocumentCode
@@ -359,9 +330,46 @@ public class AttendanceController {
         System.out.println("employeeCode = " + employeeCode);
         System.out.println("approvalDocumentCode = " + approvalDocumentCode);
 
-        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "대기 문서 조회 성공",attendanceService.detailMyApply(approvalDocumentCode) ));
+        // 상세 정보를 조회하여 ResponseDTO에 담기
+        DetailMyWaitingDTO detail = attendanceService.detailMyApply(approvalDocumentCode);
+        ResponseDTO responseDTO = new ResponseDTO(HttpStatus.OK, "상세 조회 성공", detail);
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
+
+
+
+    //내가 신청한 문서 기안
+
+    @Operation(summary = "내가 기안 문서", description = "내가 기안한 문서중 미 결제된 것을 조회 합니다")
+    @GetMapping("/attendances/my/documents-waiting")
+    public ResponseEntity<ResponseDTO> myDocumentWaiting(
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User employeeInFo
+//            @RequestParam (name = "approvalDocumentCode", defaultValue = "") Long approvalDocumentCode
+    ) {
+
+        int employeeCode = employeeInFo.getEmployeeCode();
+        System.out.println("employeeCode = " + employeeCode);
+
+        System.out.println("====controller======documentWaitingStart==========");
+        System.out.println("========== offset ======== " + offset);
+
+        Criteria cri = new Criteria(Integer.valueOf(offset), 6);
+
+        PagingResponseDTO pagingResponse = new PagingResponseDTO();
+
+        Page<ApprovalLineDTO> myDocumentWaitingList = attendanceService.myDocumentWaitingList(cri, employeeCode);
+
+//        DetailMyWaitingDTO detail = attendanceService.detailMyApply(approvalDocumentCode);
+
+        pagingResponse.setData(myDocumentWaitingList);
+        pagingResponse.setPageInfo(new PageDTO(cri, (int) myDocumentWaitingList.getTotalElements()));
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "내 기안 문서 조회 성공", pagingResponse));
+
+    }
 
 
 }

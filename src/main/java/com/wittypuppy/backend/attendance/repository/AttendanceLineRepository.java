@@ -35,34 +35,4 @@ public interface AttendanceLineRepository extends JpaRepository<ApprovalLine, Lo
 
 
 
-
-    @Query(value = "SELECT " +
-            "A.approval_document_code, " +
-            "A.approval_line_code, " +
-            "A.approval_process_date, " +
-            "A.approval_process_order, " +
-            "A.employee_code, " +
-            "A.approval_process_status, " +
-            "A.approval_rejected_reason, " +
-            "B.overwork_date, " +
-            "B.overwork_end_time, " +
-            "B.overwork_start_time, " +
-            "B.kind_of_overwork, " +
-            "B.overwork_reason, " +
-            "B.overwork_title " +
-            "FROM tbl_approval_line A " +
-            "LEFT JOIN tbl_overwork B ON A.approval_document_code = B.approval_document_code " +
-            "WHERE A.approval_document_code = :approvalDocumentCode " +
-            "AND A.approval_process_order = (SELECT MAX(approval_process_order) " +
-            "FROM tbl_approval_line " +
-            "WHERE approval_document_code = :approvalDocumentCode)",
-            nativeQuery = true)
-    ApprovalLine findOver(Long approvalDocumentCode);
-
-
-
-
-
-
-
 }

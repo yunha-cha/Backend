@@ -551,15 +551,17 @@ public class AttendanceService {
 
         System.out.println("문서 코드 = " + approvalDocumentCode);
 
-        //근무 형태 서류 상세 보기
-        DetailMyWaing detailWaiting = detailMyRepository.findContent(approvalDocumentCode);
-        System.out.println(" 상세보기 detailWaiting = " + detailWaiting);
+        if(approvalDocumentCode != null) {
 
-        //연장근로 서류 상세보기
-        ApprovalLine detailOver = attendanceLineRepository.findOver(approvalDocumentCode);
+            //근무 형태 서류 상세 보기
+            DetailMyWaing detailWaiting = detailMyRepository.findContent(approvalDocumentCode);
+            System.out.println(" 상세보기 detailWaiting = " + detailWaiting);
 
-        DetailMyWaitingDTO detailMyWaiting = modelMapper.map(detailWaiting, DetailMyWaitingDTO.class);
+            DetailMyWaitingDTO detailMyWaiting = modelMapper.map(detailWaiting, DetailMyWaitingDTO.class);
 
-        return detailMyWaiting;
+            return detailMyWaiting;
+        }
+
+        return null;
     }
 }
