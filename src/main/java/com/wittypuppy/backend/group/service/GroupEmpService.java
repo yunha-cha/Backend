@@ -4,6 +4,7 @@ package com.wittypuppy.backend.group.service;
 import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.group.dto.ChartData;
 import com.wittypuppy.backend.group.dto.ChartState;
+import com.wittypuppy.backend.group.dto.GroupDeptDTO;
 import com.wittypuppy.backend.group.dto.GroupEmpDTO;
 import com.wittypuppy.backend.group.entity.GroupDept;
 import com.wittypuppy.backend.group.entity.GroupEmp;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,6 +65,17 @@ public class GroupEmpService {
         log.info("부서명이랑 사원명으로 조회하는 서비스 종료");
         return groupEmpDTOList;
     }
+
+
+    @Transactional
+    public void addDepartment(String deptName, Long parentDeptCode) {
+        GroupDept department = new GroupDept();
+        department.setDeptName(deptName);
+        department.setParentDeptCode(parentDeptCode);
+        groupDeptRepository.save(department);
+        System.out.println("신규 부서가 추가되었습니다.");
+    }
+
 
 
 //    ==================== 여기부터 조직도 데이터 뽑아오기 ====================

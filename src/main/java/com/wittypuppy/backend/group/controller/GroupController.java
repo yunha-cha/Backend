@@ -6,6 +6,7 @@ import com.wittypuppy.backend.common.dto.PageDTO;
 import com.wittypuppy.backend.common.dto.PagingResponseDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.group.dto.ChartData;
+import com.wittypuppy.backend.group.dto.GroupDeptDTO;
 import com.wittypuppy.backend.group.dto.GroupEmpDTO;
 import com.wittypuppy.backend.group.entity.GroupDept;
 import com.wittypuppy.backend.group.service.GroupEmpService;
@@ -39,10 +40,6 @@ public class GroupController {
     public ResponseEntity<ResponseDTO> selectEmpListWithGroupPaging(
             @RequestParam(name = "offset", defaultValue = "1") String offset
             ){
-//
-//        System.out.println("principal로그인 사용자 권한 알아보기  = " + principal);
-//        log.info("[그룹컨트롤러 시작] selectProductListWithPaging Start ============ ");
-//        log.info("[offset 나오는지 확인용] selectProductListWithPaging offset : {} ", offset);
 
         Criteria criteria = new Criteria(Integer.valueOf(offset), 10);
 
@@ -71,5 +68,13 @@ public class GroupController {
         List<ChartData> orgChartData = groupEmpService.getChartData();
         return ResponseEntity.ok().body(orgChartData);
     }
+
+    @PostMapping("/adddept")
+    public ResponseEntity<ResponseDTO> addDepartment(@RequestBody GroupDeptDTO groupDeptDTO) {
+        groupEmpService.addDepartment(groupDeptDTO.getDeptName(), groupDeptDTO.getParentDeptCode());
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "부서 추가하기 성공", "부서 추가하기 성공했습니다"));
+    }
+
+
 
 }

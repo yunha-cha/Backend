@@ -53,3 +53,12 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+//sourceSets {
+//    main {
+//        resources {
+//            srcDirs = ['src/main/resources', 'src/main/resources/static/web-images']
+//            include 'images/**'
+//        }
+//    }
+//}
