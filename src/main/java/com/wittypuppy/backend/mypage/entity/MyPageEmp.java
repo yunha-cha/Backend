@@ -27,7 +27,7 @@ public class MyPageEmp {
 
     @ManyToOne
     @JoinColumn(name = "department_code")
-    private GroupDept department;
+    private MyPageDept department;
 
     @Column(name = "employee_external_email")
     private String empEmail;
@@ -47,9 +47,9 @@ public class MyPageEmp {
     @Column(name = "employee_address")
     private String empAddress;
 
-
-//    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<MyPageProfile> profiles;
+    @ManyToOne // 다대일 관계로 변경
+    @JoinColumn(name = "job_code") // 조인할 열 지정
+    private MyPageJob job; // MyPageJob 엔티티 전체를 참조
 
 
 

@@ -86,17 +86,6 @@ public class MyPageController {
     }
 
 
-
-//프로필가져오기 채팅방에성
-//    @GetMapping("/chatrooms/{chatroomCode}/profile")
-//    public ResponseEntity<ResponseDTO> findProfileImage(
-//            @PathVariable Long chatroomCode,
-//            @AuthenticationPrincipal User principal) {
-//        Long userEmployeeCode = 12L;
-//        return res("프로필사진 이미지 url 가져오기 성공", messengerService.findProfileImage(chatroomCode, userEmployeeCode));
-//    }
-//
-
     //프로필사진 가져오기
     @GetMapping("/find/profile")
     public ResponseEntity<ResponseDTO> findMyPageProfileImg(

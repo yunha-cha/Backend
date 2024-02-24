@@ -80,6 +80,7 @@ public class CustomAuthFailUserHandler implements AuthenticationFailureHandler {
 
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("failType",failMsg);
+        resultMap.put("status",404);
 
         jsonObject = new JSONObject(resultMap);
 
