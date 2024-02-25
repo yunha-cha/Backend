@@ -44,4 +44,30 @@ public class PageDTO {
         /* 다음 버튼 값 초기화 */
         this.next = cri.getPageNum() < realEnd;
     }
+
+    public PageDTO(Criteria cri, int total, int pageCount) {
+        /* cri, total 초기화 */
+        this.cri = cri;
+        this.total = total;
+
+        /* 페이지 끝 번호 */
+        this.pageEnd = (int) (Math.ceil(cri.getPageNum() * 1.0 / pageCount)) * pageCount;
+
+        /* 페이지 시작 번호 */
+        this.pageStart = this.pageEnd - pageCount + 1;
+
+        /* 전체 마지막 페이지 번호 */
+        this.realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
+
+        /* 페이지 끝 번호 유효성 체크 */
+        if (realEnd < pageEnd) {
+            this.pageEnd = this.realEnd;
+        }
+
+        /* 이전 버튼 값 초기화 */
+        this.prev = cri.getPageNum() > 1;
+
+        /* 다음 버튼 값 초기화 */
+        this.next = cri.getPageNum() < realEnd;
+    }
 }

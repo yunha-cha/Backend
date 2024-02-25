@@ -1,6 +1,9 @@
 package com.wittypuppy.backend.messenger.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.common.dto.Criteria;
+import com.wittypuppy.backend.common.dto.PageDTO;
+import com.wittypuppy.backend.common.dto.PagingResponseDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.messenger.dto.*;
 import com.wittypuppy.backend.messenger.service.MessengerService;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/messenger")
@@ -192,6 +196,21 @@ public class MessengerController {
         return res("프로필사진 이미지 url 가져오기 성공", messengerService.findProfileImage(chatroomCode, userEmployeeCode));
     }
 
+    @GetMapping("/chatrooms/{chatroomCode}/search")
+    public ResponseEntity<ResponseDTO> findChatList(
+            @PathVariable Long chatroomCode,
+            @RequestParam(name = "search", required = false, defaultValue = "") String searchValue,
+            @RequestParam(name = "offset", defaultValue = "1") String offset,
+            @AuthenticationPrincipal User principal) {
+        Long userEmployeeCode = (long) principal.getEmployeeCode();
+        Criteria cri = new Criteria(Integer.valueOf(offset), 20);
+        Map<String, Object> result = messengerService.findChatList(chatroomCode, "%" + searchValue + "%", userEmployeeCode, cri);
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
+        pagingResponseDTO.setData(result.get("content"));
+        pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("totalSize")).intValue(), 3));
+        System.out.println("><><><>" + pagingResponseDTO);
+        return res("채팅방 검색 결과 반환", pagingResponseDTO);
+    }
 
     @PutMapping("/chatrooms/{chatroomCode}/profile")
     public ResponseEntity<ResponseDTO> updateProfileImage(
@@ -220,16 +239,15 @@ public class MessengerController {
             @PathVariable Long chatroomCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res("채팅방 나가기 성공",messengerService.leaveChatroomMember(chatroomCode, userEmployeeCode));
+        return res("채팅방 나가기 성공", messengerService.leaveChatroomMember(chatroomCode, userEmployeeCode));
     }
 
     @PutMapping("/chatrooms/{chatroomCode}/read-status-update")
     public ResponseEntity<ResponseDTO> updateChatReadStatus(
             @PathVariable Long chatroomCode,
-            @RequestParam(name="chat") Long chatCode,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        return res("최근 채팅 관찰 시점 갱신 성공",messengerService.updateChatReadStatus(chatCode, chatroomCode, userEmployeeCode));
+        return res("최근 채팅 관찰 시점 갱신 성공", messengerService.updateChatReadStatus(chatroomCode, userEmployeeCode));
     }
 
     /**
