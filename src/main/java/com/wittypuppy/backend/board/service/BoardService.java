@@ -27,6 +27,8 @@ public class BoardService {
     private final PostCommentRepository postCommentRepository;
     private final PostLikeRepository postLikeRepository;
 
+    private final PostAttachmentRepository postAttachmentRepository;
+
 
     /* board */
     private final BoardRepository boardRepository;
@@ -37,10 +39,11 @@ public class BoardService {
     private final BoardEmployeeRepository boardEmployeeRepository;
     private final ModelMapper modelMapper;
 
-    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, BoardRepository boardRepository, BoardMemberRepository boardMemberRepository, BoardGroupRepository boardGroupRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
+    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, PostAttachmentRepository postAttachmentRepository, BoardRepository boardRepository, BoardMemberRepository boardMemberRepository, BoardGroupRepository boardGroupRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
         this.postCommentRepository = postCommentRepository;
         this.postLikeRepository = postLikeRepository;
+        this.postAttachmentRepository = postAttachmentRepository;
         this.boardRepository = boardRepository;
         this.boardMemberRepository = boardMemberRepository;
         this.boardGroupRepository = boardGroupRepository;
@@ -118,7 +121,7 @@ public class BoardService {
 
 
     @Transactional
-    public String insertPost(PostDTO postDTO,  Long employeeCode) {
+    public PostDTO insertPost(PostDTO postDTO,  Long employeeCode) {
 
         log.info("BoardService >>> insertPost >>> start");
 
@@ -138,15 +141,11 @@ public class BoardService {
             // 좋아요 개수 초기화 (아직 좋아요 개수 미구현)
 
             // 알림 받을 직원 설정 -> 테이블 생성?(게시판 멤버, 게시글 코드)
-            postRepository.save(newPost);
-            result = 1;
-
+            return modelMapper.map(postRepository.save(newPost),PostDTO.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return null;
         }
-
-
-        return result > 0 ? "게시글 등록 성공" : "게시글 등록 실패";
 
     }
 
@@ -550,14 +549,14 @@ public class BoardService {
         log.info("[BoardService] selectPostListWithPaging =================>");
 
         // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
-        int currentIndex = cri.getPageNum() - 1;
+        int currentIndex = cri.getPageNum();
         int quantity = cri.getQuantity();
+
+        System.out.println("currentIndex = " + currentIndex);
+        System.out.println("quantity = " + quantity);
 
         // Pageable 객체 생성
         Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
-
-        Board board = boardRepository.findById(boardCode).get();
-        if(board.getBoardAccessStatus().equals("Y")){
 
             // 페이징 적용하여 데이터 조회
             Page<Post> postList = postRepository.findByBoardCode(boardCode, paging);
@@ -571,25 +570,81 @@ public class BoardService {
 
             return postDTOList;
 
-        } else {
-
-            return null;
-        }
     }
 
 
 
     /* 게시판 카테고리 조회 */
-    public List<BoardDTO> selectBoardList() {
+//    public List<BoardDTO> selectBoardList(Long myParentDepartmentCode) {
+//
+//        List<Board> boardList1 = boardRepository.findAllByBoardAccessStatusAndBoardGroupCode("Y", 1L);
+//        List<Board> boardList2 = boardRepository.findAllByParentDepartmentCode(myParentDepartmentCode);
+//
+//        System.out.println("boardList1 = " + boardList1);
+//        System.out.println("boardList2 = " + boardList2);
+//
+//        List<BoardDTO> boardDTOList1 = boardList1.stream()
+//                .map(board -> modelMapper.map(board, BoardDTO.class))
+//                .collect(Collectors.toList());
+//
+//        List<BoardDTO> boardDTOList2 = boardList2.stream()
+//                .map(board -> modelMapper.map(board, BoardDTO.class))
+//                .collect(Collectors.toList());
+//
+//        MyDeptBoardDTO myDeptBoardDTO = new MyDeptBoardDTO(boardDTOList1, boardDTOList2);
+//
+//        System.out.println("myDeptBoardDTO = " + myDeptBoardDTO);
+//
+//        return null;
+//
+//    }
 
-        List<Board> boardList = boardRepository.findAllByBoardAccessStatus("Y");
 
-        List<BoardDTO> boardDTOList = boardList.stream()
+    /* 게시판 카테고리 조회 */
+    public MyDeptBoardDTO selectBoardList(Long myParentDepartmentCode) {
+
+        List<Board> boardList1 = boardRepository.findAllByBoardAccessStatusAndBoardGroupCode("Y", 1L);
+        List<Board> boardList2 = boardRepository.findAllByParentDepartmentCode(myParentDepartmentCode);
+
+        System.out.println("boardList1 = " + boardList1);
+        System.out.println("boardList2 = " + boardList2);
+
+        List<BoardDTO> boardDTOList1 = boardList1.stream()
                 .map(board -> modelMapper.map(board, BoardDTO.class))
                 .collect(Collectors.toList());
 
-        return boardDTOList;
+        List<BoardDTO> boardDTOList2 = boardList2.stream()
+                .map(board -> modelMapper.map(board, BoardDTO.class))
+                .collect(Collectors.toList());
 
+        MyDeptBoardDTO myDeptBoardDTO = new MyDeptBoardDTO(boardDTOList1, boardDTOList2);
+
+        System.out.println("myDeptBoardDTO = " + myDeptBoardDTO);
+
+        return myDeptBoardDTO;
+
+    }
+
+    public BoardDTO selectBoard(Long boardCode) {
+
+        Board boardInfo = boardRepository.findById(boardCode).get();
+
+        return modelMapper.map(boardInfo, BoardDTO.class);
+
+    }
+
+    public void insertPostAttachment(List<PostAttachmentDTO> attachmentDTOS) {
+
+        postAttachmentRepository.saveAll(convert(attachmentDTOS,PostAttachment.class));
+    }
+
+    public List<PostAttachmentDTO> findByPostCode(Long postCode) {
+        return convert(postAttachmentRepository.findAllByPostCode(postCode),PostAttachmentDTO.class);
+    }
+
+    public PostAttachment getFileById(Long attachmentCode) {
+
+        return postAttachmentRepository.findById(attachmentCode).orElseThrow(null);
     }
 }
 

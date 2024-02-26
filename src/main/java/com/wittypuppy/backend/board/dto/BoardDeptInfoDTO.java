@@ -10,6 +10,8 @@ import lombok.*;
 @ToString
 public class BoardDeptInfoDTO {
 
+    private Long boardDeptCode;
+
     private Long boardCode;
 
     private Long departmentCode;

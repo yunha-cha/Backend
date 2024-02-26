@@ -22,4 +22,5 @@ public class Employee {
     @Column(name = "employee_name",columnDefinition = "VARCHAR(100)")
     private String employeeName;
 
+
 }
