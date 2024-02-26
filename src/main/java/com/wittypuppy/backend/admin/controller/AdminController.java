@@ -34,15 +34,18 @@ import static com.wittypuppy.backend.util.FileUploadUtils.saveFile;
 @RestController
 @RequestMapping("admin")
 public class AdminController {
-    @Value("${file.file-dir}")
-    private String FILE_DIR;
 
     private final AdminService adminService;
     private final SimpMessagingTemplate simp;
+
+    @Value("${file.file-dir}")
+    private String FILE_DIR;
+
     public AdminController(AdminService adminService, SimpMessagingTemplate simp) {
         this.adminService = adminService;
         this.simp = simp;
     }
+
 
     @MessageMapping("/mail/alert/admin/send")
     public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
