@@ -2,10 +2,11 @@ package com.wittypuppy.backend.mail.dto;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter@Setter@ToString
+@Getter@Setter
 public class EmailDTO {
     private Long emailCode;
     private String emailReadStatus;
@@ -18,4 +19,5 @@ public class EmailDTO {
     private String emailStatus;
     private EmployeeDTO emailSender;    //이 사람이 메서드를 호출하는 거니까 security에서 얻어올 수 있다.
     private EmployeeDTO emailReceiver;
+    private List<EmailAttachmentDTO> attachments;
 }

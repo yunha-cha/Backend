@@ -2,16 +2,20 @@ package com.wittypuppy.backend.board.service;
 
 import com.wittypuppy.backend.board.dto.*;
 import com.wittypuppy.backend.board.entity.*;
+import com.wittypuppy.backend.board.paging.Criteria;
 import com.wittypuppy.backend.board.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,16 +32,18 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardMemberRepository boardMemberRepository;
 
+    private final BoardGroupRepository boardGroupRepository;
 
     private final BoardEmployeeRepository boardEmployeeRepository;
     private final ModelMapper modelMapper;
 
-    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, BoardRepository boardRepository, BoardMemberRepository boardMemberRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
+    public BoardService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostLikeRepository postLikeRepository, BoardRepository boardRepository, BoardMemberRepository boardMemberRepository, BoardGroupRepository boardGroupRepository, BoardEmployeeRepository boardEmployeeRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
         this.postCommentRepository = postCommentRepository;
         this.postLikeRepository = postLikeRepository;
         this.boardRepository = boardRepository;
         this.boardMemberRepository = boardMemberRepository;
+        this.boardGroupRepository = boardGroupRepository;
         this.boardEmployeeRepository = boardEmployeeRepository;
         this.modelMapper = modelMapper;
     }
@@ -88,6 +94,8 @@ public class BoardService {
 
         Board board = boardRepository.findById(boardCode).get();
 
+        System.out.println("board.getBoardAccessStatus().equals(\"Y\") = " + board.getBoardAccessStatus().equals("Y"));
+
         if(board.getBoardAccessStatus().equals("Y")){
             List<Post> postList = postRepository.findByBoardCodeOrderByPostDateDesc(boardCode);
 
@@ -110,11 +118,13 @@ public class BoardService {
 
 
     @Transactional
-    public String insertPost(PostDTO postDTO) {
+    public String insertPost(PostDTO postDTO,  Long employeeCode) {
 
         log.info("BoardService >>> insertPost >>> start");
 
         int result = 0;
+
+        Employee userEmployee = boardEmployeeRepository.findByEmployeeCode(employeeCode);
 
         try{
             // 받은 dto를 엔티티로 변환
@@ -122,6 +132,10 @@ public class BoardService {
 
             // 등록할 때 현재 날짜로 설정
             newPost.setPostDate(LocalDateTime.now());
+            newPost.setEmployee(userEmployee);
+            newPost.setPostViews(0L);
+
+            // 좋아요 개수 초기화 (아직 좋아요 개수 미구현)
 
             // 알림 받을 직원 설정 -> 테이블 생성?(게시판 멤버, 게시글 코드)
             postRepository.save(newPost);
@@ -132,7 +146,7 @@ public class BoardService {
         }
 
 
-        return result > 0 ? "게시물 등록 성공" : "게시물 등록 실패";
+        return result > 0 ? "게시글 등록 성공" : "게시글 등록 실패";
 
     }
 
@@ -147,6 +161,15 @@ public class BoardService {
         Post entityPost = postRepository.findById(postCode).get();
         entityPost.setPostTitle(postDTO.getPostTitle());
         entityPost.setPostContext(postDTO.getPostContext());
+        entityPost.setPostNoticeStatus(postDTO.getPostNoticeStatus());
+        entityPost.setBoardCode(postDTO.getBoardCode());
+
+
+        // 파일 첨부
+
+        // 알림 설정
+        // 알림 엔티티.set
+
 
         PostDTO updatedPostDTO = modelMapper.map(entityPost, PostDTO.class);
 
@@ -213,18 +236,35 @@ public class BoardService {
     }
 
 
+    // 댓글 등록
     @Transactional
-    public PostCommentDTO insertComment(PostCommentDTO postCommentDTO, Long postCode) {
+    public PostCommentDTO insertComment(PostCommentDTO postCommentDTO, Long postCode, Long employeeCode) {
+        Employee employee = new Employee();
+        employee.setEmployeeCode(employeeCode);
+
+        // employee 객체로 boardMember 찾는게 되나?
+        BoardMember boardMember = boardMemberRepository.findByEmployee(employee);
 
         PostComment newPostComment = modelMapper.map(postCommentDTO, PostComment.class);
-        newPostComment.setPostCode(postCode);
+        System.out.println("newPostComment : " + newPostComment); // 값 serivce에 잘 전달되는지 확인
+
+        newPostComment.setBoardMember(boardMember);
         newPostComment.setPostCommentDate(LocalDateTime.now());
+        newPostComment.setPostCode(postCode);
+        newPostComment.setPostCommentDeleteStatus("N");
 
-        postCommentRepository.save(newPostComment);
+        return modelMapper.map(postCommentRepository.save(newPostComment),PostCommentDTO.class);
 
-        System.out.println("newPostComment = " + newPostComment);
-
-        return modelMapper.map(newPostComment, PostCommentDTO.class);
+//        PostComment newPostComment = modelMapper.map(postCommentDTO, PostComment.class);
+//        newPostComment.setPostCode(postCode);
+//        newPostComment.setBoardMember(boardMember);
+//        newPostComment.setPostCommentDate(LocalDateTime.now());
+//
+//        postCommentRepository.save(newPostComment);
+//
+//        System.out.println("newPostComment = " + newPostComment);
+//
+//        return modelMapper.map(newPostComment, PostCommentDTO.class);
 
     }
 
@@ -274,19 +314,37 @@ public class BoardService {
 
 
     @Transactional
-    public List<PostDTO> searchPostList(String search, Long boardCode) {
-
-//        List<Post> postList = postRepository.findByBoardCodeOrderByPostDateDesc(boardCode);
-
-        List<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%');
-
-        List<PostDTO> postDTOList = postListByTitle.stream().map(
-                post -> modelMapper.map(post, PostDTO.class)
-        ).toList();
+    public Page<PostDTO> searchPostListWithPaging(Criteria cri, String search, Long boardCode) {
 
 
-        System.out.println("postDTOList = " + postDTOList);
-        return postDTOList;
+        // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
+        int currentIndex = cri.getPageNum() - 1;
+        int quantity = cri.getQuantity();
+
+        // Pageable 객체 생성
+        Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
+
+        Board board = boardRepository.findById(boardCode).get();
+        System.out.println("board = " + board);
+
+        if(board.getBoardAccessStatus().equals("Y")){
+
+            Page<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%', paging);
+
+            System.out.println("postListByTitle = " + postListByTitle);
+
+            Page<PostDTO> postDTOList = postListByTitle.map(
+                    post -> modelMapper.map(post, PostDTO.class)
+            );
+
+            System.out.println("postDTOList = " + postDTOList);
+            return postDTOList;
+
+        }
+        else {
+            return null;
+        }
+
     }
 
     
@@ -319,7 +377,6 @@ public class BoardService {
         try{
             PostLike postLike = modelMapper.map(postLikeDTO, PostLike.class);
             postLikeRepository.delete(postLike);
-            System.out.println("dpd?");
             result = 1;
 
         }catch (Exception e){
@@ -434,6 +491,8 @@ public class BoardService {
 
     }
 
+
+    @Transactional
     public String noticePostList(List<PostDTO> postDTOList) {
 
 
@@ -459,6 +518,7 @@ public class BoardService {
     }
 
 
+
     public List<BoardMemberDTO> selectBoardMember(Long boardCode) {
 
         return convert(boardMemberRepository.findByBoardCode(boardCode), BoardMemberDTO.class);
@@ -474,6 +534,61 @@ public class BoardService {
 
 
         return null;
+
+    }
+
+    public List<PostDTO> findByEmployeeCodeMain(long employeeCode) {
+        List<Post> postEntity = postRepository.findByEmployee_EmployeeCode(employeeCode);
+        return convert(postEntity, PostDTO.class);
+    }
+
+
+    /* 페이징된 게시글 조회 */
+    @Transactional
+    public Page<PostDTO> selectPostListWithPaging(Criteria cri, Long boardCode) {
+
+        log.info("[BoardService] selectPostListWithPaging =================>");
+
+        // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
+        int currentIndex = cri.getPageNum() - 1;
+        int quantity = cri.getQuantity();
+
+        // Pageable 객체 생성
+        Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
+
+        Board board = boardRepository.findById(boardCode).get();
+        if(board.getBoardAccessStatus().equals("Y")){
+
+            // 페이징 적용하여 데이터 조회
+            Page<Post> postList = postRepository.findByBoardCode(boardCode, paging);
+
+            // 엔티티 조회되는지 출력
+            System.out.println("postList = " + postList);
+
+            // 엔티티를 dto로 변환
+            Page<PostDTO> postDTOList = postList
+                    .map(post -> modelMapper.map(post, PostDTO.class));
+
+            return postDTOList;
+
+        } else {
+
+            return null;
+        }
+    }
+
+
+
+    /* 게시판 카테고리 조회 */
+    public List<BoardDTO> selectBoardList() {
+
+        List<Board> boardList = boardRepository.findAllByBoardAccessStatus("Y");
+
+        List<BoardDTO> boardDTOList = boardList.stream()
+                .map(board -> modelMapper.map(board, BoardDTO.class))
+                .collect(Collectors.toList());
+
+        return boardDTOList;
 
     }
 }

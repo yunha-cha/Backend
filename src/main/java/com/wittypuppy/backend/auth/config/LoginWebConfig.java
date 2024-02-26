@@ -33,8 +33,16 @@ public class LoginWebConfig implements WebMvcConfigurer {
 //        registry.addMapping("/**") // 모든 엔드포인트에 대해 CORS를 허용
 //                .allowedOrigins("*") // 모든 출처 허용
 //                .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드 지정
-//                .allowedHeaders("*"); // 모든 헤더 허용
+//
 //    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // 모든 경로에 대해
+                .allowedOrigins("*") // 모든 출처 허용
+                .allowedMethods("*") // 모든 HTTP 메소드 허용
+                .allowedHeaders("*"); // 모든 헤더 허용
+    }
 
     @Bean(name = "filterRegistrationBean")
     public FilterRegistrationBean<HeaderFilter> getFilterRegistrationBean(){

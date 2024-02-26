@@ -1,6 +1,7 @@
 package com.wittypuppy.backend.mypage.entity;
 
 import com.wittypuppy.backend.group.entity.GroupDept;
+import com.wittypuppy.backend.group.entity.GroupJob;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class MyPageEmp {
 
     @ManyToOne
     @JoinColumn(name = "department_code")
-    private GroupDept department;
+    private MyPageDept department;
 
     @Column(name = "employee_external_email")
     private String empEmail;
@@ -41,9 +42,17 @@ public class MyPageEmp {
     @Column(name = "employee_birth_date")
     private Date empBirth;
 
+    @Column(name = "employee_join_date")
+    private Date empJoinDate;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MyPageProfile> profiles;
+    @Column(name = "employee_address")
+    private String empAddress;
+
+    @ManyToOne
+    @JoinColumn(name = "job_code")
+    private MyPageJob job;
+
+
 
 
 }

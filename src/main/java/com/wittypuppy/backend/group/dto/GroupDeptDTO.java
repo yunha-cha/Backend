@@ -15,11 +15,9 @@ public class GroupDeptDTO {
 
     private Long departmentCode;
 
-    private String departmentName;
+    private String deptName;
 
-//    private Long parentDeptCode;
-//
-//    private List<GroupEmp> employee;
+    private Long parentDeptCode;
 
 }
 

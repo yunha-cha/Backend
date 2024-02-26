@@ -1,9 +1,11 @@
 package com.wittypuppy.backend.mail.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,4 +51,9 @@ public class Email {
     @ManyToOne
     @JoinColumn(name = "email_sender_employee_code", columnDefinition = "BIGINT")   //보낸 이
     private Employee emailSender;   //유저의 아이디 가져오기
+
+
+
+//    @OneToMany(mappedBy = "emailCode")
+//    private List<EmailAttachment> attachments;
 }

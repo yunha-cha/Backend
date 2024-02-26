@@ -1,15 +1,21 @@
 package com.wittypuppy.backend.attendance.repository;
 
 
+import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
+import com.wittypuppy.backend.attendance.entity.OnLeave;
+import com.wittypuppy.backend.attendance.entity.Overwork;
+import com.wittypuppy.backend.attendance.entity.WorkType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+import javax.naming.Name;
+import java.util.List;
 import java.util.stream.Stream;
-
 
 public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine, Long> {
 
@@ -24,18 +30,19 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "A.approval_process_status, " +
             "A.approval_rejected_reason " +
             "FROM tbl_approval_line A " +
-            "LEFT JOIN tbl_approval_document B ON (A.employee_code = B.employee_code) " +
+            "LEFT JOIN tbl_approval_document B ON A.approval_document_code = B.approval_document_code " +
             "WHERE A.approval_process_status = '반려' " +
             "AND A.approval_document_code " +
             "IN (SELECT approval_document_code " +
             "FROM tbl_approval_document  " +
-            "WHERE employee_code = :empCode) ",
+            "WHERE employee_code = :empCode) " +
+            "AND A.approval_document_code is not null ",
             nativeQuery = true)
-    Page<ApprovalLine> findByApprovalProcessStatusAndLineEmployeeCode_EmployeeCodeNative(Pageable pageable, Long empCode);
+    Page<ApprovalLine> findByApprovalProcessStatusAndLineEmployeeCode_EmployeeCodeNative(Pageable pageable, int empCode);
 
 
 //내 문서 승인
-    @Query(value = "SELECT " +
+    @Query(value = "SELECT  " +
             "A.approval_document_code, " +
             "A.approval_line_code, " +
             "A.approval_process_date, " +
@@ -44,16 +51,17 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "A.approval_process_status, " +
             "A.approval_rejected_reason " +
             "FROM tbl_approval_line A " +
-            "LEFT JOIN tbl_approval_document B ON A.employee_code = B.employee_code " +
+            "LEFT JOIN tbl_approval_document B ON A.approval_document_code = B.approval_document_code " +
             "WHERE A.approval_process_status = '결재' " +
             "AND A.approval_document_code IN (SELECT approval_document_code " +
             "FROM tbl_approval_document " +
             "WHERE employee_code = :employeeCode) " +
             "AND A.approval_process_order = (SELECT MAX(approval_process_order) " +
             "FROM tbl_approval_line " +
-            "WHERE A.approval_document_code = approval_document_code) ",
+            "WHERE A.approval_document_code = approval_document_code) " +
+            "AND A.approval_document_code is not null ",
             nativeQuery = true)
-    Page<ApprovalLine> findMyDocumentPayment(Long employeeCode, Pageable paging);
+    Page<ApprovalLine> findMyDocumentPayment(int employeeCode, Pageable paging);
 
 
     //내 기안 문서
@@ -67,10 +75,10 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "A.approval_rejected_reason " +
             "FROM tbl_approval_line A " +
             "WHERE A.approval_process_status = '기안' " +
-            "AND A.approval_process_order = 1 " +
-            "AND A.employee_code = :employeeCode",
+            "AND A.employee_code = :employeeCode " +
+            "AND A.approval_document_code is not null ",
             nativeQuery = true)
-    Page<ApprovalLine> findByApplyDocument(Long employeeCode, Pageable paging);
+    Page<ApprovalLine> findByApplyDocument(int employeeCode, Pageable paging);
 
 
 
@@ -90,11 +98,12 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "LEFT JOIN tbl_employee C ON B.employee_code = C.employee_code " +
             "LEFT JOIN tbl_department D ON C.department_code = D.department_code " +
             "WHERE A.employee_code = :employeeCode " +
-            "AND A.approval_process_status = '결재'"
+            "AND A.approval_process_status = '결재'" +
+            "AND A.approval_document_code is not null "
             , nativeQuery = true)
 
     // 내가 결재한 문서
-    Page<ApprovalLine> approvalPayment(Pageable paging, Long employeeCode);
+    Page<ApprovalLine> approvalPayment(Pageable paging, int employeeCode);
 
 
 
@@ -116,6 +125,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "LEFT JOIN tbl_department D ON C.department_code = D.department_code " +
             "WHERE A.approval_process_status = '대기' " +
             "AND A.employee_code = :employeeCode " +
+            "AND A.approval_document_code is not null " +
             "AND A.approval_process_order IN (SELECT approval_process_order - 1 FROM tbl_approval_line) " +
             "AND ((A.approval_process_status IN ('결재'or '기안') " +
             "      AND A.approval_process_order - 1 IN (SELECT approval_process_order FROM tbl_approval_line " +
@@ -125,7 +135,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "      AND A.approval_process_order - 1 IN (SELECT approval_process_order FROM tbl_approval_line " +
             "                                           WHERE approval_process_status IN ('대기'or '반려'or '회수'))))",
             nativeQuery = true)
-    Page<ApprovalLine> paymentWaiting(Pageable paging, Long employeeCode);
+    Page<ApprovalLine> paymentWaiting(Pageable paging, int employeeCode);
 
 
 
@@ -145,6 +155,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "LEFT JOIN tbl_department D ON C.department_code = D.department_code " +
             "WHERE A.approval_process_status = '대기' " +
             "AND A.employee_code = :employeeCode " +
+            "AND A.approval_document_code is not null " +
             "AND A.approval_process_order IN (SELECT approval_process_order - 1 FROM tbl_approval_line) " +
             "AND ((A.approval_process_status IN ('결재'or '기안') " +
             "      AND A.approval_process_order - 1 IN (SELECT approval_process_order FROM tbl_approval_line " +
@@ -155,7 +166,7 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
             "                                           WHERE approval_process_status IN ('대기'or '반려'or '회수'))))",
             nativeQuery = true)
     //대기 수량으로 표현
-    ApprovalLine attendanceWaiting(Long employeeCode);
+    List<ApprovalLine> attendanceWaiting(int employeeCode);
 
 
 

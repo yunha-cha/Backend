@@ -25,12 +25,22 @@ public class WebImageConfig implements WebMvcConfigurer {
   add-resource-locations: classpath:/static/web-images/
   add-resource-handler: /web-images/**
 * */
+    @Value("${file.add-resource-locations}")
+    private String ADD_FILE_LOCATION;
+
+    @Value("${file.add-resource-handler}")
+    private String ADD_FILE_HANDLER;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         registry.addResourceHandler(ADD_RESOURCE_HANDLER)
                 .addResourceLocations(ADD_RESOURCE_LOCATION)
                 .setCachePeriod(20);
         registry.addResourceHandler(ADD_STATIC_RESOURCE_HANDLER)
+                .addResourceLocations(ADD_RESOURCE_LOCATION)
                 .addResourceLocations(ADD_RESOURCE_LOCATION);
+        registry.addResourceHandler(ADD_FILE_HANDLER)
+                .addResourceLocations(ADD_FILE_LOCATION)
+        ;
     }
 }

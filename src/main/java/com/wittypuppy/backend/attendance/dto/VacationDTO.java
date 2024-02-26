@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.dto;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.entity.Employee;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,7 @@ public class VacationDTO {
 
     private Long vacationCode;
 
-    private Employee vacationEmployeeCode;
+    private EmployeeDTO vacationEmployeeCode;
 
     private LocalDateTime vacationCreationDate;
 

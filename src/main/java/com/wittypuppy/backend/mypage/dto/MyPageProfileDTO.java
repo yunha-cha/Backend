@@ -16,7 +16,7 @@ public class MyPageProfileDTO {
 
     private Long profileCode;
 
-    private Long employeeCode;
+    private Long enpCode;
 
     private String profileOgFile;
 
@@ -25,7 +25,5 @@ public class MyPageProfileDTO {
     private LocalDateTime profileRegistDate;
 
     private String profileDeleteStatus;
-
-
 
 }

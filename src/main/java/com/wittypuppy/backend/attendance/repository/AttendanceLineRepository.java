@@ -1,10 +1,12 @@
 package com.wittypuppy.backend.attendance.repository;
 
 import com.wittypuppy.backend.attendance.entity.ApprovalLine;
+import com.wittypuppy.backend.attendance.entity.DetailMyWaing;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 
 public interface AttendanceLineRepository extends JpaRepository<ApprovalLine, Long> {
 
@@ -24,11 +26,13 @@ public interface AttendanceLineRepository extends JpaRepository<ApprovalLine, Lo
             "LEFT JOIN tbl_employee C ON B.employee_code = C.employee_code " +
             "LEFT JOIN tbl_department D ON C.department_code = D.department_code " +
             "WHERE A.employee_code = :employeeCode " +
-            "AND A.approval_process_status = '반려'"
+            "AND A.approval_process_status = '반려'" +
+            "AND A.approval_document_code is not null "
             , nativeQuery = true)
-
     //내가 반려한 문서
-    Page<ApprovalLine> rejectionDocument(Pageable paging, Long employeeCode);
+    Page<ApprovalLine> rejectionDocument(Pageable paging, int employeeCode);
+
+
 
 
 }

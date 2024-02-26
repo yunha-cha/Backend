@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -22,9 +24,9 @@ public class Career {
     private Long employeeCode;
 
     @Column(name="career_start_date")
-    private String careerStartDate;
+    private Date careerStartDate;
     @Column(name="career_end_date")
-    private String careerEndDate;
+    private Date careerEndDate;
     @Column(name="career_company_name")
     private String careerCompanyName;
     @Column(name="career_position")

@@ -12,6 +12,7 @@ import java.util.Date;
 @Entity(name = "MESSENGER_CHATROOM_PROFILE")
 @Table(name = "tbl_chatroom_profile")
 public class ChatroomProfile {
+
     @Id
     @Column(name = "chatroom_profile_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

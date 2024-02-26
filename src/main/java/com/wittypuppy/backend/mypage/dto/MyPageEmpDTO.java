@@ -15,7 +15,7 @@ public class MyPageEmpDTO {
 
 private Long empCode;
 
-private GroupDeptDTO department;
+private MyPageDeptDTO department;
 
 private String empName;
 
@@ -24,6 +24,12 @@ private String empEmail;
 private String phone;
 
 private Date empBirth;
+
+private Date empJoinDate;
+
+private String empAddress;
+
+private MyPageJobDTO job;
 
 
 }

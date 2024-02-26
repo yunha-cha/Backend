@@ -41,6 +41,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
          * */
 
         List<String> roleLeessList = Arrays.asList(
+                "/",
                 "/auth/signup",
                 "/auth/login",
                 "/websocket",
@@ -51,7 +52,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/v3/api-docs",              //swagger 설정
                 "/v3/api-docs/(.*)",         //swagger 설정
                 "/swagger-resources",        //swagger 설정
-                "/swagger-resources/(.*)"    //swagger 설정
+                "/swagger-resources/(.*)",    //swagger 설정
+                "/mail/download-attachment/(.*)"
         );
 
 
@@ -76,7 +78,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
                     authentication.setEmployeeId((String) claims.get("employeeId"));
-//                    authentication.setEmployeeRole((List<EmployeeRoleDTO>) claims.get("employeeRole"));
+//
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
                     // List<EmployeeRoleDTO> 설정 dto타입이라서 한 번 더 설정해줘야됨
@@ -97,13 +99,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 throw new RuntimeException("토큰이 존재하지 않습니다.");
             }
         } catch (Exception e) {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json");
-            PrintWriter printWriter = response.getWriter();
-            JSONObject jsonObject = jsonresponseWrapper(e);
-            printWriter.print(jsonObject);
-            printWriter.flush();
-            printWriter.close();
+//            response.setCharacterEncoding("UTF-8");
+//            response.setContentType("application/json");
+//            PrintWriter printWriter = response.getWriter();
+//            JSONObject jsonObject = jsonresponseWrapper(e);
+//            printWriter.print(jsonObject);
+//            printWriter.flush();
+//            printWriter.close();
         }
     }
 

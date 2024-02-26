@@ -1,9 +1,9 @@
 package com.wittypuppy.backend.mypage.service;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.common.exception.DataUpdateException;
 import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
-import com.wittypuppy.backend.mypage.dto.MyPageProfileDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
 import com.wittypuppy.backend.mypage.entity.MyPageEmp;
 import com.wittypuppy.backend.mypage.entity.MyPageProfile;
@@ -11,30 +11,36 @@ import com.wittypuppy.backend.mypage.entity.MyPageUpdateEmp;
 import com.wittypuppy.backend.mypage.repository.MyPageProfileRepository;
 import com.wittypuppy.backend.mypage.repository.MyPageRepository;
 import com.wittypuppy.backend.mypage.repository.MyPageUpdateRepository;
+import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 
 @Service
 @Slf4j
 public class MyPageService {
 
+    @Value("${image.image-dir}")
+    private String IMAGE_DIR;
+
+    @Value("${image.image-url}")
+    private String IMAGE_URL;
+
     private final MyPageRepository myPageRepository;
     private final ModelMapper modelMapper;
     private final MyPageUpdateRepository myPageUpdateRepository;
 
-    @Autowired
     private final MyPageProfileRepository myPageProfileRepository;
 
     private final String imageDirectory = "classpath:/static/web-images/";
@@ -69,6 +75,8 @@ public class MyPageService {
                    .address(myPageUpdateDTO.getAddress());
            log.info("Mypaservice >>> mypageupdateemp>>>> end");
 
+
+
            return myPageUpdateEmp;
        }catch (Exception e){
            log.error("MyPageService 에서 myPageUpdateEmp로 가는중에 에러");
@@ -102,43 +110,110 @@ public class MyPageService {
     }
 
 
+    public MyPageProfile findMyPageProfileImage(Long empCode) {
+        Optional<MyPageProfile> myPageProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileRegistDateDesc(empCode);
 
-//    public MyPageProfileDTO updateProfile(Long employeeCode, MultipartFile file) {
-//        MyPageEmp myPageEmp = new MyPageEmp();
-//        myPageEmp.setEmpCode(employeeCode);
-//
-//        // 프로필 사진 업데이트 로직 구현
-//        myPageProfileRepository.updateProfileDeleteStatusByEmployeeCode(employeeCode);
-//
-//        List<MyPageProfile> profilesToUpdate = myPageProfileRepository.findByEmployee_EmpCodeAndProfileDeleteStatus(employeeCode, "y");
-//
-//        MyPageProfileDTO fileSavePath = saveProfileImage(file);
-//
-//        for (MyPageProfile profile : profilesToUpdate) {
-//            profile.setProfileOgFile(String.valueOf(fileSavePath));
-//            profile.setProfileChangedFile(String.valueOf(fileSavePath));
-//            profile.setProfileRegistDate(LocalDateTime.now());
-//            profile.setProfileDeleteStatus("N");
-//        }
-//
-//        myPageProfileRepository.saveAll(profilesToUpdate);
-//
-////        return imageDirectory + fileSavePath; // 완전한 이미지 URL 반환
-//        return fileSavePath;
-//    }
-//
-//    private MyPageProfileDTO saveProfileImage(MultipartFile file) {
+        // 프로필을 찾지 못한 경우 예외 처리
+        MyPageProfile myPageProfile = myPageProfileOptional.orElseThrow(() -> new DataNotFoundException("프로필 사진이 존재하지 않습니다."));
+
+        System.out.println("myPageProfile 나오는지 홗인용 ============= = " + myPageProfile);
+        System.out.println("myPageProfile.getProfileChangedFile() = " + myPageProfile.getProfileChangedFile());
+        // 프로필 파일을 반환
+        return myPageProfile;
+    }
+
+//    @Transactional
+//    public String updateMyPageProfileImage(MultipartFile ProfileImage, Long empCode, @AuthenticationPrincipal User principal) {
 //        try {
-//            // 실제 파일 저장 로직
-//            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//            Path filePath = Path.of(imageDirectory, fileName);
-//            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//            LocalDateTime now = LocalDateTime.now();
+//            empCode = (long) principal.getEmployeeCode();
 //
-////            return fileName;
-//            return new MyPageProfileDTO(fileName); // MyPageProfileDTO 객체 생성 후 반환
+//            // 새로운 프로필을 생성합니다.
+//            String imageName = UUID.randomUUID().toString().replace("-", "");
+//            String replaceFileName = null;
+//            try {
+//                replaceFileName = FileUploadUtils.saveFile(IMAGE_DIR, imageName, ProfileImage);
 //
-//        } catch (IOException e) {
-//            throw new RuntimeException("파일 변경 실", e);
+//                // 새로운 프로필 정보를 생성합니다.
+//                MyPageProfile newMyPageProfile = new MyPageProfile()
+//                        .setEmpCode(empCode)
+//                        .setProfileOgFile(ProfileImage.getOriginalFilename())
+//                        .setProfileChangedFile(replaceFileName)
+//                        .setProfileRegistDate(now)
+//                        .setProfileDeleteStatus("N"); // 새 프로필을 등록할 때 삭제 상태를 'N'으로 설정합니다.
+//
+//                // 새 프로필 정보를 데이터베이스에 저장합니다.
+//                myPageProfileRepository.save(newMyPageProfile);
+//
+//                // 이전 프로필이 존재하는 경우, 삭제 상태를 변경합니다.
+//                MyPageProfile existingProfile = myPageProfileRepository.findFirstByEmpCodeOrderByProfileRegistDateDesc(empCode).orElse(null);
+//                if (existingProfile != null) {
+//                    existingProfile.setProfileDeleteStatus("Y");
+//                    myPageProfileRepository.save(existingProfile);
+//                }
+//
+//            } catch (IOException e) {
+//                // 파일 저장 실패 시 예외 처리
+//                if (replaceFileName != null) {
+//                    FileUploadUtils.deleteFile(IMAGE_DIR, replaceFileName);
+//                }
+//                throw new DataUpdateException("프로필 사진 변경 실패");
+//            }
+//        } catch (Exception e) {
+//            throw new DataUpdateException("프로필 사진 변경 실패");
 //        }
+//        return "프로필 사진 변경 성공";
 //    }
+
+
+    @Transactional
+    public String updateMyPageProfileImage(MultipartFile profileImage, Long empCode, @AuthenticationPrincipal User principal) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            empCode = (long) principal.getEmployeeCode();
+
+            // 기존 프로필을 조회합니다.
+            Optional<MyPageProfile> existingProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileRegistDateDesc(empCode);
+            if (existingProfileOptional.isPresent()) {
+                // 기존 프로필이 존재하는 경우 삭제 상태를 "Y"로 설정합니다.
+                MyPageProfile existingProfile = existingProfileOptional.get();
+                existingProfile.setProfileDeleteStatus("Y");
+                myPageProfileRepository.save(existingProfile);
+            }
+            System.out.println("ProfileImage 위에서 나오는지 = " + profileImage);
+
+            // 새로운 프로필을 생성합니다.
+            String imageName = UUID.randomUUID().toString().replace("-", "");
+            String replaceFileName = null;
+            try {
+                replaceFileName = FileUploadUtils.saveFile(IMAGE_DIR, imageName, profileImage);
+
+                System.out.println("ProfileImage 여기서 나오는지 = " + profileImage);
+                // 새로운 프로필 정보를 생성합니다.
+                MyPageProfile newMyPageProfile = new MyPageProfile()
+                        .setEmpCode(empCode)
+                        .setProfileOgFile(profileImage.getOriginalFilename())
+                        .setProfileChangedFile(replaceFileName)
+                        .setProfileRegistDate(now)
+                        .setProfileDeleteStatus("N"); // 새 프로필을 등록할 때 삭제 상태를 'N'으로 설정합니다.
+
+                // 새 프로필 정보를 데이터베이스에 저장합니다.
+                myPageProfileRepository.save(newMyPageProfile);
+
+            } catch (IOException e) {
+                // 파일 저장 실패 시 예외 처리
+                if (replaceFileName != null) {
+                    FileUploadUtils.deleteFile(IMAGE_DIR, replaceFileName);
+                }
+                throw new DataUpdateException("프로필 사진 변경 실패");
+            }
+        } catch (Exception e) {
+            throw new DataUpdateException("프로필 사진 변경 실패");
+        }
+        return "프로필 사진 변경 성공";
+    }
+
+
+
+
 }

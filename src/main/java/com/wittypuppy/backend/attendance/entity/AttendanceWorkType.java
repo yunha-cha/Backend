@@ -36,4 +36,5 @@ public class AttendanceWorkType {
     private ApprovalDocument attendanceWorkTypeApprovalDocumentCode;
 
 
+
 }

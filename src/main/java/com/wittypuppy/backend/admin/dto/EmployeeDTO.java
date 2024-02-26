@@ -15,17 +15,22 @@ public class EmployeeDTO {
     private List<EducationDTO> educations;
     private List<CareerDTO> careers;
 
-    private String employeeBirthDate;
-    private String employeeJoinDate;
-    private String employeeAddress;
-    private String employeeId;
     private String employeeName;
-    //private String employeePassword;
-    private String employeePhone;
+    private String employeeBirthDate;
     private String employeeResidentNumber;
+    private String employeePhone;
+    private String employeeAddress;
+    private String employeeJoinDate;
     private String employeeRetirementDate;
+
+    private String employeeId;
+    private String employeePassword;
+
     private String employeeAssignedCode;
     private String employeeOnLeaveCount;
     private String employeeExternalEmail;
     private String employeeRole;
+    public EmployeeDTO (Long employeeCode){
+        this.employeeCode = employeeCode;
+    }
 }

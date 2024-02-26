@@ -15,5 +15,7 @@ public class TokenDTO {
     private String employeeName;      // 인증받은 회원 이름
     private String employeeId;
     private String accessToken;     // 엑세스 토큰
+    private String deptName;
+    private Long groupName;
 //    private Long accessTokenExpiresIn;  // Long 형의 만료 시간
 }

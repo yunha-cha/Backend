@@ -3,6 +3,8 @@ package com.wittypuppy.backend.admin.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity(name="ADMIN_EDUCATION")
 @Table(name="tbl_education")
 @AllArgsConstructor
@@ -19,9 +21,9 @@ public class Education {
     private Long employeeCode;
 
     @Column(name="education_graduate_date")
-    private String educationGraduateDate;
+    private Date educationGraduateDate;
     @Column(name="education_admission_date")
-    private String educationAdmissionDate;
+    private Date educationAdmissionDate;
     @Column(name="education_major")
     private String educationMajor;
     @Column(name="education_name")

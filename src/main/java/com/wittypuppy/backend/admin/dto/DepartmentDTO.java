@@ -5,7 +5,7 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter@Setter
+@Getter@Setter@ToString
 public class DepartmentDTO {
     private Long departmentCode;
     private Long parentDepartmentCode;

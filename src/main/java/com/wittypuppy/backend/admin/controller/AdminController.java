@@ -1,27 +1,83 @@
 package com.wittypuppy.backend.admin.controller;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.admin.dto.*;
+import com.wittypuppy.backend.admin.entity.Profile;
 import com.wittypuppy.backend.admin.service.AdminService;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
+import com.wittypuppy.backend.admin.dto.EmailDTO;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
 import org.hibernate.QueryTimeoutException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-@Controller
-@RequestMapping("/admin")
+import static com.wittypuppy.backend.util.FileUploadUtils.saveFile;
+
+@RestController
+@RequestMapping("admin")
 public class AdminController {
     private final AdminService adminService;
-    public AdminController(AdminService adminService) {
+    private final SimpMessagingTemplate simp;
+    public AdminController(AdminService adminService, SimpMessagingTemplate simp) {
         this.adminService = adminService;
+        this.simp = simp;
+    }
+
+    @MessageMapping("/mail/alert/admin/send")
+    public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+        //관리자가 보냈음
+        email.setEmailSender(new EmployeeDTO(15L));
+        email.setEmailStatus("send");
+        email.setEmailReadStatus("N");
+
+        if(email.getStatus().equals("all")){    //조직이 all이라면
+            List<EmployeeDTO> employeeDTO = adminService.sendMailAll(email);
+            for(EmployeeDTO emp : employeeDTO){
+                simp.convertAndSend("topic/mail/alert/"+emp.getEmployeeCode(),email);
+            }
+        } else if(!email.getStatus().isEmpty()){    //조직이 비어있다면
+            List<EmployeeDTO> employeeDTO = adminService.sendDepartmentMail(email);
+            for(EmployeeDTO emp : employeeDTO){
+                simp.convertAndSend("topic/mail/alert/"+emp.getEmployeeCode(),email);
+            }
+        }
+    }
+    @MessageMapping("/mail/alert/admin/send2")
+    public void mailAlert2(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+        //관리자가 보냈음
+        System.out.println("여2"+email.getStatus2());
+        email.setEmailSender(new EmployeeDTO(15L));
+        email.setEmailStatus("send");
+        email.setEmailReadStatus("N");
+        List<EmployeeDTO> employeeDTOS = adminService.sendMailAll2(email);
+        for(EmployeeDTO emp : employeeDTOS){
+            simp.convertAndSend("topic/mail/alert/"+emp.getEmployeeCode(),email);
+        }
+    }
+    @GetMapping("/get-department")
+    public ResponseEntity<ResponseDTO> getDepartment(){
+        List<DepartmentDTO> departmentDTO = adminService.getDepartment();
+        for(DepartmentDTO department : departmentDTO){
+            System.out.println(department);
+        }
+        return res("조직 조회 성공",departmentDTO);
     }
     /**
      * 유저의 모든 정보를 가져오는 메서드
@@ -66,7 +122,25 @@ public class AdminController {
         }
         return res("유저 정보 수정에 성공했습니다.",employeeDTO);
     }
-
+//    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/insert-profile")
+    public ResponseEntity<ResponseDTO> insertProfile(MultipartFile profile, @AuthenticationPrincipal User user){
+        ProfileDTO profileDTO = new ProfileDTO();
+        profileDTO.setProfileOgFile(profile.getOriginalFilename());
+        profileDTO.setProfileRegistDate(LocalDateTime.now());
+        profileDTO.setProfileDeleteStatus("N");
+        String fileName = UUID.randomUUID().toString().replace("-", "");
+        try {
+            //saveFile 메서드 : util패키지에 static으로 존재함
+            profileDTO.setProfileChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+                    fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
+                    profile));     //MultipartFile의 i 번째 (가져온 첨부파일)
+        }catch (IOException e){     //저장하다가 에러나면?
+            System.err.println(e.getMessage()); //메세지 출력
+        }
+        ProfileDTO result = adminService.insertProfile(profileDTO,user);
+        return res("굳",result);
+    }
     /**
      * 유저 회원 가입 시키기
      * (비밀번호 암호화 하기)
@@ -75,6 +149,7 @@ public class AdminController {
      */
     @PostMapping("/create-user")
     public ResponseEntity<ResponseDTO> createUser(@RequestBody CreateUserDTO userDTO){
+        System.out.println("createUser 처리 중 : "+userDTO);
         try {
             EmployeeDTO employeeDTO = adminService.createUser(userDTO.getEmployee());
             userDTO.getEducation().setEmployeeCode(employeeDTO.getEmployeeCode());
@@ -135,4 +210,8 @@ public class AdminController {
     private ResponseEntity<ResponseDTO> res(String msg,Object data){
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK,msg,data));
     }
+
+    //연차 인서트
+
+
 }

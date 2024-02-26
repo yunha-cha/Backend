@@ -389,6 +389,7 @@ public class MessengerService {
         ChatroomProfile chatroomProfile = chatroomProfileRepository.findFirstByChatroomCodeOrderByChatroomProfileRegistDateDesc(chatroomCode)
                 .orElseThrow(() -> new DataNotFoundException("프로필 사진이 존재하지 않습니다."));
 
+
         return chatroomProfile.getChatroomProfileChangedFile();
     }
 

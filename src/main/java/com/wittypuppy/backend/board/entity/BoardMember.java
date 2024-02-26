@@ -20,8 +20,9 @@ public class BoardMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardMemberCode;
 
-    @Column(name = "employee_code", columnDefinition = "BIGINT")
-    private Long employeeCode;
+    @JoinColumn(name = "employee_code")
+    @ManyToOne
+    private Employee employee;
 
     @Column(name = "board_code", columnDefinition = "BIGINT")
     private Long boardCode;
@@ -33,7 +34,7 @@ public class BoardMember {
 //    @OneToMany
 //    private List<PostComment> postCommentList;
 
-    @JoinColumn(name = "board_member_code")
-    @OneToMany
-    private List<PostAlert> postAlertList;
+//    @JoinColumn(name = "board_member_code")
+//    @OneToMany
+//    private List<PostAlert> postAlertList;
 }
