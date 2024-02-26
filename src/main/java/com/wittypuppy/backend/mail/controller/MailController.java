@@ -3,16 +3,22 @@ package com.wittypuppy.backend.mail.controller;
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.config.scheduler.DynamicTaskScheduler;
+import com.wittypuppy.backend.mail.dto.EmailAttachmentDTO;
 import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.mail.dto.EmployeeDTO;
+import com.wittypuppy.backend.mail.entity.EmailAttachment;
 import com.wittypuppy.backend.mail.service.EmailService;
 import com.wittypuppy.backend.util.TokenUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,9 +29,19 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-//com.wittypuppy.backend.Employee.dto.EmployeeDTO
+
+import static com.wittypuppy.backend.util.FileUploadUtils.saveFile;
+
 @Tag(name = "메일 스웨거 연동")
 @RequestMapping("/mail")
 @RestController
@@ -35,19 +51,64 @@ public class MailController {
     private final DynamicTaskScheduler dynamicTaskScheduler;
     private final RestTemplate restTemplate;
 
+    @Value("${file.file-dir}")
+    private String FILE_DIR;
+
     public MailController(EmailService emailService, SimpMessagingTemplate simp, DynamicTaskScheduler dynamicTaskScheduler, RestTemplateBuilder restTemplateBuilder) {
         this.emailService = emailService;
         this.simp = simp;
         this.dynamicTaskScheduler = dynamicTaskScheduler;
         this.restTemplate = restTemplateBuilder.build();
     }
-    @Tag(name = "이메일 검색", description = "똑같은 거 같은데")
+    @Tag(name = "이메일 검색", description = "이메일 내용 조회용")
     @GetMapping("/find-a-mail")
     public ResponseEntity<ResponseDTO> findAMail(@RequestParam Long emailCode){
         EmailDTO email = emailService.findById(emailCode);
+        List<EmailAttachmentDTO> emailAttachment = emailService.findAllByEmailCode(email);
+        email.setAttachments(emailAttachment);
         return res("메일을 검색했습니다.",email);
     }
-    @Tag(name = "이메일 조회", description = "이메일 코드로 이메일 조회")
+    @Tag(name = "다운로드", description = "이메일의 첨부파일 다운로드")
+    @GetMapping("/download-attachment/{attachmentCode}")
+    public ResponseEntity<Resource> findByAttachmentCode(@PathVariable Long attachmentCode){
+        System.out.println("??");
+        try {
+            EmailAttachment fileEntity = emailService.getFileById(attachmentCode);  //
+            Path filePath = Paths.get(FILE_DIR+"/"+ fileEntity.getAttachmentChangedFile());
+            File file = filePath.toFile();
+            System.out.println(file);
+            if (!file.exists()) {
+                throw new FileNotFoundException("파일을 찾을 수 없습니다: " + filePath);
+            }
+            System.out.println("aa");
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, fileEntity.getAttachmentOgFile());
+            headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath)); // 파일 타입을 자동으로 결정
+            headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length())); // 파일 크기 설정
+            headers.add(HttpHeaders.EXPIRES, fileEntity.getAttachmentOgFile());
+            System.out.println("bb");
+            Resource resource = new InputStreamResource(new FileInputStream(file));
+            System.out.println("Resource: " + resource);
+            System.out.println("File exists: " + resource.exists());
+            System.out.println("File readable: " + resource.isReadable());
+//            System.out.println("File URL: " + resource.getURL().toString());
+//            System.out.println("File URI: " + resource.getURI().toString());
+////            System.out.println("File content type: " + Files.probeContentType(path));
+//            System.out.println("File length: " + resource.contentLength());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 읽기 중 오류 발생", e);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+    }
+    @Tag(name = "이메일 조회", description = "??")
     @GetMapping("find-email-by-code")
     public ResponseEntity<ResponseDTO> findByEmailId(@RequestParam Long emailCode){
         System.out.println("여기 오는건 맞음?");
@@ -127,6 +188,7 @@ public class MailController {
         System.out.println(condition);
         Page<EmailDTO> emailList = emailService.findReceiveMail(condition,user,pageable);
 
+
         if(condition.equals("temporary")){
             for(EmailDTO email : emailList){
                 email.setEmailTitle("[임시저장] "+email.getEmailTitle());
@@ -142,6 +204,11 @@ public class MailController {
                 email.setEmailTitle("[휴지통] "+email.getEmailTitle());
             }
         }
+        System.out.println("확인용");
+        for(EmailDTO email : emailList){
+            System.out.println(email.getEmailTitle());
+        }
+
         return res("받은 이메일 조회 성공",emailList);
 //        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 //        SimpleDateFormat inputFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
@@ -303,7 +370,6 @@ public class MailController {
     @MessageMapping("/mail/alert/send") //방법 3 시도 중
     public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
         //wERjtIdxQ8lNjF0w/AAiN6HqTASaCAUzSq6nbKefMwf5CbPE8GvwLsClz94uVt9Q1esxYwwXVU+BYn7/mR01Qg== 비밀키임
-
         String token = accessor.getFirstNativeHeader("Authorization");
         TokenUtils tokenUtils = new TokenUtils();
         if (token != null) {
@@ -312,7 +378,7 @@ public class MailController {
             EmailDTO emailDTO = setDefault(email,tokenUtils.getUserId(token));
             System.out.println("가져온 이메일의 내용은 : "+emailDTO);
 
-            emailDTO = emailService.sendMail(emailDTO,"send");
+            //emailDTO = emailService.sendMail(emailDTO,"send");
             System.out.println("누구에게 알람을 보내냐 하면 : "+emailDTO.getEmailReceiver().getEmployeeCode());
             System.out.println("알람의 총 주소는 : "+"/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode());
             simp.convertAndSend("/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode(),emailDTO);
@@ -320,11 +386,32 @@ public class MailController {
         } else {
             System.out.println("토큰이 없다.");
         }
+    }
+    @PostMapping("send-mail")
+    public ResponseEntity<ResponseDTO> sendMail(@ModelAttribute EmailDTO email, List<MultipartFile> multipartFile,@AuthenticationPrincipal User user){
+        EmailDTO emailDTO = setDefault(email,user.getEmployeeId()); //지우셈
+        EmailDTO result = emailService.sendMail(emailDTO,"send");   //이메일을 기본키로 찾아옴
+        List<EmailAttachmentDTO> attachmentDTOS = new ArrayList<>();    //첨부파일 배열만듦
+        for(int i =0; i<multipartFile.size(); i++){     //첨부파일 배열만큼 반복
+            EmailAttachmentDTO emailAttachmentDTO = new EmailAttachmentDTO();   //첨부파일 객체 만들음
+            emailAttachmentDTO.setAttachmentDate(new Date());       //첨부파일 들어간 날짜,시간을 지금으로
+            emailAttachmentDTO.setAttachmentDeleteStatus("N");      //첨부파일 삭제 여부 N으로
+            emailAttachmentDTO.setEmailCode(result);                //첨부파일 이메일 코드를 가져온 값으로 설정
+            emailAttachmentDTO.setAttachmentOgFile(multipartFile.get(i).getOriginalFilename()); //multipartFile 객체로 가져온 파일의 i번 째의 원본 파일 이름을 첨부파일 객체의 원본파일 이름으로 설정
+            String fileName = UUID.randomUUID().toString().replace("-", "");    //랜덤한 이름 만들기
+            try {
+                //saveFile 메서드 : util패키지에 static으로 존재함
+                emailAttachmentDTO.setAttachmentChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+                        fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
+                        multipartFile.get(i)));     //MultipartFile의 i 번째 (가져온 첨부파일)
+            }catch (IOException e){     //저장하다가 에러나면?
+                System.err.println(e.getMessage()); //메세지 출력
+            }
+            attachmentDTOS.add(emailAttachmentDTO);     //아까 만든 ArrayList에 지금까지 한거 넣기
+        }   //반복분 종료 (MultipartFile 개수 만큼{가져온 첨부파일 개수 만큼} 반복함)
+        emailService.insertMailAttachment(attachmentDTOS);  //반복문 끝나고 만들어진 ArrayList를 서비스로 가져가기 SaveAll(어레이리스트) 하면 됨.
 
-
-
-//        simp.convertAndSend("/topic/mail/alert/"+1,    //누구에게 보낼건지
-//                emailService.sendMail(setDefault(email),"send"));   //뭐를 보낼건지
+        return resNull(111,"잘옴");
     }
     @PostMapping("send-reserve-mail")
     public ResponseEntity<ResponseDTO> test(@RequestBody EmailDTO emailDTO, @AuthenticationPrincipal User user){
@@ -339,7 +426,7 @@ public class MailController {
 
     private EmailDTO setDefault(EmailDTO email, String user){
         String receiverId = getId(email.getEmailReceiver().getEmployeeId());    //받는 사람
-        System.out.println("받는 사람 : "+receiverId);  //얘가 없을 때 처리를 해줘야겠네
+        System.out.println("받는 사람 : "+receiverId);                  //얘가 없을 때 처리를 해줘야겠네
         email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
         email.setEmailSender(emailService.findByEmployeeId(user));              //보내는 사람 찾아 와서 설정함.(보내는 사람이 없을 순 없다)
 
