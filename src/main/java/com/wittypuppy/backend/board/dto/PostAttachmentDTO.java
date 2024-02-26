@@ -1,7 +1,7 @@
 package com.wittypuppy.backend.board.dto;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class PostAttachmentDTO {
 
     private String postAttachmentChangedFile;
 
-    private LocalDateTime postAttachmentDate;
+    private Date postAttachmentDate;
 
     private String postDeleteStatus;
 

@@ -3,15 +3,19 @@ package com.wittypuppy.backend.board.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.board.dto.*;
+import com.wittypuppy.backend.board.entity.PostAttachment;
 import com.wittypuppy.backend.board.paging.Criteria;
 import com.wittypuppy.backend.board.paging.PageDTO;
 import com.wittypuppy.backend.board.paging.PagingResponseDTO;
 import com.wittypuppy.backend.board.service.BoardService;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.core.io.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,8 +23,21 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import static com.wittypuppy.backend.util.FileUploadUtils.saveFile;
 
 
 @RestController
@@ -48,26 +65,44 @@ public class BoardController {
     /* 게시판 그룹 카테고리 조회 */
     @Tag(name = "게시판 카테고리 조회", description = "게시판 사이드바에 나오는 카테고리")
     @GetMapping("")
-    public ResponseEntity<ResponseDTO> selectBoardList() {
+    public ResponseEntity<ResponseDTO> selectBoardList(@AuthenticationPrincipal User principal) {
         log.info("BoardController >>> selectBoardList >>> start");
 
-        List<BoardDTO> boardDTOList = boardService.selectBoardList();
+        Long myParentDepartmentCode = (long) principal.getDepartment().getParentDepartmentCode();
+        System.out.println("principal.getDepartment() = " + principal.getDepartment().getParentDepartmentCode());
 
-        return res("게시판그룹 조회", boardDTOList);
+        MyDeptBoardDTO myDeptBoardDTO = boardService.selectBoardList(myParentDepartmentCode);
+
+//        return res("게시판그룹 조회", boardDTOList);
+
+        return res("게시판그룹 조회", myDeptBoardDTO);
+
     }
 
 
 
-
-    // 특정 게시판에서 게시글 정렬
-    @Tag(name = "게시글 조회", description = "해당 게시판에 따른 게시글 최신순 리스트")
+    /* 특정 게시판 상세 조회 */
+    @Tag(name = "게시판 카테고리 조회", description = "게시판 사이드바에 나오는 카테고리")
     @GetMapping("/{boardCode}")
-    public ResponseEntity<ResponseDTO> selectPostListByBoardCode(@PathVariable Long boardCode,
-                                                                 @RequestParam(defaultValue = "1") String offset) {
-        log.info("BoardController >>> selectPostsOfBoard >>> start");
+    public ResponseEntity<ResponseDTO> selectBoard(@PathVariable Long boardCode) {
+        log.info("BoardController >>> selectBoard >>> start");
 
-        // 1. 게시판 중 허가 상태가 "Y"인거 find
-        List<PostDTO> postDTOList = boardService.selectPostListByBoardCode(boardCode);
+        BoardDTO boardDTO = boardService.selectBoard(boardCode);
+
+        System.out.println("boardDTO 상세 = " + boardDTO);
+
+        return res("게시판 상세 조회", boardDTO);
+
+    }
+
+
+
+    // 특정 게시판에서 게시글 조회
+    @Tag(name = "게시글 조회", description = "해당 게시판에 따른 게시글 최신순 리스트")
+    @GetMapping("/{boardCode}/posts")
+    public ResponseEntity<ResponseDTO> selectPostListByBoardCode(@PathVariable Long boardCode,
+                                                                 @RequestParam String offset) {
+        log.info("BoardController >>> selectPostsOfBoard >>> start  "+offset);
 
 
         /* 페이징 */
@@ -77,30 +112,119 @@ public class BoardController {
         Page<PostDTO> postDTOPages = boardService.selectPostListWithPaging(cri, boardCode);
 
         // pageDTO 적용, 화면에서 페이징 버튼 처리
-        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO(new PageDTO(cri, (Long) postDTOPages.getTotalElements()),postDTOPages);
+//        pagingResponseDTO.setData(postDTOPages);
+//        pagingResponseDTO.setPage(new PageDTO(cri, (int) postDTOPages.getTotalElements()));
 
-        System.out.println("pagingResponseDTO = " + pagingResponseDTO);
+
         log.info("BoardController >>> selectPostsOfBoard >>> end");
 
-        return res("페이징 적용한 조회", pagingResponseDTO);
+        return res("페이징 적용한 조회", postDTOPages);
 
     }
 
 
-    // 게시글 등록
-    @Tag(name = "게시글 등록", description = "게시글 등록")
+
+//    // 게시글 등록
+//    @Tag(name = "게시글 등록", description = "게시글 등록")
+//    @PostMapping("/posts/regist")
+//    public ResponseEntity<ResponseDTO> insertPost(@RequestBody PostDTO postDTO, @AuthenticationPrincipal User principal){
+//
+//        log.info("BoardController >> insertPost >> start");
+//        System.out.println("postDTO = " + postDTO);
+//
+//        Long employeeCode = (long) principal.getEmployeeCode();
+//        System.out.println("employeeCode = " + employeeCode);
+//        String resultStr = null;
+//        try{
+//            boardService.insertPost(postDTO, employeeCode);
+//            resultStr = "성공";
+//        } catch (Exception e){
+//            resultStr = "실패";
+//        }
+//        return res(resultStr, null);
+//    }
+
+
+
+    @Tag(name = "파일 업로드", description = "파일 등록")
     @PostMapping("/posts/regist")
-    public ResponseEntity<ResponseDTO> insertPost(@RequestBody PostDTO postDTO, @AuthenticationPrincipal User principal){
+    public ResponseEntity<ResponseDTO> uploadFiles(@ModelAttribute PostDTO postDTO, List<MultipartFile> multipartFile, @AuthenticationPrincipal User user){
+        if(multipartFile != null){
+            PostDTO result = boardService.insertPost(postDTO, (long) user.getEmployeeCode());   //이메일을 기본키로 찾아옴
+            List<PostAttachmentDTO> attachmentDTOS = new ArrayList<>();    //첨부파일 배열만듦
+            for(int i =0; i<multipartFile.size(); i++){     //첨부파일 배열만큼 반복
+                PostAttachmentDTO postAttachmentDTO = new PostAttachmentDTO();   //첨부파일 객체 만들음
+                postAttachmentDTO.setPostAttachmentDate(new Date());       //첨부파일 들어간 날짜,시간을 지금으로
+                postAttachmentDTO.setPostDeleteStatus("N");      //첨부파일 삭제 여부 N으로
+                postAttachmentDTO.setPostCode(result.getPostCode());                //첨부파일 이메일 코드를 가져온 값으로 설정
+                postAttachmentDTO.setPostAttachmentOgFile(multipartFile.get(i).getOriginalFilename()); //multipartFile 객체로 가져온 파일의 i번 째의 원본 파일 이름을 첨부파일 객체의 원본파일 이름으로 설정
+                String fileName = UUID.randomUUID().toString().replace("-", "");    //랜덤한 이름 만들기
+                try {
+                    //saveFile 메서드 : util패키지에 static으로 존재함
+                    postAttachmentDTO.setPostAttachmentChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+                            fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
+                            multipartFile.get(i)));     //MultipartFile의 i 번째 (가져온 첨부파일)
+                }catch (IOException e){     //저장하다가 에러나면?
+                    System.err.println(e.getMessage()); //메세지 출력
+                }
+                attachmentDTOS.add(postAttachmentDTO);     //아까 만든 ArrayList에 지금까지 한거 넣기
+            }   //반복분 종료 (MultipartFile 개수 만큼{가져온 첨부파일 개수 만큼} 반복함)
+            boardService.insertPostAttachment(attachmentDTOS);  //반복문 끝나고 만들어진 ArrayList를 서비스로 가져가기 SaveAll(어레이리스트) 하면 됨.
 
-        log.info("BoardController >> insertPost >> start");
-        System.out.println("postDTO = " + postDTO);
+            return res("게시글 등록",null);
+        }
+        else {
+            System.out.println("멀티파트 파일 없을 때도 추가");
+            PostDTO result = boardService.insertPost(postDTO, (long) user.getEmployeeCode());   //이메일을 기본키로 찾아
+            return res("게시글 첨부파일 안해도 등록",result);
+        }
 
-        Long employeeCode = (long) principal.getEmployeeCode();
-        String resultStr = boardService.insertPost(postDTO, employeeCode);
-
-        return res(resultStr, null);
     }
 
+
+
+    /* 파일 다운로드 */
+    @Tag(name = "다운로드", description = "이메일의 첨부파일 다운로드")
+    @GetMapping("/file-download/{attachmentCode}")
+    public ResponseEntity<Resource> findByAttachmentCode(@PathVariable Long attachmentCode){
+        System.out.println("??");
+        try {
+            PostAttachment fileEntity = boardService.getFileById(attachmentCode);  //
+            Path filePath = Paths.get("src/main/resources/static/web-files"+"/"+ fileEntity.getPostAttachmentChangedFile());
+            File file = filePath.toFile();
+            System.out.println(file);
+            if (!file.exists()) {
+                throw new FileNotFoundException("파일을 찾을 수 없습니다: " + filePath);
+            }
+            System.out.println("aa");
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, fileEntity.getPostAttachmentChangedFile());
+            headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath)); // 파일 타입을 자동으로 결정
+            headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length())); // 파일 크기 설정
+            headers.add(HttpHeaders.EXPIRES, fileEntity.getPostAttachmentOgFile());
+            System.out.println("=================="+fileEntity.getPostAttachmentOgFile());
+
+            Resource resource = new InputStreamResource(new FileInputStream(file));
+            System.out.println("Resource: " + resource);
+            System.out.println("File exists: " + resource.exists());
+            System.out.println("File readable: " + resource.isReadable());
+//            System.out.println("File URL: " + resource.getURL().toString());
+//            System.out.println("File URI: " + resource.getURI().toString());
+////            System.out.println("File content type: " + Files.probeContentType(path));
+//            System.out.println("File length: " + resource.contentLength());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 읽기 중 오류 발생", e);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+    }
 
     /* 게시글 상세 열람 */
     @Tag(name = "게시글 상세", description = "게시글 상세 보기")
@@ -111,7 +235,8 @@ public class BoardController {
 
         // 게시글 열람, 댓글 조인
         PostDTO postDTO = boardService.selectPost(postCode);
-
+        List<PostAttachmentDTO> postAttachmentDTO = boardService.findByPostCode(postDTO.getPostCode());
+        postDTO.setPostAttachmentList(postAttachmentDTO);
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "열람 성공",postDTO));
 
     }
@@ -213,7 +338,7 @@ public class BoardController {
         Page<PostDTO> postDTOPages = boardService.searchPostListWithPaging(cri, search, boardCode);
 
         // pageDTO 적용, 화면에서 페이징 버튼 처리
-        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO(new PageDTO(cri, (Long) postDTOPages.getTotalElements()),postDTOPages);
+        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO(new PageDTO(cri, (int) postDTOPages.getTotalElements()),postDTOPages);
 
         System.out.println("pagingResponseDTO = " + pagingResponseDTO);
         log.info("BoardController >>> selectPostsOfBoard >>> end");

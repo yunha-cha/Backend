@@ -13,7 +13,7 @@ public class PageDTO {
     private int startPage;
     private int endPage;
 
-    private Long totalQuantity; // 데이터 전체 개수
+    private int totalQuantity; // 데이터 전체 개수
 
     // 이전, 다음 버튼
     private boolean prev;
@@ -23,7 +23,7 @@ public class PageDTO {
     // 현재 페이지, 한 페이지당 데이터 개수
     private Criteria cri;
 
-    public PageDTO(Criteria cri, Long totalQuantity) {
+    public PageDTO(Criteria cri, int totalQuantity) {
         this.totalQuantity = totalQuantity;
         this.cri = cri;
 
