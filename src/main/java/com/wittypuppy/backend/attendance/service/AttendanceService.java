@@ -50,7 +50,6 @@ public class AttendanceService {
     }
 
     public Page<AttendanceManagementDTO> selectCommuteList(Criteria cri, String yearMonth, int employeeCode) {
-        System.out.println("=============WorkTypeList start= service===============");
 
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -153,12 +152,11 @@ public class AttendanceService {
 
         AttendanceManagement commute = managementRepository.attendanceCommute(employeeCode);
 
-        // commute 값이 null인지 체크
         if (commute == null) {
-            // null인 경우, 시간을 00:00:00으로 설정
+
             commute = new AttendanceManagement();
             commute.setAttendanceManagementArrivalTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
-            // 또는 다른 필요한 처리 수행
+
         }
 
         AttendanceManagementDTO commutes = modelMapper.map(commute, AttendanceManagementDTO.class);
@@ -172,11 +170,11 @@ public class AttendanceService {
         Employee vacationCount = attendanceEmployeeRepository.findByEmployeeCode(employeeCode);
         LocalDateTime join = vacationCount.getEmployeeJoinDate();
 
-        long daysSinceJoin = Duration.between(join, LocalDateTime.now()).toDays(); // 입사일부터 현재까지 경과한 일수 계산
+        long daysSinceJoin = Duration.between(join, LocalDateTime.now()).toDays();
 
-        long yearsSinceJoin = daysSinceJoin / 365; // 현재까지 경과한 연 수
+        long yearsSinceJoin = daysSinceJoin / 365;
 
-        int total = 0; //전체 수량 담을 것
+        int total = 0;
 
         LocalDate currentDate = LocalDate.now();
 
@@ -189,7 +187,7 @@ public class AttendanceService {
             if(yearsSinceJoin == 1){
                 total = 15;
             }else {
-                // 1년 이상 경과 후부터는 2년에 1개씩 증가
+
                 total = 15 + (int) ((yearsSinceJoin - 1) / 2);
             }
         } else {
@@ -205,8 +203,8 @@ public class AttendanceService {
         Long useVacation = managementRepository.attendanceUseVacation(employeeCode);
         Long useHalfVacation = managementRepository.attendanceUseHalfVacation(employeeCode);
 
-        int usedVacationDays = useVacation.intValue(); //사용한 연차 수량
-        int usedHalfVacationDays = useHalfVacation.intValue(); //사용한 반차 수량
+        int usedVacationDays = useVacation.intValue();
+        int usedHalfVacationDays = useHalfVacation.intValue();
 
         double nowVacation =0;
 
@@ -239,7 +237,6 @@ public class AttendanceService {
     }
 
 
-    //근태 결재(대기) 할 수량 조회
     public ApprovalLineDTO attendanceWaiting(int employeeCode) {
 
         List<ApprovalLine> results = attendanceApprovalRepository.attendanceWaiting(employeeCode);
@@ -276,10 +273,8 @@ public class AttendanceService {
         int result = 0;
 
         try {
-            // 현재 날짜 가져오기
             LocalDate today = LocalDate.now();
 
-            // 출근 정보를 담은 DTO 객체 생성
             InsertAttendanceManagementDTO InsertAttendanceManagement = new InsertAttendanceManagementDTO();
             InsertAttendanceManagement.setAttendanceEmployeeCode(employeeCode);
             InsertAttendanceManagement.setAttendanceManagementArrivalTime(arrivalTime);
@@ -312,7 +307,7 @@ public class AttendanceService {
         int result = 0;
 
         try {
-            //가장 최근에 인처트 된 출근 시간 조회
+
             InsertAttendanceManagement updateAttendance = insertCommuteRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
 
             updateAttendance.setAttendanceManagementDepartureTime(departureTime);
@@ -338,9 +333,8 @@ public class AttendanceService {
         int result = 0;
 
         try {
-            //가장 최근에 인처트 된 출근 시간 조회
-            InsertAttendanceManagement updateAttendance = insertCommuteRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
 
+            InsertAttendanceManagement updateAttendance = insertCommuteRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
 
             updateAttendance.setAttendanceManagementDepartureTime(departureTime);
 
