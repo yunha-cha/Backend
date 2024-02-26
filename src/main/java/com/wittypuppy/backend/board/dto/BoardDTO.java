@@ -29,6 +29,6 @@ public class BoardDTO {
 
 //    private List<PostDTO> postList;
 
-    private List<BoardMemberDTO> boardMemberList;
+//    private List<BoardMemberDTO> boardMemberList;
 
 }

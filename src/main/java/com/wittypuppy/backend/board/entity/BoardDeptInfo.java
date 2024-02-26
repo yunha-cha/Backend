@@ -13,13 +13,16 @@ import lombok.*;
 public class BoardDeptInfo {
 
     @Id
-    @Column(name = "board_code",columnDefinition = "BIGINT")
+    @Column(name = "board_dept_info_code",columnDefinition = "BIGINT")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long boardDeptCode;
+
+
+    @Column(name = "board_code",columnDefinition = "BIGINT")
     private Long boardCode;
 
-    @Id
+
     @Column(name = "department_code",columnDefinition = "BIGINT")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long departmentCode;
 
 }

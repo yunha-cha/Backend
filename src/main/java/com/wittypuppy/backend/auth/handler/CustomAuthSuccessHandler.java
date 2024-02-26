@@ -39,8 +39,8 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
                                 .employeeName(employee.getEmployeeName())
                                 .employeeCode(employee.getEmployeeCode())
                                 .employeeId(employee.getEmployeeId())
-                                .deptName(employee.getDepartment().getDepartmentName())
-                                .groupName(employee.getDepartment().getParentDepartmentCode())
+                                .deptCode(employee.getDepartment().getDepartmentCode())
+                                .groupCode(employee.getDepartment().getParentDepartmentCode())
                                 .accessToken(token)
                                 .grantType(AuthConstants.TOKEN_TYPE)
                                 .build();

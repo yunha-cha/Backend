@@ -1,4 +1,4 @@
-package com.wittypuppy.backend.Employee.dto;
+package com.wittypuppy.backend.board.dto;
 
 import lombok.*;
 
@@ -6,7 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @Getter@Setter@ToString
 public class DepartmentDTO {
-    private Integer departmentCode;
-    private Integer parentDepartmentCode;
+    private Long departmentCode;
     private String departmentName;
+    private Long parentDepartmentCode;
+
 }

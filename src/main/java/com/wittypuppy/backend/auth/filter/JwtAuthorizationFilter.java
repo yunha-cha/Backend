@@ -2,6 +2,7 @@ package com.wittypuppy.backend.auth.filter;
 
 
 import com.wittypuppy.backend.Employee.dto.AuthorityDTO;
+import com.wittypuppy.backend.Employee.dto.DepartmentDTO;
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.Employee.dto.EmployeeRoleDTO;
 import com.wittypuppy.backend.common.dto.AuthConstants;
@@ -51,7 +52,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/v3/api-docs",              //swagger 설정
                 "/v3/api-docs/(.*)",         //swagger 설정
                 "/swagger-resources",        //swagger 설정
-                "/swagger-resources/(.*)"    //swagger 설정
+                "/swagger-resources/(.*)",    //swagger 설정
+                "/board/file-download/(.*)"
         );
 
 
@@ -76,7 +78,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     authentication.setEmployeeEmail(claims.get("employeeEmail").toString());
                     authentication.setEmployeeCode((Integer) claims.get("empCode"));
                     authentication.setEmployeeId((String) claims.get("employeeId"));
-//
+                    DepartmentDTO departmentDTO = new DepartmentDTO();
+                    departmentDTO.setDepartmentCode((Integer) claims.get("departmentCode"));
+                    departmentDTO.setDepartmentName((String)claims.get("departmentName"));
+                    departmentDTO.setParentDepartmentCode((Integer) claims.get("empGroupCode"));
+                    authentication.setDepartment(departmentDTO);
                     System.out.println("claims ==================== " + claims.get("employeeRole"));
 
                     // List<EmployeeRoleDTO> 설정 dto타입이라서 한 번 더 설정해줘야됨
@@ -94,6 +100,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     throw new RuntimeException("토큰이 유효하지 않습니다.");
                 }
             } else {
+
                 throw new RuntimeException("토큰이 존재하지 않습니다.");
             }
         } catch (Exception e) {

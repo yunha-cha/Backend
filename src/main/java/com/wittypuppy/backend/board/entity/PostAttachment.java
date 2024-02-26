@@ -3,7 +3,7 @@ package com.wittypuppy.backend.board.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +28,7 @@ public class PostAttachment {
     private String postAttachmentChangedFile;
 
     @Column(name = "post_attachment_date", columnDefinition = "BIGINT")
-    private LocalDateTime postAttachmentDate;
+    private Date postAttachmentDate;
 
     @Column(name = "post_delete_status", columnDefinition = "VARCHAR(1) DEFAULT 'N'")
     private String postDeleteStatus;
