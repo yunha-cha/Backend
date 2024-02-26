@@ -51,7 +51,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/v3/api-docs",              //swagger 설정
                 "/v3/api-docs/(.*)",         //swagger 설정
                 "/swagger-resources",        //swagger 설정
-                "/swagger-resources/(.*)"    //swagger 설정
+                "/swagger-resources/(.*)",    //swagger 설정
+                "/mail/download-attachment/(.*)"
         );
 
 
@@ -97,13 +98,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 throw new RuntimeException("토큰이 존재하지 않습니다.");
             }
         } catch (Exception e) {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json");
-            PrintWriter printWriter = response.getWriter();
-            JSONObject jsonObject = jsonresponseWrapper(e);
-            printWriter.print(jsonObject);
-            printWriter.flush();
-            printWriter.close();
+//            response.setCharacterEncoding("UTF-8");
+//            response.setContentType("application/json");
+//            PrintWriter printWriter = response.getWriter();
+//            JSONObject jsonObject = jsonresponseWrapper(e);
+//            printWriter.print(jsonObject);
+//            printWriter.flush();
+//            printWriter.close();
         }
     }
 

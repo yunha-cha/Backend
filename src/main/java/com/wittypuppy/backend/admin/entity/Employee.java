@@ -44,8 +44,8 @@ public class Employee {
     private String employeeId;
     @Column(name="employee_name")
     private String employeeName;
-//    @Column(name="employee_password")
-//    private String employeePassword;
+    @Column(name="employee_password")
+    private String employeePassword;
     @Column(name="employee_phone")
     private String employeePhone;
     @Column(name="employee_resident_number")

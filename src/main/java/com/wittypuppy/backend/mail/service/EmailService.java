@@ -1,10 +1,13 @@
 package com.wittypuppy.backend.mail.service;
 
 import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.mail.dto.EmailAttachmentDTO;
 import com.wittypuppy.backend.mail.dto.EmailDTO;
 import com.wittypuppy.backend.mail.dto.EmployeeDTO;
 import com.wittypuppy.backend.mail.entity.Email;
+import com.wittypuppy.backend.mail.entity.EmailAttachment;
 import com.wittypuppy.backend.mail.entity.Employee;
+import com.wittypuppy.backend.mail.repository.MailEmailAttachmentRepository;
 import com.wittypuppy.backend.mail.repository.MailEmailRepository;
 import com.wittypuppy.backend.mail.repository.MailEmployeeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,11 +29,13 @@ public class EmailService {
     private final ModelMapper modelMapper;
     private final MailEmailRepository emailRepository;
     private final MailEmployeeRepository employeeRepository;
+    private final MailEmailAttachmentRepository attachmentRepository;
 
-    public EmailService(ModelMapper modelMapper, MailEmailRepository emailRepository, MailEmployeeRepository employeeRepository) {
+    public EmailService(ModelMapper modelMapper, MailEmailRepository emailRepository, MailEmployeeRepository employeeRepository, MailEmailAttachmentRepository attachmentRepository) {
         this.modelMapper = modelMapper;
         this.emailRepository = emailRepository;
         this.employeeRepository = employeeRepository;
+        this.attachmentRepository = attachmentRepository;
     }
 
 
@@ -205,10 +210,7 @@ public class EmailService {
     }
 
 
-    public EmailDTO findById(Long emailCode) {
-        System.out.println("여기도 옴?");
-        return modelMapper.map(emailRepository.findById(emailCode),EmailDTO.class);
-    }
+
 
     public EmailDTO updateEmailReadStatus(EmailDTO emailDTO) {
         Email email = modelMapper.map(emailDTO,Email.class);
@@ -274,5 +276,29 @@ public class EmailService {
         receiver.setEmployeeCode((long)user.getEmployeeCode());
         Page<Email> emails = emailRepository.findAllByEmailSenderAndEmailReceiver(sender,receiver,pageable);
         return emails.map(email -> modelMapper.map(email,EmailDTO.class));
+    }
+
+    public void insertMailAttachment(List<EmailAttachmentDTO> attachmentDTOS) {
+        List<EmailAttachment> attachmentEntity = convert(attachmentDTOS, EmailAttachment.class);
+        attachmentRepository.saveAll(attachmentEntity);
+    }
+
+    public EmailDTO findById(Long emailCode) {
+
+        return modelMapper.map(emailRepository.findById(emailCode),EmailDTO.class);
+    }
+
+    public List<EmailAttachmentDTO> findAllByEmailCode(EmailDTO email) {
+        Email emailEntity = modelMapper.map(email, Email.class);
+        List<EmailAttachment> attachmentList = attachmentRepository.findByEmailCode(emailEntity);
+        for(EmailAttachment a : attachmentList){
+            System.out.println(a.getEmailCode());
+            System.out.println(a.getAttachmentOgFile());
+        }
+        return convert(attachmentList,EmailAttachmentDTO.class);
+    }
+
+    public EmailAttachment getFileById(Long attachmentCode) {
+        return attachmentRepository.findById(attachmentCode).orElseThrow(null);
     }
 }

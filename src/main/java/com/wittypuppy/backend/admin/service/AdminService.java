@@ -1,16 +1,14 @@
 package com.wittypuppy.backend.admin.service;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.admin.dto.*;
 
-import com.wittypuppy.backend.admin.entity.Board;
-import com.wittypuppy.backend.admin.entity.Career;
-import com.wittypuppy.backend.admin.entity.Education;
-import com.wittypuppy.backend.admin.entity.Employee;
+import com.wittypuppy.backend.admin.entity.*;
 import com.wittypuppy.backend.admin.repository.*;
 
 
-import com.wittypuppy.backend.admin.entity.Email;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +26,19 @@ public class AdminService {
     private final AdminBoardRepository boardRepository;
     private final AdminDepartmentRepository departmentRepository;
     private final AdminEmailRepository emailRepository;
+    private final AdminJobRepository jobRepository;
+    private final AdminProfileRepository profileRepository;
     private final ModelMapper modelMapper;
 
-    public AdminService(AdminEmployeeRepository repository, AdminCareerRepository careerRepository, AdminEducationRepository educationRepository, AdminBoardRepository boardRepository, AdminDepartmentRepository departmentRepository, AdminEmailRepository emailRepository, ModelMapper modelMapper) {
+    public AdminService(AdminEmployeeRepository repository, AdminCareerRepository careerRepository, AdminEducationRepository educationRepository, AdminBoardRepository boardRepository, AdminDepartmentRepository departmentRepository, AdminEmailRepository emailRepository, AdminJobRepository jobRepository, AdminProfileRepository profileRepository, ModelMapper modelMapper) {
         this.employeeRepository = repository;
         this.careerRepository = careerRepository;
         this.educationRepository = educationRepository;
         this.boardRepository = boardRepository;
         this.departmentRepository = departmentRepository;
         this.emailRepository = emailRepository;
+        this.jobRepository = jobRepository;
+        this.profileRepository = profileRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -53,7 +55,19 @@ public class AdminService {
     }
     @Transactional
     public EmployeeDTO createUser(EmployeeDTO employeeDTO) {
+//        Department departmentEntity = departmentRepository.findByDepartmentName(employeeDTO.getEmployeeDepartment().getDepartmentName());
+//        Job jobEntity = jobRepository.findByJobName(employeeDTO.getEmployeeJob().getJobName());
+
+//        Employee employeeEntity = modelMapper.map(employeeDTO,Employee.class);
+//        employeeEntity.setDepartment(departmentEntity);
+//        employeeEntity.setJob(jobEntity);
+        System.out.println(employeeDTO.getEmployeePassword());
+        String newHashPwd = BCrypt.hashpw(employeeDTO.getEmployeePassword(), BCrypt.gensalt());
+        employeeDTO.setEmployeePassword(newHashPwd);
+        System.out.println(employeeDTO.getEmployeePassword());
+
         Employee employee = employeeRepository.save(modelMapper.map(employeeDTO,Employee.class));
+
         return modelMapper.map(employee,EmployeeDTO.class);
     }
     @Transactional
@@ -167,5 +181,11 @@ public class AdminService {
         }
         emailRepository.saveAll(emails);
         return employeeDTO;
+    }
+
+    public ProfileDTO insertProfile(ProfileDTO profileDTO, User user) {
+        Employee employee = employeeRepository.findById((long)user.getEmployeeCode()).orElseThrow(null);
+        profileDTO.setEmployee(modelMapper.map(employee,EmployeeDTO.class));
+        return modelMapper.map(profileRepository.save(modelMapper.map(profileDTO,Profile.class)),ProfileDTO.class);
     }
 }

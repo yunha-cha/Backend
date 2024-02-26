@@ -15,7 +15,7 @@ import java.nio.file.StandardCopyOption;
 public class FileUploadUtils {
 
     public static String saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
-
+        System.out.println("파일 save 시작");
         Path uploadPath = Paths.get(uploadDir);
 
         if(!Files.exists(uploadPath)) {

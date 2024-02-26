@@ -1,6 +1,8 @@
 package com.wittypuppy.backend.admin.controller;
 
+import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.admin.dto.*;
+import com.wittypuppy.backend.admin.entity.Profile;
 import com.wittypuppy.backend.admin.service.AdminService;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
@@ -15,13 +17,21 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import static com.wittypuppy.backend.util.FileUploadUtils.saveFile;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("admin")
 public class AdminController {
     private final AdminService adminService;
     private final SimpMessagingTemplate simp;
@@ -112,7 +122,25 @@ public class AdminController {
         }
         return res("유저 정보 수정에 성공했습니다.",employeeDTO);
     }
-
+//    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/insert-profile")
+    public ResponseEntity<ResponseDTO> insertProfile(MultipartFile profile, @AuthenticationPrincipal User user){
+        ProfileDTO profileDTO = new ProfileDTO();
+        profileDTO.setProfileOgFile(profile.getOriginalFilename());
+        profileDTO.setProfileRegistDate(LocalDateTime.now());
+        profileDTO.setProfileDeleteStatus("N");
+        String fileName = UUID.randomUUID().toString().replace("-", "");
+        try {
+            //saveFile 메서드 : util패키지에 static으로 존재함
+            profileDTO.setProfileChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+                    fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
+                    profile));     //MultipartFile의 i 번째 (가져온 첨부파일)
+        }catch (IOException e){     //저장하다가 에러나면?
+            System.err.println(e.getMessage()); //메세지 출력
+        }
+        ProfileDTO result = adminService.insertProfile(profileDTO,user);
+        return res("굳",result);
+    }
     /**
      * 유저 회원 가입 시키기
      * (비밀번호 암호화 하기)
@@ -121,6 +149,7 @@ public class AdminController {
      */
     @PostMapping("/create-user")
     public ResponseEntity<ResponseDTO> createUser(@RequestBody CreateUserDTO userDTO){
+        System.out.println("createUser 처리 중 : "+userDTO);
         try {
             EmployeeDTO employeeDTO = adminService.createUser(userDTO.getEmployee());
             userDTO.getEducation().setEmployeeCode(employeeDTO.getEmployeeCode());
