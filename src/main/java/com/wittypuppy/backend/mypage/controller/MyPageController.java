@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,8 +36,10 @@ public class MyPageController {
 
     @Tag(name = "내정보 조회" , description = "마이페이지에서 사원번호로 조회")
     @GetMapping("/emplist")
-    public ResponseEntity<ResponseDTO> selectSearchMyPageEmp( @RequestParam(name = "c", defaultValue = "") Long search ){
+    public ResponseEntity<ResponseDTO> selectSearchMyPageEmp(
+            @RequestParam(name = "c", defaultValue = "") Long search ){
         MyPageEmpDTO myPageEmpDTO = myPageService.selectEmpByEmpCode(search);
+
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "마이페에지 사원번호 조회 성공 ", myPageEmpDTO));
 
@@ -94,22 +97,7 @@ public class MyPageController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "imageUrl", myPageService.findMyPageProfileImage(userEmployeeCode)));
     }
 
-
-
-//
-//    @PutMapping("/chatrooms/{chatroomCode}/profile")
-//    public ResponseEntity<ResponseDTO> updateProfileImage(
-//            @PathVariable Long chatroomCode,
-//            MultipartFile chatroomProfileImage,
-//            @AuthenticationPrincipal User principal) {
-//        if (chatroomProfileImage.isEmpty()) {
-//            return res("해당 파일이 존재하지 않습니다.");
-//        }
-//        Long userEmployeeCode = 12L;
-//        return res(messengerService.updateProfileImage(chatroomCode, chatroomProfileImage, userEmployeeCode));
-//    }
-
-
+    //프로필 사진 업데이트
     @PutMapping("/updateprofile")
     public ResponseEntity<ResponseDTO> updateMyPageProfileImg(
             MultipartFile profileImage,Long empCode, @AuthenticationPrincipal User principal){

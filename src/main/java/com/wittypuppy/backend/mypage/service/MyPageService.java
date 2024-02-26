@@ -1,8 +1,12 @@
 package com.wittypuppy.backend.mypage.service;
 
 import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.admin.dto.CareerDTO;
+import com.wittypuppy.backend.admin.dto.EducationDTO;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.common.exception.DataUpdateException;
+import com.wittypuppy.backend.mypage.dto.MyPageCareerDTO;
+import com.wittypuppy.backend.mypage.dto.MyPageEducationDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
 import com.wittypuppy.backend.mypage.entity.MyPageEmp;
@@ -23,8 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -58,8 +64,15 @@ public class MyPageService {
         log.info("마이페이지 서비스 시작___-----=====");
 
         MyPageEmp myPageEmp = myPageRepository.findById(empCode).get();//findById는 스프링부트에서 원래 있는 문법으로 empcode라는 pk값으로 값을 불러온다.
-
         MyPageEmpDTO myPageEmpDTO = modelMapper.map(myPageEmp, MyPageEmpDTO.class);
+
+        MyPageCareerDTO myPageCareerDTO = modelMapper.map(myPageEmp.getCareer(), MyPageCareerDTO.class);
+        MyPageEducationDTO myPageEducationDTO = modelMapper.map(myPageEmp.getEducation(), MyPageEducationDTO.class);
+
+//        myPageEmpDTO.setCareer( myPageCareerDTO);
+//        myPageEmpDTO.setEducation( myPageEducationDTO);
+
+
         return myPageEmpDTO;
 
     }
@@ -114,7 +127,7 @@ public class MyPageService {
         Optional<MyPageProfile> myPageProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileRegistDateDesc(empCode);
 
         // 프로필을 찾지 못한 경우 예외 처리
-        MyPageProfile myPageProfile = myPageProfileOptional.orElseThrow(() -> new DataNotFoundException("프로필 사진이 존재하지 않습니다."));
+        MyPageProfile myPageProfile = myPageProfileOptional.orElse(new MyPageProfile());
 
         System.out.println("myPageProfile 나오는지 홗인용 ============= = " + myPageProfile);
         System.out.println("myPageProfile.getProfileChangedFile() = " + myPageProfile.getProfileChangedFile());

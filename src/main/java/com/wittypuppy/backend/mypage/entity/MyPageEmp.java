@@ -1,5 +1,7 @@
 package com.wittypuppy.backend.mypage.entity;
 
+import com.wittypuppy.backend.admin.entity.Career;
+import com.wittypuppy.backend.admin.entity.Education;
 import com.wittypuppy.backend.group.entity.GroupDept;
 import com.wittypuppy.backend.group.entity.GroupJob;
 import jakarta.persistence.*;
@@ -51,6 +53,14 @@ public class MyPageEmp {
     @ManyToOne
     @JoinColumn(name = "job_code")
     private MyPageJob job;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "career_code")
+    private List<MyPageCareer> career;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "education_code")
+    private List<MyPageEducation> education;
 
 
 
