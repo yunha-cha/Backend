@@ -362,7 +362,7 @@ public class AttendanceController {
 
         Page<ApprovalLineDTO> myDocumentWaitingList = attendanceService.myDocumentWaitingList(cri, employeeCode);
 
-//        DetailMyWaitingDTO detail = attendanceService.detailMyApply(approvalDocumentCode);
+//      /  DetailMyWaitingDTO detail = attendanceService.detailMyApply(approvalDocumentCode);
 
         pagingResponse.setData(myDocumentWaitingList);
         pagingResponse.setPageInfo(new PageDTO(cri, (int) myDocumentWaitingList.getTotalElements()));
