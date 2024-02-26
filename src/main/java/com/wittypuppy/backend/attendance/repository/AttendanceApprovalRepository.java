@@ -169,7 +169,18 @@ public interface AttendanceApprovalRepository extends JpaRepository<ApprovalLine
     List<ApprovalLine> attendanceWaiting(int employeeCode);
 
 
-
+    @Query(value = "SELECT " +
+            "A.approval_document_code, " +
+            "A.approval_line_code, " +
+            "A.approval_process_date, " +
+            "A.approval_process_order, " +
+            "A.employee_code, " +
+            "A.approval_process_status, " +
+            "A.approval_rejected_reason " +
+            "FROM tbl_approval_line A " +
+            "WHERE A.approval_document_code = :approvalDocumentCode ",
+            nativeQuery = true)
+    List<ApprovalLine> findByApprovalDocumentCode(Long approvalDocumentCode);
 }
 
 
