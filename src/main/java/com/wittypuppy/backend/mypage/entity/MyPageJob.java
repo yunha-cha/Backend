@@ -21,6 +21,5 @@ public class MyPageJob {
     @Column(name = "job_name")
     private String jobName;
 
-//    @OneToMany(mappedBy = "job")
-//    private List<MyPageEmp> employeeList;
+
 }

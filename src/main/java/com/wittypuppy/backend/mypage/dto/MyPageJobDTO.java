@@ -14,5 +14,4 @@ public class MyPageJobDTO {
 
     private String jobName;
 
-//    private List<MyPageEmpDTO> employeeList;
 }
