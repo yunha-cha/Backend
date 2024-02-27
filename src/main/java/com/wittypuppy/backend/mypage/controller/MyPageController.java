@@ -59,7 +59,7 @@ public class MyPageController {
     @Tag(name = "비밀번호 변경" , description = "마이페이지에서 비밀번호 변경")
     @PutMapping("/modifypwd/{empCode}")
     public ResponseEntity<ResponseDTO> resetPassword(
-            @PathVariable Long empCode,
+                                                     @PathVariable Long empCode,
                                                      @RequestBody MyPageUpdateDTO myPageUpdateDTO,
                                                      @RequestHeader("Authorization") String authToken,
                                                      @AuthenticationPrincipal User principal) {
@@ -74,6 +74,8 @@ public class MyPageController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         log.info("마이페이지 컨트롤러 비밀번호 변경 사원코드 비교",empCode,userEmpCode);
+        System.out.println("userEmpCode 나오냐 = " + userEmpCode);
+        System.out.println("empCode 나오냐 = " + empCode);
 //
         try {
             MyPageUpdateDTO myPageUpdateEmp = myPageService.updateEmpPwdByEmpCode(empCode, myPageUpdateDTO.getEmpPwd(), myPageUpdateDTO.getNewEmpPwd());
@@ -83,7 +85,7 @@ public class MyPageController {
             return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경 성공","비밀번호 변경 성공"));
         }
        catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new ResponseDTO(HttpStatus.BAD_REQUEST, e.getMessage(), null));
+            return ResponseEntity.badRequest().body(new ResponseDTO(HttpStatus.BAD_REQUEST, "비밀번호 변경 실패", "비밀번로 변경 실패"));
         }
 
     }
