@@ -1,17 +1,22 @@
 package com.wittypuppy.backend.mainpage.controller;
 
+import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
+import com.wittypuppy.backend.attendance.dto.WorkTypeResponseDTO;
 import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.mainpage.dto.MainPageBoardDTO;
 import com.wittypuppy.backend.mainpage.dto.MainPageProjectListDTO;
 import com.wittypuppy.backend.mainpage.service.MainPageService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 @Tag(name = "메인 페이지 스웨거 연동")
 @RestController
@@ -39,5 +44,41 @@ public class MainPageController {
         List<MainPageProjectListDTO> mainPageProjectListDTOList = mainPageService.selectProjectList();
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "메인페이지 프로젝트 조회 성공", mainPageProjectListDTOList));
     }
+
+
+
+
+//    @Operation(summary = "메인홈페이지 출근 insert", description = "메인 페이지 출퇴근 인서트")
+//    @PostMapping("/arrive")
+//    public ResponseEntity<WorkTypeResponseDTO> arrivedUser(@AuthenticationPrincipal User user){
+//        //새로운 출퇴근 객체 생성
+//        AttendanceManagementDTO managementDTO = new AttendanceManagementDTO();
+//        //출근 시간을 지금으로
+//        managementDTO.setAttendanceManagementArrivalTime(LocalDateTime.now());
+//        //오전 9시를 뜻하는 LocalDateTime 객체 생성
+//        LocalDateTime nineAM = LocalDateTime.now().with(LocalTime.of(9, 0));
+//        //출근한 시간이 9시 이후니?
+//        if(managementDTO.getAttendanceManagementArrivalTime().isAfter(nineAM)){
+//            //참이면 지각
+//            managementDTO.setAttendanceManagementState("지각");
+//        }else {
+//            //거짓이면 정상
+//            managementDTO.setAttendanceManagementState("정상");
+//        }
+//        //workDay 는 지금 날짜로설정
+//        managementDTO.setAttendanceManagementWorkDay(LocalDate.now());
+//
+//        //퇴근 시간 오늘 날짜 시작 시간
+//        LocalDateTime todayStart = LocalDateTime.now().with(LocalTime.MIN);
+//        managementDTO.setAttendanceManagementDepartureTime(todayStart);;
+//
+//        //서비스로 슈웅~
+//        managementDTO = mainPageService.saveArrive(managementDTO,user);
+//
+//        //갖다오면 보낸 객체 프론트로 보내기
+//        return ResponseEntity.ok().body(new WorkTypeResponseDTO(HttpStatus.OK, "메인 화면 출근 등록 성공", managementDTO, user));
+//    }
+
+
 
 }
