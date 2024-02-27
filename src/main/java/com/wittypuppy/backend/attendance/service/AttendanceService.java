@@ -301,6 +301,8 @@ public class AttendanceService {
 
 
 
+
+
     @Transactional
     public String updateDeparture(User employeeCode, LocalDateTime departureTime, String status) {
 

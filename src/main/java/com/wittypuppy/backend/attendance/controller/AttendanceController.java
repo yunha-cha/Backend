@@ -60,7 +60,6 @@ public class AttendanceController {
             @RequestBody Map<String, Object> requestBody
             ){
 
-
         LocalDateTime arrivalTime = LocalDateTime.parse((String) requestBody.get("arrivalTime")); // arrivalTime은 문자열로 전송되기 때문에 파싱 필요
         String status = (boolean) requestBody.get("late") ? "지각" : "정상";
 
@@ -74,7 +73,6 @@ public class AttendanceController {
 
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "근태 출근 등록 성공", login));
     }
-
 
 
 
