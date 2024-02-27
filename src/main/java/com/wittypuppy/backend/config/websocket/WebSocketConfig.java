@@ -64,8 +64,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
          * */
         messageBrokerRegistry.setApplicationDestinationPrefixes("/app"); // prefix 정의
     }
+
     /**
      * WebMvcConfigurer 인터페이스 반환하는 메서드
+     *
      * @return WebMvcConfigurer 익명 클래스로 WebMvcConfigurer의 메서드 구현
      */
     @Bean(name = "websocket")

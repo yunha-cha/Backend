@@ -15,7 +15,6 @@ public class PageDTO {
     private int total;              // 행 전체 개수
     private int realEnd;            // 페이지 전체 개수
 
-    /* 현재 페이지 번호(PageNum), 행 표시 수(amount), 검색 키워드(keyword), 검색 종류(type)등등*/
     private Criteria cri;           // 검색 정보
 
     public PageDTO(Criteria cri, int total) {

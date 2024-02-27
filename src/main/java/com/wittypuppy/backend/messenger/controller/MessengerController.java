@@ -8,7 +8,6 @@ import com.wittypuppy.backend.common.dto.ResponseDTO;
 import com.wittypuppy.backend.messenger.dto.*;
 import com.wittypuppy.backend.messenger.service.MessengerService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +20,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/messenger")
 @AllArgsConstructor
-@Slf4j
 public class MessengerController {
     private final MessengerService messengerService;
 
@@ -208,7 +206,6 @@ public class MessengerController {
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
         pagingResponseDTO.setData(result.get("content"));
         pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("totalSize")).intValue(), 3));
-        System.out.println("><><><>" + pagingResponseDTO);
         return res("채팅방 검색 결과 반환", pagingResponseDTO);
     }
 
@@ -217,7 +214,6 @@ public class MessengerController {
             @PathVariable Long chatroomCode,
             MultipartFile file,
             @AuthenticationPrincipal User principal) {
-        System.out.println("file>>>" + file);
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         if (file == null || file.isEmpty()) {
             return res("해당 파일이 존재하지 않습니다.");

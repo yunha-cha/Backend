@@ -14,7 +14,10 @@ import com.wittypuppy.backend.project.exception.InvalidProjectMemberException;
 import com.wittypuppy.backend.project.exception.NotProjectManagerException;
 import com.wittypuppy.backend.project.exception.ProjectKickedException;
 import com.wittypuppy.backend.project.exception.ProjectManagerException;
-import com.wittypuppy.backend.project.repository.*;
+import com.wittypuppy.backend.project.repository.EmployeeRepository;
+import com.wittypuppy.backend.project.repository.ProjectMemberRepository;
+import com.wittypuppy.backend.project.repository.ProjectPostRepository;
+import com.wittypuppy.backend.project.repository.ProjectRepository;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -34,23 +37,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-    private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
-    private final JobRepository jobRepository;
-    private final ProfileRepository profileRepository;
     private final ProjectMemberRepository projectMemberRepository;
-    //    private final ProjectPostCommentFileRepository projectPostCommentFileRepository;
-//    private final ProjectPostCommentRepository projectPostCommentRepository;
-//    private final ProjectPostMemberRepository projectPostMemberRepository;
     private final ProjectPostRepository projectPostRepository;
     private final ProjectRepository projectRepository;
-    private final ProjectFileRepository projectFileRepository;
     private final ModelMapper modelMapper;
 
     @Value("${image.image-dir}")
     private String IMAGE_DIR;
 
-    /* 전체 프로젝트 목록 확인 */
     public Map<String, Object> selectProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -62,7 +57,6 @@ public class ProjectService {
         return returnMap;
     }
 
-    /* 내 프로젝트 목록 확인 */
     public Map<String, Object> selectMyProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -74,7 +68,6 @@ public class ProjectService {
         return returnMap;
     }
 
-    /* 내 부서 프로젝트 목록 확인 */
     public Map<String, Object> selectMyDeptProjectListWithPaging(Long userEmployeeCode, Criteria cri) {
         Employee employee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
@@ -88,7 +81,6 @@ public class ProjectService {
         return returnMap;
     }
 
-    /* 프로젝트 검색하기 */
     public Map<String, Object> searchProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -100,7 +92,6 @@ public class ProjectService {
         return returnMap;
     }
 
-    /* 내 프로젝트 검색하기 */
     public Map<String, Object> searchMyProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
@@ -112,7 +103,6 @@ public class ProjectService {
         return returnMap;
     }
 
-    /* 내 부서 프로젝트 검색하기 */
     public Map<String, Object> searchMyDeptProjectListWithPaging(Long userEmployeeCode, String searchValue, Criteria cri) {
         Employee employee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 계정의 정보를 찾을 수 없습니다."));
@@ -126,7 +116,6 @@ public class ProjectService {
         return returnMap;
     }
 
-    /* 프로젝트 만들기 */
     @Transactional
     public Long createProject(ProjectDTO projectDTO, Long userEmployeeCode) {
         Employee employee = employeeRepository.findByEmployeeCodeAndEmployeeRetirementDateIsNull(userEmployeeCode)
@@ -155,7 +144,6 @@ public class ProjectService {
         }
     }
 
-    /* 프로젝트 열기 */
     public Map<String, Object> openProject(Long projectCode, Long userEmployeeCode) {
         Project project = projectRepository.findById(projectCode)
                 .orElseThrow(() -> new DataNotFoundException("해당 프로젝트가 존재하지 않습니다"));
@@ -187,7 +175,6 @@ public class ProjectService {
         return resultMap;
     }
 
-    /* 프로젝트를 열게 되는데. 거기서 게시글들을 따로 읽어온다.*/
     public Map<String, Object> selectProjectPostListWithPaging(String searchValue, Long projectCode, Criteria cri, Long userEmployeeCode) {
         ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
                 .orElse(null); // 현재 프로젝트의 멤버가 아니면 null
@@ -201,8 +188,6 @@ public class ProjectService {
         }
         int index = cri.getPageNum() - 1;
         int count = cri.getAmount();
-        System.out.println("index>>" + index);
-        System.out.println("count>>" + count);
 
         PageRequest pageRequest = PageRequest.of(index, count);
         Page<ProjectPost> projectPostPage = projectPostRepository.findAllByProjectPostContentLikeAndProjectCodeOrderByProjectPostCreationDateDesc(searchValue, projectCode, pageRequest);
@@ -211,14 +196,12 @@ public class ProjectService {
                 .stream()
                 .map(projectPost -> modelMapper.map(projectPost, ProjectPostDTO.class))
                 .collect(Collectors.toList());
-        System.out.println("projectPostList" + projectPostList);
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("totalSize", projectPostPage.getTotalElements());
         returnMap.put("content", projectPostList);
         return returnMap;
     }
 
-    /* 프로젝트 수정 */
     @Transactional
     public String modifyProject(Long projectCode, ProjectOptionsDTO projectOptions, Long userEmployeeCode) {
         Project project = projectRepository.findById(projectCode)
@@ -239,7 +222,6 @@ public class ProjectService {
         }
     }
 
-    /* 프로젝트 초대를 위한 사원 목록 가져오기 */
     public List<EmployeeDTO> selectEmployeeList() {
         List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateIsNull();
         List<EmployeeDTO> employeeDTOList = employeeList.stream().map(employee -> modelMapper.map(employee, EmployeeDTO.class))
@@ -247,7 +229,6 @@ public class ProjectService {
         return employeeDTOList;
     }
 
-    /* 프로젝트 멤버 초대하기 */
     @Transactional
     public ProjectPostDTO inviteProjectMember(Long projectCode, Long inviteEmployeeCode, Long userEmployeeCode) {
         try {
@@ -278,7 +259,6 @@ public class ProjectService {
         }
     }
 
-    /* 프로젝트 멤버에서 나가기 */
     @Transactional
     public ProjectMemberDTO leaveProjectMember(Long projectCode, Long userEmployeeCode) {
         try {
@@ -299,7 +279,6 @@ public class ProjectService {
         }
     }
 
-    /* 프로젝트 멤버 내보내기*/
     @Transactional
     public ProjectMemberDTO kickedProjectMember(Long projectCode, Long kickedEmployeeCode, Long userEmployeeCode) {
         try {
@@ -310,7 +289,6 @@ public class ProjectService {
             }
             ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", kickedEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("프로젝트 멤버에 현재 강퇴할 계정이 존재하지 않습니다."));
-            System.out.println("projectMember = " + projectMember);
             if (projectMember.getEmployee().getEmployeeCode().equals(userEmployeeCode)) {
                 throw new ProjectKickedException("자기자신을 내보낼 수 없습니다.");
             }
@@ -319,7 +297,6 @@ public class ProjectService {
             ProjectMemberDTO projectMemberDTO = modelMapper.map(projectMember, ProjectMemberDTO.class);
             return projectMemberDTO;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new DataDeletionException("멤버 내보내기 실패");
         }
     }
@@ -327,7 +304,6 @@ public class ProjectService {
     public ProjectPostFileDTO uploadImage(MultipartFile file) {
         try {
             LocalDateTime now = LocalDateTime.now();
-            System.out.println("file>>>" + file);
             String imageName = UUID.randomUUID().toString().replace("-", "");
             String replaceFileName = null;
             try {
@@ -351,15 +327,13 @@ public class ProjectService {
         try {
             ProjectMember projectMember = projectMemberRepository.findByProjectCodeAndProjectMemberDeleteStatusAndEmployee_EmployeeCode(projectCode, "N", userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("현재 계정은 해당 프로젝트의 멤버가 아닙니다."));
-            System.out.println("projectMember = " + projectMember);
             ProjectPost projectPost = modelMapper.map(projectPostDTO, ProjectPost.class);
             projectPost.setProjectMember(projectMember);
             projectPostRepository.save(projectPost);
-            System.out.println("projectPost<<<<"+projectPost.getProjectPostFileList().get(0).toString());
             ProjectPostDTO newProjectPostDTO = modelMapper.map(projectPost, ProjectPostDTO.class);
             return newProjectPostDTO;
         } catch (Exception e) {
-            throw new DataDeletionException("프로젝트 게시글 생성 실패");
+            throw new DataUpdateException("프로젝트 게시글 생성 실패");
         }
     }
 
@@ -384,7 +358,4 @@ public class ProjectService {
             throw new DataDeletionException("프로젝트 멤버 위임하기 실패");
         }
     }
-
-    /*프로젝트 게시글 작성하기*/
-
 }

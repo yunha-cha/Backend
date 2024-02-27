@@ -14,8 +14,6 @@ import java.util.Optional;
 
 @Repository("Messenger_ChatRepository")
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-    List<Chat> findAllByChatroomCodeInAndChatroomMember_Employee_EmployeeCode(List<Long> chatroomCodeList, Long userEmployeeCode);
-
     @Query(value =
             "SELECT " +
                     "tc.chat_code chatCode," +
@@ -33,30 +31,6 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
                     "LIMIT 1"
             , nativeQuery = true)
     RecentChatInterface findChatCodesInChatAndChatReadStatus(Long chatroomCode, Long userEmployeeCode);
-
-
-    @Query(value =
-            "SELECT " +
-                    "COUNT(*)" +
-                    "FROM tbl_chat tc " +
-                    "WHERE tc.chatroom_code = :chatroomCode "
-            , nativeQuery = true)
-    Long getChatCount(Long chatroomCode);
-
-    @Query(value =
-            "SELECT " +
-                    "COUNT(*)" +
-                    "FROM tbl_chat tc " +
-                    "WHERE tc.chatroom_code = :chatroomCode " +
-                    "AND tc.chat_code < :requestChatCode"
-            , nativeQuery = true)
-    Long getMyChatCount(Long chatroomCode, Long requestChatCode);
-
-
-    @Query("SELECT MC " +
-            "FROM MESSENGER_CHAT MC " +
-            "WHERE MC.chatroomCode = :chatroomCode ")
-    List<Chat> selectChatListByChatroomCodeWithPaging(Long chatroomCode, Pageable pageable);
 
     Optional<Chat> findFirstByChatroomCodeOrderByChatCodeDesc(Long chatroomCode);
 
