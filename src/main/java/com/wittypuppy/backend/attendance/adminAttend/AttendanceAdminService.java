@@ -1,13 +1,9 @@
 package com.wittypuppy.backend.attendance.adminAttend;
 
 import com.wittypuppy.backend.Employee.dto.User;
-import com.wittypuppy.backend.attendance.dto.EmployeeDTO;
 import com.wittypuppy.backend.attendance.dto.VacationDTO;
-import com.wittypuppy.backend.attendance.entity.Employee;
-import com.wittypuppy.backend.attendance.entity.Vacation;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.repository.AttendanceAdminEmployee;
-import com.wittypuppy.backend.attendance.repository.AttendanceVaca;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -21,8 +17,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.chrono.ChronoLocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,12 +25,10 @@ public class AttendanceAdminService {
 
 
     private final AttendanceAdminEmployee attendanceAdminEmployee;
-    private final AttendanceVaca attendanceVaca;
     private final ModelMapper modelMapper;
 
-    public AttendanceAdminService(AttendanceAdminEmployee attendanceAdminEmployee, AttendanceVaca attendanceVaca, ModelMapper modelMapper) {
+    public AttendanceAdminService(AttendanceAdminEmployee attendanceAdminEmployee, ModelMapper modelMapper) {
         this.attendanceAdminEmployee = attendanceAdminEmployee;
-        this.attendanceVaca = attendanceVaca;
         this.modelMapper = modelMapper;
     }
 

@@ -1,29 +1,20 @@
 package com.wittypuppy.backend.mypage.service;
 
 import com.wittypuppy.backend.Employee.dto.User;
-import com.wittypuppy.backend.admin.dto.CareerDTO;
-import com.wittypuppy.backend.admin.dto.EducationDTO;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
 import com.wittypuppy.backend.common.exception.DataUpdateException;
 import com.wittypuppy.backend.mypage.dto.MyPageCareerDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageEducationDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageEmpDTO;
 import com.wittypuppy.backend.mypage.dto.MyPageUpdateDTO;
-import com.wittypuppy.backend.mypage.entity.MyPageEmp;
-import com.wittypuppy.backend.mypage.entity.MyPageProfile;
-import com.wittypuppy.backend.mypage.entity.MyPageUpdateEmp;
-import com.wittypuppy.backend.mypage.repository.MyPageProfileRepository;
-import com.wittypuppy.backend.mypage.repository.MyPageRepository;
-import com.wittypuppy.backend.mypage.repository.MyPageUpdateRepository;
+import com.wittypuppy.backend.mypage.entity.*;
+import com.wittypuppy.backend.mypage.repository.*;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -53,17 +43,22 @@ public class MyPageService {
 
     private final MyPageProfileRepository myPageProfileRepository;
 
+    private final MyPageCareerRepository myPageCareerRepository;
+    private final MyPageEducationRepository myPageEducationRepository;
+
     private final String imageDirectory = "classpath:/static/web-images/";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
 
-    public MyPageService(MyPageRepository myPageRepository, ModelMapper modelMapper, MyPageUpdateRepository myPageUpdateRepository, MyPageProfileRepository myPageProfileRepository) {
+    public MyPageService(MyPageRepository myPageRepository, ModelMapper modelMapper, MyPageUpdateRepository myPageUpdateRepository, MyPageProfileRepository myPageProfileRepository, MyPageCareerRepository myPageCareerRepository, MyPageEducationRepository myPageEducationRepository) {
         this.myPageRepository = myPageRepository;
         this.modelMapper = modelMapper;
         this.myPageUpdateRepository = myPageUpdateRepository;
         this.myPageProfileRepository = myPageProfileRepository;
+        this.myPageCareerRepository = myPageCareerRepository;
+        this.myPageEducationRepository = myPageEducationRepository;
     }
 
 
@@ -71,13 +66,17 @@ public class MyPageService {
         log.info("마이페이지 서비스 시작___-----=====");
 
         MyPageEmp myPageEmp = myPageRepository.findById(empCode).get();//findById는 스프링부트에서 원래 있는 문법으로 empcode라는 pk값으로 값을 불러온다.
+//        MyPageCareer myPageCareer = myPageCareerRepository.findById(empCode).get();
+//        MyPageEducation myPageEducation = myPageEducationRepository.findById(empCode).get();
+
         MyPageEmpDTO myPageEmpDTO = modelMapper.map(myPageEmp, MyPageEmpDTO.class);
 
-        MyPageCareerDTO myPageCareerDTO = modelMapper.map(myPageEmp.getCareer(), MyPageCareerDTO.class);
-        MyPageEducationDTO myPageEducationDTO = modelMapper.map(myPageEmp.getEducation(), MyPageEducationDTO.class);
-
-//        myPageEmpDTO.setCareer( myPageCareerDTO);
-//        myPageEmpDTO.setEducation( myPageEducationDTO);
+//        MyPageCareerDTO myPageCareerDTO = modelMapper.map(myPageCareer, MyPageCareerDTO.class);
+//        MyPageEducationDTO myPageEducationDTO = modelMapper.map(myPageEducation, MyPageEducationDTO.class);
+//
+//
+////        myPageEmpDTO.setCareer(myPageCareerDTO);
+////       myPageEmpDTO.setEducation(myPageEducationDTO );
 
 
         return myPageEmpDTO;

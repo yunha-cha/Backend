@@ -34,7 +34,7 @@ private String empAddress;
 
 private MyPageJobDTO job;
 
-    private List<MyPageEducation> education;
+    private List<MyPageEducationDTO> education;
 
     private List<MyPageCareerDTO> career;
 
@@ -84,7 +84,7 @@ private MyPageJobDTO job;
         return this;
     }
 
-    public void setEducation(List<MyPageEducation> education) {
+    public void setEducation(List<MyPageEducationDTO> education) {
         this.education = education;
     }
 

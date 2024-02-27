@@ -54,13 +54,15 @@ public class MyPageEmp {
     @JoinColumn(name = "job_code")
     private MyPageJob job;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "career_code")
-    private List<MyPageCareer> career;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "career_code")
+@OneToMany(mappedBy = "employeeCode", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+private List<MyPageCareer> career;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "education_code")
-    private List<MyPageEducation> education;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "education_code")
+@OneToMany(mappedBy = "employeeCode", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+private List<MyPageEducation> education;
 
 
 
