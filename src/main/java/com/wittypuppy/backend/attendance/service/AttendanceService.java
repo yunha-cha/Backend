@@ -1,6 +1,9 @@
 package com.wittypuppy.backend.attendance.service;
 
 import com.wittypuppy.backend.Employee.dto.User;
+import com.wittypuppy.backend.Employee.entity.LoginEmployee;
+import com.wittypuppy.backend.approval.entity.AdditionalApprovalLine;
+import com.wittypuppy.backend.approval.entity.ApprovalRepresent;
 import com.wittypuppy.backend.attendance.adminAttend.AdminEmployee;
 import com.wittypuppy.backend.attendance.adminAttend.AdminEmployeeDTO;
 import com.wittypuppy.backend.attendance.dto.*;
@@ -413,6 +416,31 @@ public class AttendanceService {
             return lineStates;
         }
         return null;
+    }
+
+
+    @Transactional
+    public String approvalDocument(Long approvalDocumentCode, User user) {
+
+        // 결재 대상 조회
+        Integer approvalSubject = attendanceApprovalRepository.approvalSubjectEmployeeCode(approvalDocumentCode);
+
+        // 로그인한 사용자의 정보 가져오기
+        int employeeCode = user.getEmployeeCode();
+
+
+        if (approvalSubject != null && approvalSubject == employeeCode) {
+            ApprovalLine updateProcess = attendanceApprovalRepository.approvalList(approvalDocumentCode, employeeCode);
+            updateProcess.setApprovalProcessDate(LocalDateTime.now());
+            updateProcess.setApprovalProcessStatus("결재");
+            attendanceApprovalRepository.save(updateProcess);
+            return "결재 성공";
+        } else if (approvalSubject == null) {
+            System.out.println("이미 결재 했습니다");
+        }
+
+        return "결재 대상이 아닙니다.";
+
     }
 
 

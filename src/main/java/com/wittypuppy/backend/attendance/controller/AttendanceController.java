@@ -80,7 +80,6 @@ public class AttendanceController {
 
 
 
-    //퇴근 시간 업데이트
     @Operation(summary = "근태 메인 화면 퇴근 수정", description = "퇴근 시간및 상태 값을 업 데이트 합니다")
     @PutMapping ("/attendances/main")
     public ResponseEntity<ResponseDTO> commuteUpdate(
@@ -252,6 +251,7 @@ public class AttendanceController {
     @GetMapping("/attendances/document/{approvalDocumentCode}")
     public ResponseEntity<WorkTypeResponseDTO> detailMyApply (
             @PathVariable Long approvalDocumentCode
+
     ) {
 
         DetailMyWaitingDTO detail = attendanceService.detailMyApply(approvalDocumentCode);
@@ -263,6 +263,20 @@ public class AttendanceController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+
+
+    @Operation(summary = "문서 결재" , description = "상세 보기한 문서를 결재 할 수 있습니다")
+    @PutMapping("/attendances/document/{approvalDocumentCode}")
+    public ResponseEntity<String> approval(
+            @PathVariable Long approvalDocumentCode,
+            @AuthenticationPrincipal User user
+    ){
+        System.out.println("approvalDocCode = " + approvalDocumentCode);
+
+        String result = attendanceService.approvalDocument(approvalDocumentCode, user);
+        System.out.println("result ========== " + result);
+        return ResponseEntity.ok(result);
+    }
 
 
 
@@ -288,6 +302,8 @@ public class AttendanceController {
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "내 기안 문서 조회 성공", pagingResponse));
 
     }
+
+
 
 
 }
