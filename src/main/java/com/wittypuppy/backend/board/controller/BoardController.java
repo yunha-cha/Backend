@@ -15,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,8 +76,6 @@ public class BoardController {
 
         MyDeptBoardDTO myDeptBoardDTO = boardService.selectBoardList(myParentDepartmentCode);
 
-//        return res("게시판그룹 조회", boardDTOList);
-
         return res("게시판그룹 조회", myDeptBoardDTO);
 
     }
@@ -101,19 +102,18 @@ public class BoardController {
     @Tag(name = "게시글 조회", description = "해당 게시판에 따른 게시글 최신순 리스트")
     @GetMapping("/{boardCode}/posts")
     public ResponseEntity<ResponseDTO> selectPostListByBoardCode(@PathVariable Long boardCode,
-                                                                 @RequestParam String offset) {
+                                                                 @RequestParam Integer offset) {
         log.info("BoardController >>> selectPostsOfBoard >>> start  "+offset);
+
+        Pageable pageable = PageRequest.of(offset, 10, Sort.by("postDate").descending());
 
 
         /* 페이징 */
         Criteria cri = new Criteria(Integer.valueOf(offset), 10);
 
         // 페이지 번호에 맞게 데이터 가져오기
-        Page<PostDTO> postDTOPages = boardService.selectPostListWithPaging(cri, boardCode);
+        Page<PostDTO> postDTOPages = boardService.selectPostListWithPaging(pageable, boardCode);
 
-        // pageDTO 적용, 화면에서 페이징 버튼 처리
-//        pagingResponseDTO.setData(postDTOPages);
-//        pagingResponseDTO.setPage(new PageDTO(cri, (int) postDTOPages.getTotalElements()));
 
 
         log.info("BoardController >>> selectPostsOfBoard >>> end");
@@ -146,9 +146,10 @@ public class BoardController {
 
 
 
-    @Tag(name = "파일 업로드", description = "파일 등록")
+    @Tag(name = "게시글, 파일 업로드", description = "파일 등록")
     @PostMapping("/posts/regist")
     public ResponseEntity<ResponseDTO> uploadFiles(@ModelAttribute PostDTO postDTO, List<MultipartFile> multipartFile, @AuthenticationPrincipal User user){
+
         if(multipartFile != null){
             PostDTO result = boardService.insertPost(postDTO, (long) user.getEmployeeCode());   //이메일을 기본키로 찾아옴
             List<PostAttachmentDTO> attachmentDTOS = new ArrayList<>();    //첨부파일 배열만듦
@@ -183,6 +184,55 @@ public class BoardController {
 
 
 
+
+    /* 게시글 수정 */
+    @Tag(name = "게시글 수정", description = "게시글 수정")
+    @PutMapping("/posts/{postCode}/update")
+    public ResponseEntity<ResponseDTO> updatePost(@ModelAttribute PostDTO postDTO, List<MultipartFile> multipartFile, @PathVariable Long postCode){
+
+        log.info("BoardController >> updatePost >> start");
+        // 값을 받는지 확인
+        System.out.println("postDTO = " + postDTO);
+        System.out.println("multipartFile = " + multipartFile);
+
+
+        if(multipartFile != null){
+            PostDTO updatePostDTO = boardService.updatePost(postDTO, postCode);
+
+            List<PostAttachmentDTO> attachmentDTOS = new ArrayList<>();    //첨부파일 배열만듦
+            for(int i =0; i<multipartFile.size(); i++){     //첨부파일 배열만큼 반복
+                PostAttachmentDTO postAttachmentDTO = new PostAttachmentDTO();   //첨부파일 객체 만들음
+                postAttachmentDTO.setPostAttachmentDate(new Date());       //첨부파일 들어간 날짜,시간을 지금으로
+                postAttachmentDTO.setPostDeleteStatus("N");      //첨부파일 삭제 여부 N으로
+                postAttachmentDTO.setPostCode(updatePostDTO.getPostCode());                //첨부파일 이메일 코드를 가져온 값으로 설정
+                postAttachmentDTO.setPostAttachmentOgFile(multipartFile.get(i).getOriginalFilename()); //multipartFile 객체로 가져온 파일의 i번 째의 원본 파일 이름을 첨부파일 객체의 원본파일 이름으로 설정
+                String fileName = UUID.randomUUID().toString().replace("-", "");    //랜덤한 이름 만들기
+                try {
+                    //saveFile 메서드 : util패키지에 static으로 존재함
+                    postAttachmentDTO.setPostAttachmentChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+                            fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
+                            multipartFile.get(i)));     //MultipartFile의 i 번째 (가져온 첨부파일)
+                }catch (IOException e){     //저장하다가 에러나면?
+                    System.err.println(e.getMessage()); //메세지 출력
+                }
+                attachmentDTOS.add(postAttachmentDTO);     //아까 만든 ArrayList에 지금까지 한거 넣기
+            }   //반복분 종료 (MultipartFile 개수 만큼{가져온 첨부파일 개수 만큼} 반복함)
+            boardService.insertPostAttachment(attachmentDTOS);  //반복문 끝나고 만들어진 ArrayList를 서비스로 가져가기 SaveAll(어레이리스트) 하면 됨.
+
+            return res("게시글 수정 성공", updatePostDTO);
+        }
+        else {
+            System.out.println("멀티파트 파일 없을 때 추가");
+            PostDTO updatePostDTO = boardService.updatePost(postDTO, postCode);
+            return res("게시글 첨부파일 안해도 수정",updatePostDTO);
+        }
+
+
+    }
+
+
+
+
     /* 파일 다운로드 */
     @Tag(name = "다운로드", description = "이메일의 첨부파일 다운로드")
     @GetMapping("/file-download/{attachmentCode}")
@@ -205,13 +255,6 @@ public class BoardController {
             System.out.println("=================="+fileEntity.getPostAttachmentOgFile());
 
             Resource resource = new InputStreamResource(new FileInputStream(file));
-            System.out.println("Resource: " + resource);
-            System.out.println("File exists: " + resource.exists());
-            System.out.println("File readable: " + resource.isReadable());
-//            System.out.println("File URL: " + resource.getURL().toString());
-//            System.out.println("File URI: " + resource.getURI().toString());
-////            System.out.println("File content type: " + Files.probeContentType(path));
-//            System.out.println("File length: " + resource.contentLength());
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -275,24 +318,6 @@ public class BoardController {
     }
 
 
-    /* 게시글 수정 */
-    @Tag(name = "게시글 수정", description = "게시글 수정")
-    @PutMapping("/posts/{postCode}/update")
-    public ResponseEntity<ResponseDTO> updatePost(@RequestBody PostDTO postDTO, @PathVariable Long postCode){
-
-        log.info("BoardController >> updatePost >> start");
-
-        // 값을 받는지 확인
-        System.out.println("postDTO = " + postDTO);
-        System.out.println("postCode = " + postCode);
-
-        PostDTO updatePostDTO = boardService.updatePost(postDTO, postCode);
-
-        return res("성공", updatePostDTO);
-
-    }
-
-
     /* 게시글 삭제 */
     @Tag(name = "게시글 삭제", description = "게시글 삭제")
     @DeleteMapping("/posts/{postCode}")
@@ -309,7 +334,6 @@ public class BoardController {
     @PutMapping("/posts/{postCode}/move")
     public ResponseEntity<ResponseDTO> movePost(@PathVariable Long postCode, @RequestParam Long boardCode ){
 
-
        String result = boardService.movePost(postCode, boardCode);
 
        return res("게시글 이동", result);
@@ -317,34 +341,36 @@ public class BoardController {
     }
 
 
+
     /* 게시글 검색 */
     @Tag(name = "게시글 검색", description = "게시글 이름과 내용으로 검색")
 
     @GetMapping("/{boardCode}/posts/search")
-    public ResponseEntity<ResponseDTO> searchPostList(@RequestParam(name = "q", defaultValue = "회사") String search,
+    public ResponseEntity<ResponseDTO> searchPostList(@RequestParam(name = "q", defaultValue = "") String search,
                                                       @PathVariable Long boardCode,
-                                                      @RequestParam(defaultValue = "1") String offset
+                                                      @RequestParam(defaultValue = "0") Integer offset
                                                       ){
+        if(search == null || search.isEmpty()){
+
+            return res("검색어가 없습니다.", null);
+
+        } else{
+
+            Pageable pageable = PageRequest.of(offset, 10, Sort.by("postDate").descending());
+            // 페이지 번호에 맞게 데이터 가져오기
+            Page<PostDTO> postDTOPages = boardService.searchPostListWithPaging(search, boardCode, pageable);
 
 
-        System.out.println("search = " + search);
-        System.out.println("boardCode = " + boardCode);
+
+            log.info("BoardController >>> selectPostsOfBoard >>> end");
 
 
-        /* 페이징 */
-        Criteria cri = new Criteria(Integer.valueOf(offset), 10);
+            return res("검색한 게시글 조회", postDTOPages);
 
-        // 페이지 번호에 맞게 데이터 가져오기
-        Page<PostDTO> postDTOPages = boardService.searchPostListWithPaging(cri, search, boardCode);
-
-        // pageDTO 적용, 화면에서 페이징 버튼 처리
-        PagingResponseDTO pagingResponseDTO = new PagingResponseDTO(new PageDTO(cri, (int) postDTOPages.getTotalElements()),postDTOPages);
-
-        System.out.println("pagingResponseDTO = " + pagingResponseDTO);
-        log.info("BoardController >>> selectPostsOfBoard >>> end");
+        }
 
 
-        return res("검색한 게시글 조회", pagingResponseDTO);
+
 
     }
 
@@ -411,21 +437,6 @@ public class BoardController {
     }
 
 
-    /* 게시판 수정 */
-    // 카테고리랑 이름 빼고 수정할 수 있게
-//    @PutMapping("/boards/{boardCode}")
-//    public ResponseEntity<ResponseDTO> updateBoard(@PathVariable Long boardCode, @RequestBody BoardAndMemberDTO boardAndMemberDTO) {
-//
-//        BoardDTO boardDTO = boardAndMemberDTO.getBoard();
-//        List<BoardMemberDTO> memberDTOList = boardAndMemberDTO.getMemberList();
-//
-//        String result = boardService.updateBoard(boardCode, boardDTO, memberDTOList);
-//
-//        return null;
-//
-//    }
-
-
 
     /* 게시판 삭제 */
     @Tag(name = "게시판 삭제", description = "게시판 삭제")
@@ -437,7 +448,6 @@ public class BoardController {
         return res("게시판 삭제", result);
 
     }
-
 
 
 
@@ -483,21 +493,6 @@ public class BoardController {
                 boardService.postAlert(boardCode)); // 보낼 데이터, dto alert를 보냄
     }
 
-
-
-    /* 게시판에 따른 게시글 순서 이동 */
-    @GetMapping("/test")
-    public ResponseEntity<ResponseDTO> selectEmployee(@RequestBody EmployeeDTO employeeDTO){
-
-        log.info("test Controller");
-
-        EmployeeDTO employee = boardService.selectEmployee(employeeDTO);
-
-        System.out.println("controller employee = " + employee);
-
-        return res("성공", employee);
-
-    }
 
 
 
