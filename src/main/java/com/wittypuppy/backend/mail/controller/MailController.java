@@ -278,7 +278,6 @@ public class MailController {
         }
     }
     @Tag(name = "중요 이메일 전환", description = "이메일의 상태를 important로 바꿈")
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/toggle-important")
     public ResponseEntity<ResponseDTO> updateStatus(@RequestParam Long emailCode, @RequestParam String emailStatus){
         EmailDTO emailDTO = emailService.findById(emailCode);
@@ -401,7 +400,7 @@ public class MailController {
             String fileName = UUID.randomUUID().toString().replace("-", "");    //랜덤한 이름 만들기
             try {
                 //saveFile 메서드 : util패키지에 static으로 존재함
-                emailAttachmentDTO.setAttachmentChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+                emailAttachmentDTO.setAttachmentChangedFile(saveFile(FILE_DIR, //인자 1 : 파일 저장 위치
                         fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
                         multipartFile.get(i)));     //MultipartFile의 i 번째 (가져온 첨부파일)
             }catch (IOException e){     //저장하다가 에러나면?

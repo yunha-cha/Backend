@@ -10,6 +10,7 @@ import com.wittypuppy.backend.admin.dto.EmailDTO;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.NoResultException;
 import org.hibernate.QueryTimeoutException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +34,18 @@ import static com.wittypuppy.backend.util.FileUploadUtils.saveFile;
 @RestController
 @RequestMapping("admin")
 public class AdminController {
+
     private final AdminService adminService;
     private final SimpMessagingTemplate simp;
+
+    @Value("${file.file-dir}")
+    private String FILE_DIR;
+
     public AdminController(AdminService adminService, SimpMessagingTemplate simp) {
         this.adminService = adminService;
         this.simp = simp;
     }
+
 
     @MessageMapping("/mail/alert/admin/send")
     public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
@@ -132,7 +139,7 @@ public class AdminController {
         String fileName = UUID.randomUUID().toString().replace("-", "");
         try {
             //saveFile 메서드 : util패키지에 static으로 존재함
-            profileDTO.setProfileChangedFile(saveFile("src/main/resources/static/web-files", //인자 1 : 파일 저장 위치
+            profileDTO.setProfileChangedFile(saveFile(FILE_DIR, //인자 1 : 파일 저장 위치
                     fileName,   //인자 2 : 아까 랜덤하게 만든 새로운 파일 이름
                     profile));     //MultipartFile의 i 번째 (가져온 첨부파일)
         }catch (IOException e){     //저장하다가 에러나면?

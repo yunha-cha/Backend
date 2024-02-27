@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.messenger.service;
 
+import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.common.exception.DataDeletionException;
 import com.wittypuppy.backend.common.exception.DataInsertionException;
 import com.wittypuppy.backend.common.exception.DataNotFoundException;
@@ -7,10 +8,12 @@ import com.wittypuppy.backend.common.exception.DataUpdateException;
 import com.wittypuppy.backend.messenger.dto.*;
 import com.wittypuppy.backend.messenger.entity.*;
 import com.wittypuppy.backend.messenger.repository.*;
+import com.wittypuppy.backend.project.dto.ProjectPostDTO;
 import com.wittypuppy.backend.util.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -268,12 +271,16 @@ public class MessengerService {
 
     public List<ChatDTO> selectChatListWithScrollPaging(Long chatroomCode, Long requestChatCode, Long userEmployeeCode) {
         /*requestChatCode 보다 작은 채팅중 9개를 읽어온다.*/
+        List<ChatDTO> chatDTOList = new ArrayList<>(Collections.singletonList(new ChatDTO()));
+        if (requestChatCode == null) {
+            return chatDTOList;
+        }
 
         PageRequest pageRequest = PageRequest.of(0, 9, Sort.by(Sort.Direction.DESC, "chatCode"));
         List<Chat> prevChatList = chatRepository.findAllByChatroomCodeAndChatCodeIsLessThan(chatroomCode, requestChatCode, pageRequest);
         Collections.reverse(prevChatList);
 
-        List<ChatDTO> chatDTOList = prevChatList.stream().map(chat -> modelMapper.map(chat, ChatDTO.class))
+        chatDTOList = prevChatList.stream().map(chat -> modelMapper.map(chat, ChatDTO.class))
                 .collect(Collectors.toList());
         return chatDTOList;
     }
@@ -282,7 +289,7 @@ public class MessengerService {
     public ChatroomOptionsDTO openChatroomOptions(Long chatroomCode, Long userEmployeeCode) {
         Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
-        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
         ChatroomOptionsDTO chatroomOptionsDTO = new ChatroomOptionsDTO()
                 .setChatroomTitle(chatroom.getChatroomTitle())
@@ -298,7 +305,7 @@ public class MessengerService {
         String chatroomFixedStatus = chatroomOptionsDTO.getChatroomFixedStatus();
         Chatroom chatroom = chatroomRepository.findByChatroomCodeAndChatroomMemberList_Employee_EmployeeCode(chatroomCode, userEmployeeCode)
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
-        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                 .orElseThrow(() -> new DataNotFoundException("현재 이 채팅방의 멤버가 아닙니다."));
         chatroomMember = chatroomMember.setChatroomMemberPinnedStatus(chatroomFixedStatus);
         if (chatroomMember.getChatroomMemberType().equals("관리자")) {
@@ -320,7 +327,7 @@ public class MessengerService {
     /* 채팅방 초대하기 */
     @Transactional
     public List<ChatroomMemberDTO> inviteEmployee(Long chatroomCode, Long inviteEmployeeCode, Long userEmployeeCode) {
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 계정 정보가 없습니다."));
         try {
             LocalDateTime now = LocalDateTime.now();
@@ -362,7 +369,7 @@ public class MessengerService {
     /* 관리자 위임하기 */
     @Transactional
     public String delegateChatroomAdmin(Long delegateChatroomMemberCode, Long chatroomCode, Long userEmployeeCode) {
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
         if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
             return "관리자 계정이 아닙니다.";
@@ -424,7 +431,7 @@ public class MessengerService {
     /* 채팅방 내보내기 */
     @Transactional
     public String kickChatroomMember(Long kickChatroomMemberCode, Long chatroomCode, Long userEmployeeCode) {
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
         if (!userChatroomMember.getChatroomMemberType().equals("관리자")) {
             return "현재 접속한 계정은 관리자가 아닙니다.";
@@ -441,7 +448,7 @@ public class MessengerService {
     /* 채팅방 나가기 */
     @Transactional
     public Long leaveChatroomMember(Long chatroomCode, Long userEmployeeCode) {
-        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+        ChatroomMember userChatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                 .orElseThrow(() -> new DataNotFoundException("현재 채팅방에 로그인한 계정 정보가 없습니다."));
         List<ChatroomMember> chatroomMemberList = chatroomMemberRepository.findAllByChatroomCodeAndChatroomMemberTypeIn(chatroomCode, List.of("일반사원", "관리자"));
         try {
@@ -469,7 +476,7 @@ public class MessengerService {
             String chatContent = sendDTO.getChatContent();
 //            List<MultipartFile> chatFileList = sendDTO.getChatFileList();
 
-            ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, emplyoeeCode,"삭제")
+            ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, emplyoeeCode, "삭제")
                     .orElseThrow(() -> new DataNotFoundException("현재 데이터베이스에 계정 정보가 없습니다."));
 
             Chat chat = new Chat()
@@ -495,13 +502,19 @@ public class MessengerService {
 
     /* 채팅 관찰 시점 업데이트*/
     @Transactional
-    public ChatroomMessengerMainInterface updateChatReadStatus(Long chatCode, Long chatroomCode, Long userEmployeeCode) {
+    public ChatroomMessengerMainInterface updateChatReadStatus(Long chatroomCode, Long userEmployeeCode) {
         try {
-            ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode,"삭제")
+            ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomCodeAndEmployee_EmployeeCodeAndChatroomMemberTypeNot(chatroomCode, userEmployeeCode, "삭제")
                     .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
             ChatReadStatus chatReadStatus = chatReadStatusRepository.findByChatroomCodeAndChatroomMemberCode(chatroomCode, chatroomMember.getChatroomMemberCode())
                     .orElseThrow(() -> new DataNotFoundException("현재 계정이 채팅방 멤버 정보에 없습니다."));
-            chatReadStatus.setChatCode(chatCode);
+            Chat maxChatCode = chatRepository.findFirstByChatroomCodeOrderByChatCodeDesc(chatroomCode)
+                    .orElse(null); //
+            if (maxChatCode == null) {
+                chatReadStatus.setChatCode(null);
+            } else {
+                chatReadStatus.setChatCode(maxChatCode.getChatCode());
+            }
             ChatroomMessengerMainInterface chatroomMessengerMainInterface = messengerRepository.getMessengerStatisticByChatroomCode(userEmployeeCode, chatroomCode)
                     .orElseThrow(() -> new DataNotFoundException("메신저 메인화면에 갱신되는 정보를 가져올 수 없습니다."));
             return chatroomMessengerMainInterface;
@@ -513,8 +526,27 @@ public class MessengerService {
 
     @Transactional
     public ChatroomMessengerMainInterface newChatroom(Long employeeCode, Long chatroomCode) {
-        ChatroomMessengerMainInterface chatroomMessengerMainInterface = messengerRepository.getMessengerStatisticByChatroomCode(employeeCode,chatroomCode)
-                .orElseThrow(()->new DataNotFoundException("해당 채팅방 정보를 찾을 수 없습니다."));
+        ChatroomMessengerMainInterface chatroomMessengerMainInterface = messengerRepository.getMessengerStatisticByChatroomCode(employeeCode, chatroomCode)
+                .orElseThrow(() -> new DataNotFoundException("해당 채팅방 정보를 찾을 수 없습니다."));
         return chatroomMessengerMainInterface;
+    }
+
+    public Map<String, Object> findChatList(Long chatroomCode, String searchValue, Long userEmployeeCode, Criteria cri) {
+        int index = cri.getPageNum() - 1;
+        int count = cri.getAmount();
+        PageRequest pageRequest = PageRequest.of(index, count);
+        Page<Chat> chatList = chatRepository.findAllByChatroomCodeAndChatContentLike(chatroomCode, searchValue, pageRequest);
+        List<ChatDTO> chatDTOList = chatList
+                .getContent()
+                .stream()
+                .map(chat -> modelMapper.map(chat,ChatDTO.class))
+                .collect(Collectors.toList());
+
+        Map<String, Object> returnMap = new HashMap<>();
+
+        returnMap.put("totalSize", chatList.getTotalElements());
+        returnMap.put("content", chatDTOList);
+
+        return returnMap;
     }
 }
