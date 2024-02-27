@@ -158,18 +158,21 @@ public class BoardService {
 
         // postCode에 해당하는 엔티티 찾기
         Post entityPost = postRepository.findById(postCode).get();
+
         entityPost.setPostTitle(postDTO.getPostTitle());
         entityPost.setPostContext(postDTO.getPostContext());
         entityPost.setPostNoticeStatus(postDTO.getPostNoticeStatus());
         entityPost.setBoardCode(postDTO.getBoardCode());
 
+        postRepository.save(entityPost);
+
 
         // 파일 첨부
 
         // 알림 설정
-        // 알림 엔티티.set
 
 
+        //
         PostDTO updatedPostDTO = modelMapper.map(entityPost, PostDTO.class);
 
         System.out.println("entityPost = " + entityPost);
@@ -313,22 +316,9 @@ public class BoardService {
 
 
     @Transactional
-    public Page<PostDTO> searchPostListWithPaging(Criteria cri, String search, Long boardCode) {
+    public Page<PostDTO> searchPostListWithPaging(String search, Long boardCode, Pageable pageable) {
 
-
-        // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
-        int currentIndex = cri.getPageNum() - 1;
-        int quantity = cri.getQuantity();
-
-        // Pageable 객체 생성
-        Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
-
-        Board board = boardRepository.findById(boardCode).get();
-        System.out.println("board = " + board);
-
-        if(board.getBoardAccessStatus().equals("Y")){
-
-            Page<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%', paging);
+            Page<Post> postListByTitle = postRepository.findByBoardCodeAndPostTitleLikeOrBoardCodeAndPostContextLike(boardCode, '%' + search + '%', boardCode, '%' + search + '%', pageable);
 
             System.out.println("postListByTitle = " + postListByTitle);
 
@@ -339,10 +329,6 @@ public class BoardService {
             System.out.println("postDTOList = " + postDTOList);
             return postDTOList;
 
-        }
-        else {
-            return null;
-        }
 
     }
 
@@ -544,22 +530,15 @@ public class BoardService {
 
     /* 페이징된 게시글 조회 */
     @Transactional
-    public Page<PostDTO> selectPostListWithPaging(Criteria cri, Long boardCode) {
+    public Page<PostDTO> selectPostListWithPaging(Pageable pageable, Long boardCode) {
 
         log.info("[BoardService] selectPostListWithPaging =================>");
 
         // cri 필드값 사용 - 현재 페이지, 페이지당 데이터 개수
-        int currentIndex = cri.getPageNum();
-        int quantity = cri.getQuantity();
 
-        System.out.println("currentIndex = " + currentIndex);
-        System.out.println("quantity = " + quantity);
-
-        // Pageable 객체 생성
-        Pageable paging = PageRequest.of(currentIndex, quantity, Sort.by("postDate").descending());
 
             // 페이징 적용하여 데이터 조회
-            Page<Post> postList = postRepository.findByBoardCode(boardCode, paging);
+            Page<Post> postList = postRepository.findByBoardCode(boardCode, pageable);
 
             // 엔티티 조회되는지 출력
             System.out.println("postList = " + postList);
