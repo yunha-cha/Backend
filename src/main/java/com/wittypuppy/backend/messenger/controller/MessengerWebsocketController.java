@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.messenger.controller;
 
+import com.wittypuppy.backend.common.exception.TokenException;
 import com.wittypuppy.backend.messenger.dto.ChatDTO;
 import com.wittypuppy.backend.messenger.dto.ChatroomMessengerMainInterface;
 import com.wittypuppy.backend.messenger.dto.SendDTO;
@@ -28,19 +29,14 @@ public class MessengerWebsocketController {
             SimpMessageHeaderAccessor accessor) {
         String token = accessor.getFirstNativeHeader("Authorization");
         TokenUtils tokenUtils = new TokenUtils();
-        System.out.println("chatroomCode>>>" + chatroomCode);
-        System.out.println("send>>>" + send);
         if (token != null) {
             send.setEmployeeCode(tokenUtils.getUserEmployeeCode(token));
         } else {
-            System.out.println("토큰이 없다.");
+            throw new TokenException("허가되지 않은 채팅 전송");
         }
-        /* 2. 데이터베이스 저장 + 보낸 채팅을 return.(적절한 형식의 반환값을 얻기 위해) */
         ChatDTO chatDTO = messengerService.sendChat(Long.parseLong(chatroomCode), send);
 
-        // 3. 구독한 대상자에게 데이터 전달
         String destination = "/topic/messenger/chatrooms/" + chatroomCode;
-        System.out.println("destination>>>" + destination);
         messagingTemplate.convertAndSend(destination, chatDTO);
     }
 
@@ -51,22 +47,17 @@ public class MessengerWebsocketController {
             SimpMessageHeaderAccessor accessor) {
         String token = accessor.getFirstNativeHeader("Authorization");
         TokenUtils tokenUtils = new TokenUtils();
-        System.out.println("chatroomCode>>>" + chatroomCode);
-        System.out.println("employeeCode>>>" + employeeMap.get("employeeCode"));
         int userEmployeeCode = 0;
         if (token != null) {
             userEmployeeCode = tokenUtils.getUserEmployeeCode(token);
         } else {
-            System.out.println("토큰이 없다.");
+            throw new TokenException("허가되지 않은 채팅방 초대");
         }
 
-        // 2. 초대는 이미 진행했고. Messenger 메인화면에 들어가는 채팅방 정보를 반환해서 전달한다.
         ChatroomMessengerMainInterface result =
                 messengerService.newChatroom(Long.valueOf(String.valueOf(userEmployeeCode)), Long.parseLong(chatroomCode));
 
-        // 3. 구독한 대상자에게 데이터 전달
         String destination = "/topic/messenger/" + employeeMap.get("employeeCode");
-        System.out.println("destination>>>" + destination);
         messagingTemplate.convertAndSend(destination, result);
     }
 }

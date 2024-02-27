@@ -31,8 +31,6 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
             , nativeQuery = true)
     Optional<chatroomMainElseChatInterface> findByChatroomCodeAndEmployeeCode(Long chatroomCode, Long employeeCode);
 
-    List<Chatroom> findAllByChatroomMemberList_ChatroomMemberTypeNot(String chatroomMemberType);
-
     @Query("SELECT " +
             "       cr " +
             "FROM MESSENGER_CHATROOM cr " +

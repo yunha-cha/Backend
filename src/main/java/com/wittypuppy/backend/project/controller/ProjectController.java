@@ -123,13 +123,11 @@ public class ProjectController {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
         Map<String, Object> result = null;
         Criteria cri = new Criteria(Integer.valueOf(offset), 10);
-        System.out.println("searchValue>>>" + searchValue);
         result = projectService.selectProjectPostListWithPaging("%" + searchValue + "%", projectCode, cri, userEmployeeCode);
 
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
         pagingResponseDTO.setData(result.get("content"));
         pagingResponseDTO.setPageInfo(new PageDTO(cri, ((Long) result.get("totalSize")).intValue()));
-        System.out.println("pagingResponseDTO>>>" + pagingResponseDTO);
         return res("프로젝트 게시글 조회 성공", pagingResponseDTO);
     }
 
@@ -228,8 +226,6 @@ public class ProjectController {
     @PostMapping("/projects/upload-image")
     public ResponseEntity<ResponseDTO> uploadImage(
             MultipartFile file){
-        System.out.println(">>>" + file);
-        System.out.println(">>>" + file.getOriginalFilename());
         return res("파일 업로드 성공", projectService.uploadImage(file));
     }
 
@@ -239,7 +235,6 @@ public class ProjectController {
             @RequestBody ProjectPostDTO projectPost,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
-        System.out.println("projectPost>>>"+projectPost);
         return res("프로젝트 게시글 생성 성공", projectService.createProjectPost(projectCode, projectPost, userEmployeeCode));
     }
 
