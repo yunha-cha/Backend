@@ -22,13 +22,10 @@ public interface ChatroomMemberRepository extends JpaRepository<ChatroomMember, 
     @Query(value = "SELECT COUNT(*) FROM tbl_chatroom_member tcm WHERE tcm.chatroom_code AND tcm.chatroom_member_type!='삭제'"
             , nativeQuery = true
     )
-    Long getChatroomMemberCount(Long chatroomCode);
 
     Optional<ChatroomMember> findByChatroomMemberCodeAndChatroomCode(Long chatroomMember, Long chatroomCode);
 
     List<ChatroomMember> findAllByChatroomCodeAndChatroomMemberTypeIn(Long chatroomCode, List<String> chatroomMemberTypeList);
 
     List<ChatroomMember> findAllByChatroomCodeAndChatroomMemberTypeIsNot(Long chatroomCode, String chatroomMemberType);
-
-    List<ChatroomMember> findAllByEmployee_EmployeeCode(Long userEmployeeCode);
 }

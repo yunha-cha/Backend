@@ -25,34 +25,26 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class CalendarService {
     private final CalendarRepository calendarRepository;
-    private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
-    private final EventAlertRepository eventAlertRepository;
     private final EventOptionsRepository eventOptionsRepository;
     private final EventRepository eventRepository;
-    private final JobRepository jobRepository;
-    private final ProfileRepository profileRepository;
 
 
     private final ModelMapper modelMapper;
 
     @Transactional
     public CalendarDTO selectCalendar(Long userEmployeeCode) {
-        log.info("[CalendarService] >>> selectEventList >>> start");
         Employee employee;
         Calendar calendar;
         try {
             employee = employeeRepository.findById(userEmployeeCode)
                     .orElseThrow(() -> new DataNotFoundException("해당 사원이 존재하지 않습니다."));
-            log.info("employee1 : " + employee.toString());
             if (!Objects.isNull(employee.getEmployeeRetirementDate())) {
                 throw new DataNotFoundException("해당 사원은 이미 사퇴했습니다.");
             }
-            log.info("employee2 : " + employee.toString());
             calendar = calendarRepository.findByEmployee_EmployeeCode(userEmployeeCode)
                     .orElseGet(() -> {
                         Calendar newCalendar = new Calendar()
@@ -67,7 +59,6 @@ public class CalendarService {
         }
 
         CalendarDTO calendarDTO = modelMapper.map(calendar, CalendarDTO.class);
-        log.info("[CalendarService] >>> selectEventList >>> end");
 
         return calendarDTO;
     }
@@ -79,7 +70,6 @@ public class CalendarService {
         System.out.println("calendar: " + calendar.getCalendarCode());
 
         List<EventInterface> eventList = eventRepository.findAllEventByCalendarCode(calendar.getCalendarCode());
-        log.info("eventList>>>" + eventList.toString());
 
         return eventList;
     }
@@ -95,13 +85,11 @@ public class CalendarService {
     }
 
     public List<EmployeeDTO> selectEmployeeList() {
-        log.info("[CalendarService] >>> selectEmployeeList >>> start");
 
         List<Employee> employeeList = employeeRepository.findAllByEmployeeRetirementDateIsNull();
 
         List<EmployeeDTO> employeeDTOList = employeeList.stream().map(employee -> modelMapper.map(employee, EmployeeDTO.class)).collect(Collectors.toList());
 
-        log.info("[CalendarService] >>> selectEmployeeList >>> end");
         return employeeDTOList;
     }
 
@@ -229,7 +217,6 @@ public class CalendarService {
 
     @Transactional
     public EventAndCalendarCodeDTO deleteEvent(Long eventCode, Long userEmployeeCode) {
-        log.info("[CalendarService] >>> deleteEvent >>> start");
         EventAndCalendarCodeDTO eventAndCalendarCode = new EventAndCalendarCodeDTO();
         /*일정이 N에서 T로 되는가*/
         /*일정이 T에서 완전한 삭제로 되는가*/

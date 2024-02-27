@@ -10,7 +10,6 @@ import java.util.Date;
 @Setter
 @ToString
 public class EventOptionsAboutDateDTO {
-//    Long eventCode;
     Date startDate;
     Date endDate;
     String isAllday;

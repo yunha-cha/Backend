@@ -2,6 +2,8 @@ package com.wittypuppy.backend.messenger.repository;
 
 import com.wittypuppy.backend.messenger.dto.RecentChatInterface;
 import com.wittypuppy.backend.messenger.entity.Chat;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +14,6 @@ import java.util.Optional;
 
 @Repository("Messenger_ChatRepository")
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-    List<Chat> findAllByChatroomCodeInAndChatroomMember_Employee_EmployeeCode(List<Long> chatroomCodeList, Long userEmployeeCode);
-
     @Query(value =
             "SELECT " +
                     "tc.chat_code chatCode," +
@@ -32,30 +32,6 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             , nativeQuery = true)
     RecentChatInterface findChatCodesInChatAndChatReadStatus(Long chatroomCode, Long userEmployeeCode);
 
-
-    @Query(value =
-            "SELECT " +
-                    "COUNT(*)" +
-                    "FROM tbl_chat tc " +
-                    "WHERE tc.chatroom_code = :chatroomCode "
-            , nativeQuery = true)
-    Long getChatCount(Long chatroomCode);
-
-    @Query(value =
-            "SELECT " +
-                    "COUNT(*)" +
-                    "FROM tbl_chat tc " +
-                    "WHERE tc.chatroom_code = :chatroomCode " +
-                    "AND tc.chat_code < :requestChatCode"
-            , nativeQuery = true)
-    Long getMyChatCount(Long chatroomCode, Long requestChatCode);
-
-
-    @Query("SELECT MC " +
-            "FROM MESSENGER_CHAT MC " +
-            "WHERE MC.chatroomCode = :chatroomCode ")
-    List<Chat> selectChatListByChatroomCodeWithPaging(Long chatroomCode, Pageable pageable);
-
     Optional<Chat> findFirstByChatroomCodeOrderByChatCodeDesc(Long chatroomCode);
 
     List<Chat> findAllByChatroomCode(Long chatroomCode);
@@ -65,4 +41,6 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     List<Chat> findAllByChatroomCodeAndChatCodeIsLessThanEqual(Long chatroomCode, Long chatCode, Pageable pageable);
 
     List<Chat> findAllByChatroomCodeAndChatCodeIsLessThan(Long chatroomCode, Long chatCode, Pageable pageable);
+
+    Page<Chat> findAllByChatroomCodeAndChatContentLike(Long chatroomCode, String searchValue, Pageable pageable);
 }

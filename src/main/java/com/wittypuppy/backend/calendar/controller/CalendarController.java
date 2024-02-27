@@ -26,6 +26,12 @@ import java.util.List;
 public class CalendarController {
     private final CalendarService calendarService;
 
+    /**
+     * 해당 계정의 캘린더 정보를 반환한다. 일정 정보의 경우 따로 반환해야 한다.
+     *
+     * @param principal 계정 정보
+     * @return 200, 성공 텍스트, 캘린더 정보 반환
+     */
     @Tag(name = "캘린더 조회", description = "해당 계정(사원)의 캘린더 정보 조회")
     @GetMapping("")
     public ResponseEntity<ResponseDTO> selectCalendar(
