@@ -80,6 +80,15 @@ public class MainPageService {
 //
 //        return modelMapper.map(mainPageAttendanceRepository.save(attendanceManagementEntity),AttendanceManagementDTO.class);
 //    }
+//
+//
+//    public AttendanceManagementDTO attendanceList() {
+//
+//
+//
+//    }
+//
+
 
 
 }

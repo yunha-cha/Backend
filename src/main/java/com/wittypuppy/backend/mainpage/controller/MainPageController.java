@@ -46,8 +46,17 @@ public class MainPageController {
     }
 
 
-
-
+    
+//    @GetMapping("/arrive")
+//    public ResponseEntity<ResponseDTO> arrivedView(@AuthenticationPrincipal User user){
+//
+//
+//        AttendanceManagementDTO managementDTO =mainPageService.attendanceList();
+//        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "메인페이지 근태 목록", managementDTO));
+//    }
+//
+//
+//
 //    @Operation(summary = "메인홈페이지 출근 insert", description = "메인 페이지 출퇴근 인서트")
 //    @PostMapping("/arrive")
 //    public ResponseEntity<WorkTypeResponseDTO> arrivedUser(@AuthenticationPrincipal User user){
