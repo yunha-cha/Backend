@@ -2,7 +2,6 @@
 POST http://localhost:1208/auth/signup
 Content-Type: application/json
 Accept: */*
-Authorization: Bearer eyJkYXRlIjoxNzA4OTk5NDUxNTgzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJlbXBsb3llZU5hbWUiOiLqsJXtlbTrprAiLCJzdWIiOiJ1c2VyMDciLCJlbXBEZXB0TmFtZSI6IklU7Jq07JiB7YyAIiwiZW1wQ29kZSI6MTIsImVtcGxveWVlRW1haWwiOiJrYW5naGFlcmluQGdtYWlsLmNvbSIsImVtcEdyb3VwQ29kZSI6MywiZW1wbG95ZWVJZCI6InVzZXIwNyIsImV4cCI6MTcwOTAwMzA1MSwiZW1wbG95ZWVSb2xlIjpbeyJlbXBsb3llZUNvZGUiOjEyLCJhdXRob3JpdHlDb2RlIjoyLCJhdXRob3JpdHkiOnsiYXV0aG9yaXR5Q29kZSI6MiwiYXV0aG9yaXR5TmFtZSI6IlJPTEVfQURNSU4ifX1dfQ.Bhnp9ZKf39WUK7Hdx4OcSpZDIh4THZQYA-vmBDtFKOs
 
 {
   "employeeId": "rlatjdals777",
@@ -23,8 +22,8 @@ Accept: */*
 Access-Control-Allow-Origin: *
 
 {
-  "employeeId": "rlatjdals777",
-  "employeePassword": "rlatjdals777"
+  "employeeId": "user07",
+  "employeePassword": "pass07"
 
 }
 

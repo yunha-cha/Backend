@@ -1,5 +1,6 @@
 package com.wittypuppy.backend.attendance.repository;
 
+import com.wittypuppy.backend.attendance.entity.ApprovalLine;
 import com.wittypuppy.backend.attendance.entity.DetailMyWaing;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -44,8 +45,9 @@ public interface DetailMyRepository extends JpaRepository<DetailMyWaing, Long> {
             "LEFT JOIN tbl_software_use E ON A.approval_document_code = E.approval_document_code " +
             "WHERE A.approval_document_code = :approvalDocumentCode " +
             "AND A.approval_process_order = (SELECT MAX(approval_process_order) " +
-            "FROM tbl_approval_line " +
-            "WHERE approval_document_code = :approvalDocumentCode)",
+                                            "FROM tbl_approval_line " +
+                                            "WHERE approval_document_code = :approvalDocumentCode)",
             nativeQuery = true)
     DetailMyWaing findContent(Long approvalDocumentCode);
+
 }

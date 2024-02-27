@@ -1,5 +1,7 @@
 package com.wittypuppy.backend.mainpage.entity;
 
+import com.wittypuppy.backend.project.entity.ProjectPost;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
