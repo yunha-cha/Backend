@@ -4,7 +4,6 @@ package com.wittypuppy.backend.group.service;
 import com.wittypuppy.backend.common.dto.Criteria;
 import com.wittypuppy.backend.group.dto.ChartData;
 import com.wittypuppy.backend.group.dto.ChartState;
-import com.wittypuppy.backend.group.dto.GroupDeptDTO;
 import com.wittypuppy.backend.group.dto.GroupEmpDTO;
 import com.wittypuppy.backend.group.entity.GroupDept;
 import com.wittypuppy.backend.group.entity.GroupEmp;
@@ -40,7 +39,6 @@ public class GroupEmpService {
     /* 조직도에서 retired상태가 null인 사람 찾기 */
 
     public Page<GroupEmpDTO> selectEmpListWithGroupPaging(Criteria criteria){
-//        log.info("empservice 시작");
         int index = criteria.getPageNum() - 1;
         int count = criteria.getAmount();
         Pageable paging = PageRequest.of(index, count, Sort.by("empCode").ascending()); //오름차순
@@ -58,7 +56,7 @@ public class GroupEmpService {
         log.info("부서명이랑 사원명으로 조회하는 서비스 시작");
 
         List<GroupEmpDTO> groupEmpDTOList = groupEmpRepository.findAllByEmpNameAndRetirementDateIsNullOrDepartment_DeptNameAndRetirementDateIsNull(employeeName, departmentName)//여기서 All을 써줘야지 list를 받아올수 있어서 find와 By사이에 all을 써줌
-                .stream()
+                .stream()// 스트림은 각 요소에 대해 연속적으로 작업을 수행하므로 일반적으로 더 유연하고 성능이 좋습니다.
                 .map(groupEmp -> modelMapper.map(groupEmp, GroupEmpDTO.class))
                 .collect(Collectors.toList());
 

@@ -19,7 +19,7 @@ public interface GroupEmpRepository extends JpaRepository<GroupEmp, Long> {
 //    Page<GroupEmp> findByRetirementDate(Object o, Pageable paging);
 
 //조직도에서 사원정보리스트 가져오기
-@Query("SELECT gr FROM GROUP_EMPLOYEE gr LEFT JOIN FETCH gr.department WHERE gr.retirementDate IS NULL")
+@Query("SELECT gr FROM GROUP_EMPLOYEE gr LEFT JOIN FETCH gr.department WHERE gr.retirementDate IS NULL") //"DEPARTMENT" 엔티티 사이의 관계를 FETCH를 통해서 지연 로딩이 아닌 즉시 로딩으로 설정
 Page<GroupEmp> findByRetirementDateWithDepartment(Pageable paging);
 
 //    GroupEmp findByEmpNameOrDeptName(String employeeName, String departmentName);
