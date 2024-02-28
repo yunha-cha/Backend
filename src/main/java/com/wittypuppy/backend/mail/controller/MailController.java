@@ -18,9 +18,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -71,31 +73,19 @@ public class MailController {
     @Tag(name = "다운로드", description = "이메일의 첨부파일 다운로드")
     @GetMapping("/download-attachment/{attachmentCode}")
     public ResponseEntity<Resource> findByAttachmentCode(@PathVariable Long attachmentCode){
-        System.out.println("??");
         try {
             EmailAttachment fileEntity = emailService.getFileById(attachmentCode);  //
             Path filePath = Paths.get(FILE_DIR+"/"+ fileEntity.getAttachmentChangedFile());
             File file = filePath.toFile();
-            System.out.println(file);
             if (!file.exists()) {
                 throw new FileNotFoundException("파일을 찾을 수 없습니다: " + filePath);
             }
-            System.out.println("aa");
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, fileEntity.getAttachmentOgFile());
             headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath)); // 파일 타입을 자동으로 결정
             headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length())); // 파일 크기 설정
             headers.add(HttpHeaders.EXPIRES, fileEntity.getAttachmentOgFile());
-            System.out.println("bb");
             Resource resource = new InputStreamResource(new FileInputStream(file));
-            System.out.println("Resource: " + resource);
-            System.out.println("File exists: " + resource.exists());
-            System.out.println("File readable: " + resource.isReadable());
-//            System.out.println("File URL: " + resource.getURL().toString());
-//            System.out.println("File URI: " + resource.getURI().toString());
-////            System.out.println("File content type: " + Files.probeContentType(path));
-//            System.out.println("File length: " + resource.contentLength());
-
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(resource);
@@ -111,9 +101,7 @@ public class MailController {
     @Tag(name = "이메일 조회", description = "??")
     @GetMapping("find-email-by-code")
     public ResponseEntity<ResponseDTO> findByEmailId(@RequestParam Long emailCode){
-        System.out.println("여기 오는건 맞음?");
         EmailDTO email =  emailService.findById(emailCode);
-        System.out.println("==============================================================="+email);
         return res("성공",email);
     }
     @Tag(name = "이메일 조회", description = "이메일 상태에 따라 조회")
@@ -123,15 +111,12 @@ public class MailController {
 
         EmployeeDTO me = new EmployeeDTO((long)user.getEmployeeCode());
 
-        System.out.println("프론트에서 가져온 word는 : "+word);
-        System.out.println("프론트에서 가져온 option은 : "+option);
         Long receiver = (long)user.getEmployeeCode();
         Page<EmailDTO> emailList = null;
                 switch (option) {
             case "title" : emailList = emailService.findByEmailTitle(word,me,pageable); break;
             case "receiver" : emailList = emailService.findAllByEmailSender(word,receiver,pageable); break;
         }
-        System.out.println(emailList);
         if(emailList == null){
             return resNull(1100,"검색된 메일이 없습니다.");
         }
@@ -158,16 +143,12 @@ public class MailController {
     public ResponseEntity<ResponseDTO> findByEmailReadStatus(@AuthenticationPrincipal User user, @RequestParam Integer page){
         Pageable pageable = PageRequest.of(page, 12);
         EmployeeDTO employee = new EmployeeDTO((long)user.getEmployeeCode(),user.getEmployeeId());
-        System.out.println(employee+"의 readStatus가 N인 것들을 찾아옵니다. "+pageable);
         Page<EmailDTO> emailDTO = emailService.findByEmailReadStatus(employee,pageable);
-        for(EmailDTO email : emailDTO){
-            System.out.println(email);
-        }
         return res("성공",emailDTO);
     }
     @GetMapping("/to-me")
     public ResponseEntity<ResponseDTO> findByEmailSenderAndEmailReceiver(@AuthenticationPrincipal User user,@RequestParam Integer page){
-        Pageable pageable = PageRequest.of(page,12);
+        Pageable pageable = PageRequest.of(page,12,Sort.by("emailSendTime").descending());
         Page<EmailDTO> emailDTOs = emailService.findAllByEmailSenderAndEmailReceiver(user,pageable);
         return res("나에게 보낸 이메일 조회 성공",emailDTOs);
     }
@@ -185,7 +166,6 @@ public class MailController {
     public ResponseEntity<ResponseDTO> findReceiveMail(@RequestParam String condition,@RequestParam Integer page,@AuthenticationPrincipal User user){
         Pageable pageable = PageRequest.of(page, 12);
 
-        System.out.println(condition);
         Page<EmailDTO> emailList = emailService.findReceiveMail(condition,user,pageable);
 
 
@@ -204,12 +184,8 @@ public class MailController {
                 email.setEmailTitle("[휴지통] "+email.getEmailTitle());
             }
         }
-        System.out.println("확인용");
-        for(EmailDTO email : emailList){
-            System.out.println(email.getEmailTitle());
-        }
 
-        return res("받은 이메일 조회 성공",emailList);
+
 //        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 //        SimpleDateFormat inputFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 //        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
@@ -223,11 +199,13 @@ public class MailController {
 //                Date date = inputFormat.parse(email.getEmailSendTime());
 //                String formattedDate = outputFormat.format(date);
 //                email.setEmailSendTime(formattedDate);
+//                return res("받은 이메일 조회 성공",emailList);
 //            } catch (ParseException e) {
 //                try {
 //                    Date date = inputFormat2.parse(email.getEmailSendTime());
 //                    String formattedDate2 = outputFormat2.format(date);
 //                    email.setEmailSendTime(formattedDate2);
+//                    return res("받은 이메일 조회 성공",emailList);
 //                } catch (ParseException ex) {
 //                    System.out.println(ex);
 //                    return null;
@@ -236,7 +214,7 @@ public class MailController {
 //            }
 //
 //        }
-
+        return res("받은 이메일 조회 성공",emailList);
     }
 
     @Tag(name = "보낸 메일 조회", description = "아직 사용 안함")
@@ -256,24 +234,19 @@ public class MailController {
         try {
             List<EmailDTO> emails = emailService.findByAllEmailCode(emailDTOs);
 
-            System.out.println("DTO로 잘 가져왔니?");
             for (EmailDTO email : emails) {
-                System.out.println(email);
                 email.setEmailStatus(status);
             }
             try {
                 emails = emailService.updateEmailStatus(emails);
             } catch (TransactionSystemException e) {
-                System.out.println("트랜잭션 에러");
                 return resNull(1007, "트랜젝션 중 에러가 발생했습니다.");
             }
             return res("이메일이 " + status + " 이(가) 되었습니다.", emails);
 
         } catch (EmptyResultDataAccessException e){
-            System.out.println("체크한 이메일을 찾을 수 없습니다.");
             return resNull(1006,"이메일을 찾을 수 없습니다.");
         } catch (Exception e){
-            System.out.println("알 수 없는 에러");
             return resNull(1999,"복합적인 에러가 발생했습니다.");
         }
     }
@@ -281,15 +254,12 @@ public class MailController {
     @PutMapping("/toggle-important")
     public ResponseEntity<ResponseDTO> updateStatus(@RequestParam Long emailCode, @RequestParam String emailStatus){
         EmailDTO emailDTO = emailService.findById(emailCode);
-        System.out.println(emailDTO);
         EmailDTO result = emailService.updateStatus(emailDTO,emailStatus);
         return res("성공",result);
     }
     @Tag(name = "이메일 삭제", description = "이메일 상태를 trash로 변경")
     @PutMapping("/update-status")
     public ResponseEntity<ResponseDTO> updateMail(@RequestParam Long emailCode, @RequestParam String status){
-        System.out.println("emailcode는 : "+emailCode);
-        System.out.println("status는 : "+status);
         boolean result = emailService.updateEmailStatus(emailCode,status);
         return res("쓰레기통 버리기 성공",result);
     }
@@ -372,15 +342,13 @@ public class MailController {
         String token = accessor.getFirstNativeHeader("Authorization");
         TokenUtils tokenUtils = new TokenUtils();
         if (token != null) {
-            System.out.println("유저의 아이디는 : "+tokenUtils.getUserId(token));
-            System.out.println("유저가 누구에게 보내냐 : "+email.getEmailReceiver().getEmployeeId());
             EmailDTO emailDTO = setDefault(email,tokenUtils.getUserId(token));
-            System.out.println("가져온 이메일의 내용은 : "+emailDTO);
-
-            //emailDTO = emailService.sendMail(emailDTO,"send");
-            System.out.println("누구에게 알람을 보내냐 하면 : "+emailDTO.getEmailReceiver().getEmployeeCode());
-            System.out.println("알람의 총 주소는 : "+"/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode());
-            simp.convertAndSend("/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode(),emailDTO);
+            System.out.println("알림 전송!! : "+"/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode());
+            try{
+                simp.convertAndSend("/topic/mail/alert/"+emailDTO.getEmailReceiver().getEmployeeCode(),emailDTO);
+            }catch (MessageDeliveryException e){
+                System.out.println(e.getMessage()+" 메세지를 전달하는 중 에러가 발생했습니다.");
+            }
 
         } else {
             System.out.println("토큰이 없다.");
@@ -414,18 +382,15 @@ public class MailController {
     }
     @PostMapping("send-reserve-mail")
     public ResponseEntity<ResponseDTO> test(@RequestBody EmailDTO emailDTO, @AuthenticationPrincipal User user){
-        System.out.println("오는지만 보자");
         EmailDTO result = emailService.sendReserveMail(setDefault(emailDTO, user.getEmployeeId()));
         Long emailCode = result.getEmailCode();
 
-        System.out.println("예약한 시간 : "+emailDTO.getEmailReservationTime());
         dynamicTaskScheduler.scheduleTask(emailDTO.getEmailReservationTime(),emailCode);
         return res("예약 메일이 정상적으로 등록되었습니다.",null);
     }
 
     private EmailDTO setDefault(EmailDTO email, String user){
         String receiverId = getId(email.getEmailReceiver().getEmployeeId());    //받는 사람
-        System.out.println("받는 사람 : "+receiverId);                  //얘가 없을 때 처리를 해줘야겠네
         email.setEmailReceiver(emailService.findByEmployeeCode(receiverId));    //가져갈 객체에 받는 사람 저장
         email.setEmailSender(emailService.findByEmployeeId(user));              //보내는 사람 찾아 와서 설정함.(보내는 사람이 없을 순 없다)
 

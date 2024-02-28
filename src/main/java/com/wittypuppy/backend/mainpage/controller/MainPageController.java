@@ -33,7 +33,7 @@ public class MainPageController {
     @Tag(name = "게시판 리스트 조회" , description = "메인페이지에서 게시판 조회")
     @GetMapping("/boardlist")
     public ResponseEntity<ResponseDTO> selectPostList(){
-        System.out.println("메인페이지 게시판 출력 컨트롤러 시작");
+
         List<MainPageBoardDTO> mainPageBoardDTOList = mainPageService.selectPostList();
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK,"메인페이지 게시판 조회 성공", mainPageBoardDTOList));
     }
@@ -47,7 +47,7 @@ public class MainPageController {
     }
 
 
-    
+
     @GetMapping("/arrive")
     public ResponseEntity<ResponseDTO> arrivedView(@AuthenticationPrincipal User user){
 

@@ -103,11 +103,7 @@ public class EmailService {
         return convert(emails, EmailDTO.class);
     }
     public List<EmailDTO> findByEmailSender(EmployeeDTO employeeDTO) {
-        System.out.println("employeeDTO.getEmployeeCode() = " + employeeDTO.getEmployeeCode()); //2
         Employee employeeCode = modelMapper.map(employeeDTO,Employee.class);
-        System.out.println("employeeEntity = " + employeeCode.getEmployeeCode());   //ㅇㅇ
-
-
 
         List<Email> emailEntity = emailRepository.findByEmailSenderAndEmailStatus(employeeCode,"temporary");
         return convert(emailEntity,EmailDTO.class);
@@ -120,7 +116,6 @@ public class EmailService {
     public List<EmailDTO> findByEmailSendTime(String word) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(word, formatter);
-        System.out.println(dateTime);
         return convert(emailRepository.findAllByEmailSendTime(dateTime),EmailDTO.class);
     }
     public List<EmailDTO> findByEmailContent(String word) {
@@ -130,12 +125,7 @@ public class EmailService {
         if(emailStatus.equals("send")) { //클라이언트에서 send를 가져왔으면
             Employee employee = new Employee();
             employee.setEmployeeCode((long) user.getEmployeeCode());    //유저의 코드 삽입
-            System.out.println("이메일 조회할 때 나의 정보는 : " + employee.getEmployeeCode());
             Page<Email> emailList = emailRepository.findByEmailReceiverAndEmailStatusInOrderByEmailSendTimeDesc(employee, List.of("send", "important"), pageable);  //send,important인 메일을 찾아라
-            System.out.println("겟 토탈 엘리먼트 : " + emailList.getTotalElements());
-            System.out.println("겟 토탈 페이지 : " + emailList.getTotalPages());
-            System.out.println("겟 컨텐츠 : " + emailList.getContent());
-            System.out.println("겟 컨텐츠 : " + emailList.getPageable());
             return  emailList.map(email -> modelMapper.map(email,EmailDTO.class));
         } else if (emailStatus.equals("me")){
             Employee employee = new Employee();
@@ -146,7 +136,6 @@ public class EmailService {
             Employee employee = new Employee();
             employee.setEmployeeCode((long) user.getEmployeeCode());
             Page<Email> emailList = emailRepository.findAllByEmailReceiverAndEmailStatusOrderByEmailSendTimeDesc(employee, emailStatus, pageable);   //가져온 상태로 찾아라
-            System.out.println("요청한 emailStatus는 : " + emailStatus + "입니다.");
             return emailList.map(email -> modelMapper.map(email,EmailDTO.class));
         }
 
@@ -159,24 +148,17 @@ public class EmailService {
         //얘가 찾아오는 것은 Employee테이블에서 word변수의 아이디를 갖고 있는 사람을 가져온다.
             List<Employee> employee = employeeRepository.findAllByEmployeeIdLike("%" + word + "%");
             if(employee.isEmpty()){
-                System.out.println("유저를 못 찾음");
                 return null;
             }
             List<Long> emailSenderId = new ArrayList<>();
             for(Employee emp : employee){
                 emailSenderId.add(emp.getEmployeeCode());
             }
-            System.out.println("이메일 보낸 사람의 코드는? : "+emailSenderId); //이게 확인 용이다.
             //me는 나인 15이고, 두 번째 인자는 2,9,16이다.
             Page<Email> emails = emailRepository.findAllByEmailReceiverMail(me,emailSenderId,pageable);
             if(!emails.isEmpty()) {
-                System.out.println("DB에서 가져온 값은?");
-                for (Email email : emails) {
-                    System.out.println(email);
-                }
                 return emails.map(email -> modelMapper.map(email,EmailDTO.class));
             }
-            System.out.println(emails);
             return null;
     }
     //예약상태의 메일을 추가하는 메서드
@@ -215,7 +197,6 @@ public class EmailService {
     public EmailDTO updateEmailReadStatus(EmailDTO emailDTO) {
         Email email = modelMapper.map(emailDTO,Email.class);
         email.setEmailSendTime(LocalDateTime.parse(emailDTO.getEmailSendTime()));
-        System.out.println("======================================="+email.getEmailSendTime());
         emailRepository.save(email);
         return modelMapper.map(email,EmailDTO.class);
     }
@@ -291,10 +272,6 @@ public class EmailService {
     public List<EmailAttachmentDTO> findAllByEmailCode(EmailDTO email) {
         Email emailEntity = modelMapper.map(email, Email.class);
         List<EmailAttachment> attachmentList = attachmentRepository.findByEmailCode(emailEntity);
-        for(EmailAttachment a : attachmentList){
-            System.out.println(a.getEmailCode());
-            System.out.println(a.getAttachmentOgFile());
-        }
         return convert(attachmentList,EmailAttachmentDTO.class);
     }
 

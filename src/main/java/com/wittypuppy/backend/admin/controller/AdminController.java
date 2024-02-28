@@ -2,7 +2,6 @@ package com.wittypuppy.backend.admin.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.admin.dto.*;
-import com.wittypuppy.backend.admin.entity.Profile;
 import com.wittypuppy.backend.admin.service.AdminService;
 
 import com.wittypuppy.backend.common.dto.ResponseDTO;
@@ -25,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +46,7 @@ public class AdminController {
 
 
     @MessageMapping("/mail/alert/admin/send")
-    public void mailAlert(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+    public void mailAlert(@Payload EmailDTO email){
         //관리자가 보냈음
         email.setEmailSender(new EmployeeDTO(15L));
         email.setEmailStatus("send");
@@ -67,9 +65,8 @@ public class AdminController {
         }
     }
     @MessageMapping("/mail/alert/admin/send2")
-    public void mailAlert2(@Payload EmailDTO email, SimpMessageHeaderAccessor accessor){
+    public void mailAlert2(@Payload EmailDTO email){
         //관리자가 보냈음
-        System.out.println("여2"+email.getStatus2());
         email.setEmailSender(new EmployeeDTO(15L));
         email.setEmailStatus("send");
         email.setEmailReadStatus("N");
@@ -81,9 +78,6 @@ public class AdminController {
     @GetMapping("/get-department")
     public ResponseEntity<ResponseDTO> getDepartment(){
         List<DepartmentDTO> departmentDTO = adminService.getDepartment();
-        for(DepartmentDTO department : departmentDTO){
-            System.out.println(department);
-        }
         return res("조직 조회 성공",departmentDTO);
     }
     /**
@@ -156,7 +150,6 @@ public class AdminController {
      */
     @PostMapping("/create-user")
     public ResponseEntity<ResponseDTO> createUser(@RequestBody CreateUserDTO userDTO){
-        System.out.println("createUser 처리 중 : "+userDTO);
         try {
             EmployeeDTO employeeDTO = adminService.createUser(userDTO.getEmployee());
             userDTO.getEducation().setEmployeeCode(employeeDTO.getEmployeeCode());
@@ -168,9 +161,9 @@ public class AdminController {
             userDTO.setCareer(careerDTO);
             userDTO.setEducation(educationDTO);
         } catch (DataIntegrityViolationException e){
-            resNull(9002,"외래키 참조 오류입니다.");
+            res("ㄴㄴ",userDTO);
         } catch (EntityExistsException e){
-            resNull(9004,"기본 키가 중복됩니다.");
+            res("ㄴd",userDTO);
         }
 
         return res("유저 추가에 성공했습니다.",userDTO);

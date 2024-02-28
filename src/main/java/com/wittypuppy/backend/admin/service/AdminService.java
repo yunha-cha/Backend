@@ -26,18 +26,16 @@ public class AdminService {
     private final AdminBoardRepository boardRepository;
     private final AdminDepartmentRepository departmentRepository;
     private final AdminEmailRepository emailRepository;
-    private final AdminJobRepository jobRepository;
     private final AdminProfileRepository profileRepository;
     private final ModelMapper modelMapper;
 
-    public AdminService(AdminEmployeeRepository repository, AdminCareerRepository careerRepository, AdminEducationRepository educationRepository, AdminBoardRepository boardRepository, AdminDepartmentRepository departmentRepository, AdminEmailRepository emailRepository, AdminJobRepository jobRepository, AdminProfileRepository profileRepository, ModelMapper modelMapper) {
+    public AdminService(AdminEmployeeRepository repository, AdminCareerRepository careerRepository, AdminEducationRepository educationRepository, AdminBoardRepository boardRepository, AdminDepartmentRepository departmentRepository, AdminEmailRepository emailRepository, AdminProfileRepository profileRepository, ModelMapper modelMapper) {
         this.employeeRepository = repository;
         this.careerRepository = careerRepository;
         this.educationRepository = educationRepository;
         this.boardRepository = boardRepository;
         this.departmentRepository = departmentRepository;
         this.emailRepository = emailRepository;
-        this.jobRepository = jobRepository;
         this.profileRepository = profileRepository;
         this.modelMapper = modelMapper;
     }
@@ -61,10 +59,8 @@ public class AdminService {
 //        Employee employeeEntity = modelMapper.map(employeeDTO,Employee.class);
 //        employeeEntity.setDepartment(departmentEntity);
 //        employeeEntity.setJob(jobEntity);
-        System.out.println(employeeDTO.getEmployeePassword());
         String newHashPwd = BCrypt.hashpw(employeeDTO.getEmployeePassword(), BCrypt.gensalt());
         employeeDTO.setEmployeePassword(newHashPwd);
-        System.out.println(employeeDTO.getEmployeePassword());
 
         Employee employee = employeeRepository.save(modelMapper.map(employeeDTO,Employee.class));
 
@@ -118,25 +114,18 @@ public class AdminService {
             emailList.get(i).setEmailReceiver(employeeDTO);
 
             emailList.get(i).setEmailContent(email.getEmailContent());
-            System.out.println(emailList.get(i));
         }
         List<Email> emails = convert(emailList,Email.class);
         for(int i=0; i<emails.size(); i++){
             emails.get(i).setEmailReceiver(employees.get(i));
             emails.get(i).setEmailSendTime(LocalDateTime.now());
-            System.out.println(emails.get(i).getEmailReceiver().getEmployeeCode());
         }
         emailRepository.saveAll(emails);
         return convert(employees,EmployeeDTO.class);
     }
     public List<EmployeeDTO> sendDepartmentMail(EmailDTO email) {
 
-        System.out.println(email.getStatus());
         List<Employee> employees = employeeRepository.findEmployee(email.getStatus());
-        List<EmployeeDTO> employeeDTO = convert(employees, EmployeeDTO.class);
-        for(EmployeeDTO emp : employeeDTO){
-            System.out.println(emp);
-        }
 
         List<Email> emails = new ArrayList<>();
         for(int i=0; i<employees.size(); i++){
@@ -160,9 +149,6 @@ public class AdminService {
     public List<EmployeeDTO> sendMailAll2(EmailDTO email) {
         List<Employee> employee = employeeRepository.findAllByDepartment_DepartmentName(email.getStatus2());
         List<EmployeeDTO> employeeDTO = convert(employee, EmployeeDTO.class);
-        for(EmployeeDTO emp : employeeDTO){
-            System.out.println(emp);
-        }
 
         List<Email> emails = new ArrayList<>();
         for(int i=0; i<employee.size(); i++){
