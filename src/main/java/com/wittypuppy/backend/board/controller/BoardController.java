@@ -37,12 +37,6 @@ public class BoardController {
         this.boardService = boardService;
         this.simp = simpMessagingTemplate;
     }
-    @GetMapping("main-board")
-    public ResponseEntity<ResponseDTO> selectMainPagePost(@AuthenticationPrincipal User user){
-        List<PostDTO> postList = boardService.findByEmployeeCodeMain((long)user.getEmployeeCode());
-        return res("메인페이지 post 조회 성공", postList);
-    }
-
 
 
     /* 게시판 그룹 카테고리 조회 */
@@ -58,7 +52,12 @@ public class BoardController {
 
 
 
+    @GetMapping("main-board")
+    public ResponseEntity<ResponseDTO> selectMainPagePost(@AuthenticationPrincipal User user){
 
+        List<PostDTO> postList = boardService.findByEmployeeCodeMain((long)user.getEmployeeCode());
+        return res("메인페이지 post 조회 성공", postList);
+    }
     // 특정 게시판에서 게시글 정렬
     @Tag(name = "게시글 조회", description = "해당 게시판에 따른 게시글 최신순 리스트")
     @GetMapping("/{boardCode}")

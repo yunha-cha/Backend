@@ -1,7 +1,6 @@
 package com.wittypuppy.backend.attendance.controller;
 
 import com.wittypuppy.backend.Employee.dto.User;
-import com.wittypuppy.backend.attendance.adminAttend.AdminEmployeeDTO;
 import com.wittypuppy.backend.attendance.dto.*;
 import com.wittypuppy.backend.attendance.paging.Criteria;
 import com.wittypuppy.backend.attendance.paging.PageDTO;
@@ -69,7 +68,6 @@ public class AttendanceController {
         return ResponseEntity.ok().body(new AttendanceResponseDTO(HttpStatus.OK, "근태 메인 화면 조회 성공", commute, vacation, approvalWaiting, userName));
 
     }
-
 
     //출퇴근 인서트
     @Operation(summary = "근태 메인 화면 출근 인서트", description = "출퇴근 시간을 인서트 합니다")

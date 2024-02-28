@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +26,7 @@ public class MainPageController {
     @Tag(name = "게시판 리스트 조회" , description = "메인페이지에서 게시판 조회")
     @GetMapping("/boardlist")
     public ResponseEntity<ResponseDTO> selectPostList(){
-        System.out.println("메인페이지 게시판 출력 컨트롤러 시작");
+
         List<MainPageBoardDTO> mainPageBoardDTOList = mainPageService.selectPostList();
         return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK,"메인페이지 게시판 조회 성공", mainPageBoardDTOList));
     }
