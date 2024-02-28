@@ -25,7 +25,9 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
             "LEFT JOIN tbl_employee B ON A.employee_code = B.employee_code " +
             "LEFT JOIN tbl_attendance_work_type C ON A.attendance_management_code = C.attendance_management_code " +
             "WHERE A.employee_code = :employeeCode " +
-            "AND A.attendance_management_work_day = CURDATE()",
+            "AND A.attendance_management_work_day = CURDATE() " +
+            "ORDER BY A.attendance_management_code ASC " +
+            "LIMIT 1",
             nativeQuery = true)
     AttendanceManagement attendanceCommute(int employeeCode);
 
@@ -64,7 +66,8 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
             "A.employee_code, " +
             "B.attendance_work_type_status " +
             "FROM tbl_attendance_management A " +
-            "LEFT JOIN tbl_attendance_work_type B ON A.attendance_management_code = B.attendance_management_code " +
+            "LEFT JOIN tbl_attendance_work_type B " +
+            "ON A.attendance_management_code = B.attendance_management_code " +
             "WHERE A.employee_code = :employeeCode " +
             "AND DATE_FORMAT(A.attendance_management_work_day, '%Y-%m') = :yearMonth",
             nativeQuery = true)

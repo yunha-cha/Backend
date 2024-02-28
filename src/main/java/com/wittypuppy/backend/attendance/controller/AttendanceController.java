@@ -67,7 +67,7 @@ public class AttendanceController {
         System.out.println("====== arrivalTime ===== " + arrivalTime);
         System.out.println("======== status ======== " + status);
 
-        LocalDateTime now = LocalDateTime.now(); // 현재 날짜와 시간 가져오기
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime departureTime = now.toLocalDate().atStartOfDay(); // 현재 날짜의 자정 시간 구하기
 
         String login = attendanceService.insertArrival(employeeCode, arrivalTime, departureTime, status);
@@ -106,7 +106,7 @@ public class AttendanceController {
         @GetMapping("/attendances/lists")
         public ResponseEntity<WorkTypeResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "") String yearMonth,  //리액트 값 받기
+            @RequestParam(name = "yearMonth", defaultValue = "") String yearMonth,
             @AuthenticationPrincipal User employeeInFo
         ) {
 
