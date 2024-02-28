@@ -11,7 +11,7 @@ public class Criteria {
 
     private int pageNum;
     private int amount;
-    private String searchValue;
+    private String searchValue; //사용자가 입력한 검색어
 
     public Criteria(){
         this(1, 10);  // 1페이지, 10개 게시글

@@ -38,10 +38,10 @@ public class GroupController {
     @GetMapping("/chartlist")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> selectEmpListWithGroupPaging(
-            @RequestParam(name = "offset", defaultValue = "1") String offset
+            @RequestParam(name = "offset", defaultValue = "1") String offset //offset은 기본으로 시작할 페이지가 1이라는 뜻
             ){
 
-        Criteria criteria = new Criteria(Integer.valueOf(offset), 10);
+        Criteria criteria = new Criteria(Integer.valueOf(offset), 10); //offset인 한 페이지에  10개를 나타낸다는 뜻
 
         PagingResponseDTO pagingResponseDTO = new PagingResponseDTO();
         Page<GroupEmpDTO> groupList = groupEmpService.selectEmpListWithGroupPaging(criteria);
