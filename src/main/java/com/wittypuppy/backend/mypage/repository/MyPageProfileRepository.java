@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository("MyPage_Profile_Repository")
 public interface MyPageProfileRepository extends JpaRepository<MyPageProfile, Long> {
-    Optional<MyPageProfile> findFirstByEmpCodeOrderByProfileRegistDateDesc(Long empCode);
+    Optional<MyPageProfile> findFirstByEmpCodeOrderByProfileCodeDesc(Long empCode);
 
 
 

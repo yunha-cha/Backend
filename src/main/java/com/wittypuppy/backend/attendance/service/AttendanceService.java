@@ -273,13 +273,15 @@ public class AttendanceService {
     @Transactional
     public String insertArrival(User employeeCode, LocalDateTime arrivalTime, LocalDateTime departureTime, String status) {
 
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeCode(employeeCode.getEmployeeCode());
         int result = 0;
 
         try {
             LocalDate today = LocalDate.now();
 
             InsertAttendanceManagementDTO InsertAttendanceManagement = new InsertAttendanceManagementDTO();
-            InsertAttendanceManagement.setAttendanceEmployeeCode(employeeCode);
+            InsertAttendanceManagement.setAttendanceEmployeeCode(employeeDTO);
             InsertAttendanceManagement.setAttendanceManagementArrivalTime(arrivalTime);
             InsertAttendanceManagement.setAttendanceManagementDepartureTime(departureTime);
             InsertAttendanceManagement.setAttendanceManagementState(status);

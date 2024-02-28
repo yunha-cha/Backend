@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
+
 
 @Service
 @Slf4j
@@ -43,22 +45,17 @@ public class MyPageService {
 
     private final MyPageProfileRepository myPageProfileRepository;
 
-    private final MyPageCareerRepository myPageCareerRepository;
-    private final MyPageEducationRepository myPageEducationRepository;
-
     private final String imageDirectory = "classpath:/static/web-images/";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
 
-    public MyPageService(MyPageRepository myPageRepository, ModelMapper modelMapper, MyPageUpdateRepository myPageUpdateRepository, MyPageProfileRepository myPageProfileRepository, MyPageCareerRepository myPageCareerRepository, MyPageEducationRepository myPageEducationRepository) {
+    public MyPageService(MyPageRepository myPageRepository, ModelMapper modelMapper, MyPageUpdateRepository myPageUpdateRepository, MyPageProfileRepository myPageProfileRepository) {
         this.myPageRepository = myPageRepository;
         this.modelMapper = modelMapper;
         this.myPageUpdateRepository = myPageUpdateRepository;
         this.myPageProfileRepository = myPageProfileRepository;
-        this.myPageCareerRepository = myPageCareerRepository;
-        this.myPageEducationRepository = myPageEducationRepository;
     }
 
 
@@ -66,17 +63,8 @@ public class MyPageService {
         log.info("마이페이지 서비스 시작___-----=====");
 
         MyPageEmp myPageEmp = myPageRepository.findById(empCode).get();//findById는 스프링부트에서 원래 있는 문법으로 empcode라는 pk값으로 값을 불러온다.
-//        MyPageCareer myPageCareer = myPageCareerRepository.findById(empCode).get();
-//        MyPageEducation myPageEducation = myPageEducationRepository.findById(empCode).get();
 
         MyPageEmpDTO myPageEmpDTO = modelMapper.map(myPageEmp, MyPageEmpDTO.class);
-
-//        MyPageCareerDTO myPageCareerDTO = modelMapper.map(myPageCareer, MyPageCareerDTO.class);
-//        MyPageEducationDTO myPageEducationDTO = modelMapper.map(myPageEducation, MyPageEducationDTO.class);
-//
-//
-////        myPageEmpDTO.setCareer(myPageCareerDTO);
-////       myPageEmpDTO.setEducation(myPageEducationDTO );
 
 
         return myPageEmpDTO;
@@ -156,7 +144,7 @@ public class MyPageService {
 
 
     public MyPageProfile findMyPageProfileImage(Long empCode) {
-        Optional<MyPageProfile> myPageProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileRegistDateDesc(empCode);
+        Optional<MyPageProfile> myPageProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileCodeDesc(empCode);
 
         // 프로필을 찾지 못한 경우 예외 처리
         MyPageProfile myPageProfile = myPageProfileOptional.orElse(new MyPageProfile());
@@ -214,11 +202,11 @@ public class MyPageService {
     @Transactional
     public String updateMyPageProfileImage(MultipartFile profileImage, Long empCode, @AuthenticationPrincipal User principal) {
         try {
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = now();
             empCode = (long) principal.getEmployeeCode();
 
             // 기존 프로필을 조회합니다.
-            Optional<MyPageProfile> existingProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileRegistDateDesc(empCode);
+            Optional<MyPageProfile> existingProfileOptional = myPageProfileRepository.findFirstByEmpCodeOrderByProfileCodeDesc(empCode);
             if (existingProfileOptional.isPresent()) {
                 // 기존 프로필이 존재하는 경우 삭제 상태를 "Y"로 설정합니다.
                 MyPageProfile existingProfile = existingProfileOptional.get();
@@ -239,7 +227,7 @@ public class MyPageService {
                         .setEmpCode(empCode)
                         .setProfileOgFile(profileImage.getOriginalFilename())
                         .setProfileChangedFile(replaceFileName)
-                        .setProfileRegistDate(now)
+                        .setProfileRegistDate(now())
                         .setProfileDeleteStatus("N"); // 새 프로필을 등록할 때 삭제 상태를 'N'으로 설정합니다.
 
                 // 새 프로필 정보를 데이터베이스에 저장합니다.
