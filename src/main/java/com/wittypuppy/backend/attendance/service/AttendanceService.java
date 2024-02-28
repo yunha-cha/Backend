@@ -191,7 +191,7 @@ public class AttendanceService {
                 total = 15;
             }else {
 
-                total = 15 + (int) ((yearsSinceJoin - 1) / 2);
+                total = Math.min(15 + (int) ((yearsSinceJoin - 1) / 2), 25);
             }
         } else {
             for (int i = 1; i < 12; i++) {
@@ -211,21 +211,21 @@ public class AttendanceService {
 
         double nowVacation =0;
 
-        LocalDateTime marchFirst = currentDate.withMonth(3).withDayOfMonth(1).atStartOfDay().minusDays(1); //그해 연차 사용 만료일
+        LocalDateTime marchFirst = currentDate.withMonth(3).withDayOfMonth(1).atStartOfDay().minusDays(1);
 
 
         if (currentDate.isBefore(ChronoLocalDate.from(marchFirst)) ){
 
             if (futureDate.getYear() < currentDateYear) {
-                double vacationDay = total - usedVacationDays - (usedHalfVacationDays * 0.5);  // 전 년도 남은 연차 수량
+                double vacationDay = total - usedVacationDays - (usedHalfVacationDays * 0.5);
                 nowVacation = vacationDay + total;
             } else if (futureDate.getYear() == currentDateYear) {
-                nowVacation = total - usedVacationDays - (usedHalfVacationDays * 0.5);  // 남은 연차 수량
+                nowVacation = total - usedVacationDays - (usedHalfVacationDays * 0.5);
             }
 
         } else if (currentDate.isAfter(ChronoLocalDate.from(marchFirst))) {
 
-            nowVacation = total - usedVacationDays - (usedHalfVacationDays * 0.5);  // 남은 연차 수량
+            nowVacation = total - usedVacationDays - (usedHalfVacationDays * 0.5);
         }
 
 

@@ -64,7 +64,8 @@ public interface ManagementRepository extends JpaRepository <AttendanceManagemen
             "A.employee_code, " +
             "B.attendance_work_type_status " +
             "FROM tbl_attendance_management A " +
-            "LEFT JOIN tbl_attendance_work_type B ON A.attendance_management_code = B.attendance_management_code " +
+            "LEFT JOIN tbl_attendance_work_type B " +
+            "ON A.attendance_management_code = B.attendance_management_code " +
             "WHERE A.employee_code = :employeeCode " +
             "AND DATE_FORMAT(A.attendance_management_work_day, '%Y-%m') = :yearMonth",
             nativeQuery = true)

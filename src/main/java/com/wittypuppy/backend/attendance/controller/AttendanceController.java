@@ -105,7 +105,7 @@ public class AttendanceController {
         @GetMapping("/attendances/lists")
         public ResponseEntity<WorkTypeResponseDTO> selectCommuteList(
             @RequestParam(name = "offset", defaultValue = "1") String offset,
-            @RequestParam(name = "yearMonth", defaultValue = "") String yearMonth,  //리액트 값 받기
+            @RequestParam(name = "yearMonth", defaultValue = "") String yearMonth,
             @AuthenticationPrincipal User employeeInFo
         ) {
 
