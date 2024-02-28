@@ -3,7 +3,9 @@ package com.wittypuppy.backend.mainpage.service;
 import com.wittypuppy.backend.Employee.dto.User;
 import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
 import com.wittypuppy.backend.attendance.dto.EmployeeDTO;
+import com.wittypuppy.backend.attendance.dto.InsertAttendanceManagementDTO;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
+import com.wittypuppy.backend.attendance.entity.InsertAttendanceManagement;
 import com.wittypuppy.backend.mainpage.dto.MainPageBoardDTO;
 import com.wittypuppy.backend.mainpage.dto.MainPageProjectListDTO;
 import com.wittypuppy.backend.mainpage.entity.MainPagePost;
@@ -11,10 +13,14 @@ import com.wittypuppy.backend.mainpage.entity.MainPageProject;
 import com.wittypuppy.backend.mainpage.repository.MainPageAttendanceRepository;
 import com.wittypuppy.backend.mainpage.repository.MainPageBoardRepository;
 import com.wittypuppy.backend.mainpage.repository.MainPageProjectRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,26 +75,66 @@ public class MainPageService {
         return mainPageProjectListDTOList;
     }
 
+    public AttendanceManagementDTO attendanceList(int employeeCode) {
+
+//        AttendanceManagement commute = mainPageAttendanceRepository.attendanceCommute(employeeCode);
+//
+//        if (commute == null) {
+//
+//            commute = new AttendanceManagement();
+//            commute.setAttendanceManagementArrivalTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
+//
+//        }
+//
+//        AttendanceManagementDTO commutes = modelMapper.map(commute, AttendanceManagementDTO.class);
+
+        return null;
+
+    }
 
 
-//    public AttendanceManagementDTO saveArrive(AttendanceManagementDTO managementDTO, User user) {
-//
-//        EmployeeDTO employeeDTO = new EmployeeDTO();
-//        employeeDTO.setEmployeeCode(user.getEmployeeCode());
-//        managementDTO.setAttendanceEmployeeCode(employeeDTO);
-//        AttendanceManagement attendanceManagementEntity = modelMapper.map(managementDTO, AttendanceManagement.class);
-//
-//        return modelMapper.map(mainPageAttendanceRepository.save(attendanceManagementEntity),AttendanceManagementDTO.class);
-//    }
-//
-//
-//    public AttendanceManagementDTO attendanceList() {
-//
-//
-//
-//    }
-//
 
+    public InsertAttendanceManagementDTO saveArrive(InsertAttendanceManagementDTO managementDTO, User user) {
+
+
+        managementDTO.setAttendanceEmployeeCode(user);
+
+        System.out.println("====== managementDTO ==== " + managementDTO);
+        InsertAttendanceManagement attendanceManagementEntity = modelMapper.map(managementDTO, InsertAttendanceManagement.class);
+
+        return modelMapper.map(mainPageAttendanceRepository.save(attendanceManagementEntity),InsertAttendanceManagementDTO.class);
+    }
+
+
+    @Transactional
+    public InsertAttendanceManagementDTO saveOnlyDeparture(InsertAttendanceManagementDTO managementDTO, User user) {
+
+
+        int employeeNum = user.getEmployeeCode();
+        InsertAttendanceManagement updateAttendance = mainPageAttendanceRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
+
+
+        updateAttendance.setAttendanceManagementDepartureTime(managementDTO.getAttendanceManagementDepartureTime());
+
+
+        return managementDTO ;
+
+    }
+
+
+    public InsertAttendanceManagementDTO saveDeparture(InsertAttendanceManagementDTO managementDTO, User user) {
+
+        int employeeNum = user.getEmployeeCode();
+        InsertAttendanceManagement updateAttendance = mainPageAttendanceRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
+
+
+        updateAttendance.setAttendanceManagementDepartureTime(managementDTO.getAttendanceManagementDepartureTime());
+
+        updateAttendance.setAttendanceManagementState(managementDTO.getAttendanceManagementState());
+
+        return managementDTO ;
+
+    }
 
 
 }
