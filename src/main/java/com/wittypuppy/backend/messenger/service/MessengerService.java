@@ -368,10 +368,10 @@ public class MessengerService {
                 FileUploadUtils.deleteFile(IMAGE_DIR, replaceFileName);
                 throw new DataUpdateException("프로필 사진 변경 실패");
             }
+            return replaceFileName;
         } catch (Exception e) {
             throw new DataUpdateException("프로필 사진 변경 실패");
         }
-        return "프로필 사진 변경 성공";
     }
 
     @Transactional
