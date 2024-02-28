@@ -5,6 +5,7 @@ import com.wittypuppy.backend.attendance.dto.AttendanceManagementDTO;
 import com.wittypuppy.backend.attendance.dto.EmployeeDTO;
 import com.wittypuppy.backend.attendance.dto.InsertAttendanceManagementDTO;
 import com.wittypuppy.backend.attendance.entity.AttendanceManagement;
+import com.wittypuppy.backend.attendance.entity.Employee;
 import com.wittypuppy.backend.attendance.entity.InsertAttendanceManagement;
 import com.wittypuppy.backend.mainpage.dto.MainPageBoardDTO;
 import com.wittypuppy.backend.mainpage.dto.MainPageProjectListDTO;
@@ -93,17 +94,23 @@ public class MainPageService {
     }
 
 
-
+    @Transactional
     public InsertAttendanceManagementDTO saveArrive(InsertAttendanceManagementDTO managementDTO, User user) {
-
-
-        managementDTO.setAttendanceEmployeeCode(user);
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeCode(user.getEmployeeCode());
+        managementDTO.setAttendanceEmployeeCode(employeeDTO);
 
         System.out.println("====== managementDTO ==== " + managementDTO);
         InsertAttendanceManagement attendanceManagementEntity = modelMapper.map(managementDTO, InsertAttendanceManagement.class);
 
-        return modelMapper.map(mainPageAttendanceRepository.save(attendanceManagementEntity),InsertAttendanceManagementDTO.class);
+        System.out.println("8888888  ====> attendanceManagementEntity = " + attendanceManagementEntity);
+
+        InsertAttendanceManagement insertAttendanceManagement = mainPageAttendanceRepository.save(attendanceManagementEntity);
+        System.out.println("insertAttendanceManagement = " + insertAttendanceManagement);
+
+        return modelMapper.map(insertAttendanceManagement,InsertAttendanceManagementDTO.class);
     }
+
 
 
     @Transactional
@@ -113,26 +120,38 @@ public class MainPageService {
         int employeeNum = user.getEmployeeCode();
         InsertAttendanceManagement updateAttendance = mainPageAttendanceRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
 
-
+        // 출퇴근 정보 업데이트
         updateAttendance.setAttendanceManagementDepartureTime(managementDTO.getAttendanceManagementDepartureTime());
 
+        // 변경된 엔티티를 저장
+        mainPageAttendanceRepository.save(updateAttendance);
 
-        return managementDTO ;
+        // 업데이트된 정보를 DTO에 반영하여 반환
+        managementDTO.setAttendanceManagementDepartureTime(updateAttendance.getAttendanceManagementDepartureTime());
+
+        return managementDTO;
 
     }
 
-
+    @Transactional
     public InsertAttendanceManagementDTO saveDeparture(InsertAttendanceManagementDTO managementDTO, User user) {
 
         int employeeNum = user.getEmployeeCode();
         InsertAttendanceManagement updateAttendance = mainPageAttendanceRepository.findFirstByAttendanceEmployeeCode_EmployeeCodeOrderByAttendanceManagementCodeDesc(employeeNum);
 
-
+        // 출퇴근 정보 업데이트
         updateAttendance.setAttendanceManagementDepartureTime(managementDTO.getAttendanceManagementDepartureTime());
-
         updateAttendance.setAttendanceManagementState(managementDTO.getAttendanceManagementState());
 
-        return managementDTO ;
+        // 변경된 엔티티를 저장
+        mainPageAttendanceRepository.save(updateAttendance);
+
+        // 업데이트된 정보를 DTO에 반영하여 반환
+        managementDTO.setAttendanceManagementDepartureTime(updateAttendance.getAttendanceManagementDepartureTime());
+        managementDTO.setAttendanceManagementState(updateAttendance.getAttendanceManagementState());
+
+        return managementDTO;
+
 
     }
 

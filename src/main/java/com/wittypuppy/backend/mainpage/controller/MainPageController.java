@@ -112,7 +112,6 @@ public class MainPageController {
         }
 
 
-
         //갖다오면 보낸 객체 프론트로 보내기
         return ResponseEntity.ok().body(new WorkTypeResponseDTO(HttpStatus.OK, "메인 화면 출근 등록 성공", managementDTO, user));
     }

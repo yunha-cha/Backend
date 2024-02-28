@@ -16,7 +16,7 @@ public class InsertAttendanceManagementDTO {
 
     private Long attendanceManagementCode;
 
-    private User attendanceEmployeeCode;
+    private EmployeeDTO attendanceEmployeeCode;
 
     private LocalDateTime attendanceManagementArrivalTime;
 
