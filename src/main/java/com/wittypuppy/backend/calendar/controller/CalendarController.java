@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Tag(name = "캘린더관련 스웨거 연동")
@@ -101,6 +103,19 @@ public class CalendarController {
             @RequestBody EventOptionsDTO eventOptions,
             @AuthenticationPrincipal User principal) {
         Long userEmployeeCode = (long) principal.getEmployeeCode();
+        Date eventStartDate = eventOptions.getEvent().getEventStartDate();
+        Date eventEndDate = eventOptions.getEvent().getEventEndDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(eventStartDate);
+        calendar.add(Calendar.HOUR_OF_DAY, -9);
+        Date modifiedEventStartDate = calendar.getTime();
+        calendar.setTime(eventEndDate);
+        calendar.add(Calendar.HOUR_OF_DAY, -9);
+        Date modifiedEventEndDate = calendar.getTime();
+        EventDTO eventDTO = eventOptions.getEvent();
+        eventDTO.setEventStartDate(modifiedEventStartDate);
+        eventDTO.setEventEndDate(modifiedEventEndDate);
+        eventOptions.setEvent(eventDTO);
         return res("일정 수정 성공", calendarService.modifyEventOptions(Long.parseLong(eventCode), eventOptions, userEmployeeCode));
     }
 

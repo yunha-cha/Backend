@@ -27,7 +27,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ON tp.project_manager_code = te.employee_code " +
             "LEFT JOIN tbl_department td " +
             "ON te.department_code = td.department_code " +
-            "ORDER BY tp.project_code DESC " +
+            "ORDER BY " +
+            "    CASE " +
+            "        WHEN tp.project_deadline < CURDATE() THEN 1 " +
+            "        ELSE 0                                     " +
+            "    END," +
+            "    CASE " +
+            "        WHEN tp.project_deadline >= CURDATE() THEN tp.project_deadline " +
+            "    END ASC " +
             "LIMIT :startCount, :searchCount",
             nativeQuery = true)
     List<ProjectMainInterface> findAllProjectInfoWithPaging(Long employeeCode, Integer startCount, Integer searchCount);
