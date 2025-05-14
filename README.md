@@ -19,17 +19,14 @@
 
 ---
 
-## 🖥️ 기술 스택 및 개발 환경
-- **언어**: Java, JavaScript
-- **프론트엔드**: HTML, CSS, JQuery, React, Redux
-- **백엔드**: Spring Boot, Spring Security, JPA, RESTful API, WebSocket
-- **DB**: MySQL
-- **도구**: VS Code, IntelliJ, GitHub, Git, Notion
-- **Cloud & DevOps**: Docker, Amazon EC2, FileZilla
+## 기술 스택
+
+![Web App Reference Architecture (1)](https://github.com/user-attachments/assets/e9b84943-7239-4ddf-8cae-85694498cf27)
+
 
 ---
 
-## 📊 ERD (Entity-Relationship Diagram)
+## ERD
 - **데이터베이스 구조**를 나타낸 ERD입니다.
 
 ![ERD 이미지](https://github.com/user-attachments/assets/b7e344e3-9737-4afc-a449-759adf35b3bd)
