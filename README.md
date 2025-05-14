@@ -5,7 +5,36 @@
 
 **기간**: 2023.12.20 ~ 2024.02.28  
 
-**팀원**: 5명  
+**팀원**: 5명
+<table>
+  <tr>
+     <td align="center">
+      <img src="https://github.com/user-attachments/assets/b2d917e7-0a1f-4849-98f0-05a9c0d3ca7f" width="100"/><br/>
+      🐳 이준경<br/>
+      <code>INTP</code>
+    </td>
+     <td align="center">
+      <img src="https://github.com/user-attachments/assets/f8af518a-a347-4523-a6d5-10374a80a9c9" width="100"/><br/>
+      🍀 차윤하<br/>
+      <code>ISFP</code>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/b6634003-09f8-4f21-8066-9189fb6a842b" width="100"/><br/>
+      🤛 정지섭<br/>
+      <code>ENTP</code>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/f4b3d442-b719-4602-8c81-e43fa30bef22" width="100"/><br/>
+      🐾 김성민<br/>
+      <code>ISFJ</code>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/610cdbd5-c99f-4ec7-8dd5-ddea467869fa" width="100"/><br/>
+      😊 서보혜<br/>
+      <code>INFP</code>
+    </td>
+  </tr>
+</table>
 
 
 ---
@@ -31,9 +60,10 @@
 ---
 
 ## ERD
-- **데이터베이스 구조**를 나타낸 ERD입니다.
+- **게시판** 데이터베이스 구조 ERD
 
-![ERD 이미지](https://github.com/user-attachments/assets/b7e344e3-9737-4afc-a449-759adf35b3bd)
+![Witt-Wave 게시판ERD](https://github.com/user-attachments/assets/e5f569fd-8d93-4d76-a8ea-169be7940399)
+
 
 ---
 
