@@ -23,6 +23,10 @@
 
 ![Web App Reference Architecture (1)](https://github.com/user-attachments/assets/e9b84943-7239-4ddf-8cae-85694498cf27)
 
+---
+
+## 와이어프레임
+[Figma](https://www.figma.com/design/Dhd2HPbpUeezBRoI42CjSF/Witty-Wave-%EA%B7%B8%EB%A3%B9%EC%9B%A8%EC%96%B4?m=auto&t=s3R2goQeoJUGu5fj-6)
 
 ---
 
